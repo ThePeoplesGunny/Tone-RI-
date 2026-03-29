@@ -2801,19 +2801,6 @@ function findPentaPathway(scaleKey) {
 // ── Chord voicings database ─────────────────────────
 // Format: [string1..string6] where string1=low E, 'x'=muted
 // Each chord can have multiple named voicings
-const VOICINGS = {
-  major: {
-    C:  [{ name:'C (open)',    pos:[null,'32010', 'x32010'] },
-         { frets:[null,3,2,0,1,0], label:'Open' }],
-    D:  [{ frets:['x','x',0,2,3,2], label:'Open' }],
-    E:  [{ frets:[0,2,2,1,0,0], label:'Open' }],
-    A:  [{ frets:['x',0,2,2,2,0], label:'Open' }],
-    G:  [{ frets:[3,2,0,0,0,3], label:'Open' }],
-    F:  [{ frets:[1,1,2,3,3,1], label:'Barre I' }],
-    B:  [{ frets:['x',2,4,4,4,2], label:'Barre II' }],
-  }
-};
-
 // ── Position-aware span limit (DEF-10 fix) ──────────
 function maxSpanForPosition(minFret) {
   if (minFret <= 0) return 4; // open position — generous
@@ -3733,103 +3720,6 @@ function renderScale() {
   if (neighborsEl) neighborsEl.innerHTML = '';
 }
 
-function renderScaleRelationships(root, scaleKey) {
-  const container = document.getElementById('scale-neighbors');
-  if (!container) return;
-  let html = '';
-
-  // ── Pentatonic Expansion Pathway ─────────────────────
-  const pw = findPentaPathway(scaleKey);
-  if (pw) {
-    const { direction, pathway, pentaKey, parentKey } = pw;
-    html += '<div class="scale-rel-section">';
-
-    if (direction === 'expand') {
-      // Viewing pentatonic → show what 2 notes you add to get parent
-      const parentName = SCALE_FORMULAS[parentKey].name;
-      html += `<h3>Expansion Pathway</h3>`;
-      html += `<div class="scale-pw-card" onclick="document.getElementById('scale-type').value='${parentKey}';renderScale()">`;
-      html += `<div class="scale-pw-headline">${pathway.headline}</div>`;
-      html += `<div class="scale-pw-notes">`;
-      // Show existing penta notes as plain, added notes highlighted
-      const pentaIntervals = SCALE_FORMULAS[pentaKey].intervals;
-      const parentIntervals = SCALE_FORMULAS[parentKey].intervals;
-      parentIntervals.forEach(iv => {
-        const note = noteAt(root, iv);
-        const info = intervalInfo(iv);
-        if (pathway.addedIntervals.includes(iv)) {
-          html += `<span class="scale-pw-note-add" style="color:${info.color}">+ ${note} (${info.symbol})</span>`;
-        } else {
-          html += `<span style="color:${info.color}">${note}</span>`;
-        }
-      });
-      html += `</div>`;
-      pathway.addedIntervals.forEach(iv => {
-        const note = noteAt(root, iv);
-        const info = intervalInfo(iv);
-        html += `<div class="scale-pw-desc"><span class="scale-nb-chip" style="background:${info.color}">${info.symbol}</span> ${note} — ${pathway.noteDescs[iv]}</div>`;
-      });
-      html += `<div class="scale-pw-desc" style="margin-top:0.2rem;opacity:0.7">tap to view ${parentName}</div>`;
-      html += `</div>`;
-
-    } else {
-      // Viewing 7-note parent → show which 2 notes you remove to get pentatonic
-      const pentaName = SCALE_FORMULAS[pentaKey].name;
-      html += `<h3>Pentatonic Core</h3>`;
-      html += `<div class="scale-pw-card" onclick="document.getElementById('scale-type').value='${pentaKey}';renderScale()">`;
-      html += `<div class="scale-pw-headline">${pathway.reverseHeadline}</div>`;
-      html += `<div class="scale-pw-notes">`;
-      const parentIntervals = SCALE_FORMULAS[parentKey].intervals;
-      parentIntervals.forEach(iv => {
-        const note = noteAt(root, iv);
-        const info = intervalInfo(iv);
-        if (pathway.addedIntervals.includes(iv)) {
-          html += `<span class="scale-pw-note-remove" style="color:${info.color}">- ${note} (${info.symbol})</span>`;
-        } else {
-          html += `<span style="color:${info.color}">${note}</span>`;
-        }
-      });
-      html += `</div>`;
-      pathway.addedIntervals.forEach(iv => {
-        const note = noteAt(root, iv);
-        const info = intervalInfo(iv);
-        html += `<div class="scale-pw-desc"><span class="scale-nb-chip" style="background:${info.color}">${info.symbol}</span> remove ${note} — ${pathway.noteDescs[iv]}</div>`;
-      });
-      html += `<div class="scale-pw-desc" style="margin-top:0.2rem;opacity:0.7">tap to view ${pentaName}</div>`;
-      html += `</div>`;
-    }
-    html += '</div>';
-  }
-
-  // ── One-Note Neighbors ───────────────────────────────
-  const neighbors = findScaleNeighbors(scaleKey);
-  if (neighbors.length > 0) {
-    html += '<div class="scale-rel-section">';
-    html += '<h3>One-Note Neighbors</h3>';
-    html += '<div class="scale-rel-row">';
-    neighbors.forEach(nb => {
-      const outInfo = intervalInfo(nb.intervalOut);
-      const inInfo = intervalInfo(nb.intervalIn);
-      const outNote = noteAt(root, nb.intervalOut);
-      const inNote = noteAt(root, nb.intervalIn);
-      html += `<div class="scale-nb-card" onclick="document.getElementById('scale-type').value='${nb.key}';renderScale()">`;
-      html += `<div class="scale-nb-name">${nb.name}</div>`;
-      html += `<div class="scale-nb-change">`;
-      html += `<span class="scale-nb-chip" style="background:${outInfo.color}">${outInfo.symbol}</span>`;
-      html += `<span style="color:${outInfo.color}">${outNote}</span>`;
-      html += `<span class="scale-nb-arrow">→</span>`;
-      html += `<span class="scale-nb-chip" style="background:${inInfo.color}">${inInfo.symbol}</span>`;
-      html += `<span style="color:${inInfo.color}">${inNote}</span>`;
-      html += `</div>`;
-      html += `<div class="scale-nb-tendency">${nb.tendency}</div>`;
-      html += `</div>`;
-    });
-    html += '</div></div>';
-  }
-
-  container.innerHTML = html;
-}
-
 function getStepPattern(intervals) {
   const steps = [];
   for (let i = 1; i < intervals.length; i++) {
@@ -4509,9 +4399,9 @@ function heatMapSVG(heatData, keyRoot, tuningNotes, numFrets, mode) {
   // Nut
   svg += `<rect x="${left-3}" y="${top-4}" width="5" height="${(numStrings-1)*stringSpacing+8}" fill="#c8c8cc" rx="1"/>`;
 
-  // Strings
+  // Strings — low E (s=0) at bottom, high E at top
   for (let s=0; s<numStrings; s++) {
-    const y = top + s*stringSpacing;
+    const y = top + (numStrings-1-s)*stringSpacing;
     const thickness = 1 + (numStrings-1-s)*0.35;
     svg += `<line x1="${left}" y1="${y}" x2="${left+numFrets*fretSpacing}" y2="${y}" stroke="#2a2a2f" stroke-width="${thickness}"/>`;
     svg += `<text x="${left-14}" y="${y+4}" font-size="11" fill="#6a6a78" text-anchor="middle">${tuningNotes[s]}</text>`;
@@ -4531,7 +4421,7 @@ function heatMapSVG(heatData, keyRoot, tuningNotes, numFrets, mode) {
       if (!heat) continue;
 
       const x = left + f*fretSpacing;
-      const y = top + s*stringSpacing;
+      const y = top + (numStrings-1-s)*stringSpacing;
       let fillColor, opacity;
 
       if (mode === 'interval') {
@@ -5676,7 +5566,9 @@ function renderPlayFretboard(chordName) {
 
   const keyRoot  = preset.key;
   const keyMode  = preset.mode;
-  const tuning   = ['E','A','D','G','B','E'];
+  const tuning   = document.getElementById('decoder-tuning')
+    ? document.getElementById('decoder-tuning').value.split(' ')
+    : ['E','A','D','G','B','E'];
   const numFrets = 12;
 
   // Pentatonic set (key-relative)

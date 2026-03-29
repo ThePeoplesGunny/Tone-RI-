@@ -1,12 +1,13 @@
-# Tone (RI)
+# TONE (RI)
 
-TONE is an interactive web application currently in beta development.
+**The hand doesn't know what the mind knows.** TONE is the translation layer — a single-file interactive web app that bridges the gap between harmonic understanding and fretboard execution for experienced guitarists.
 
-## Files
+## Current Version
 
-- `TONE__BETA_v3_5_.html` — Latest beta (v3.5)
-- `TONE__BETA_v3_4_.html` — Beta v3.4
-- `TONE (BETA v3.3).html` — Beta v3.3
-- `TONE_CONTEXT.md` — Project context and documentation
-- `ROADMAP.md` — Development roadmap
-- `SESSION_CHECKLIST.md` — Session checklist
+- `TONE__BETA_v3_6_.html` — **Beta 3.6** (current)
+- `TONE__BETA_v3_5_.html` — Beta 3.5 (prior)
+
+## Documentation
+
+- `TONE_CONTEXT.md` — Project source of truth: mission, architecture, feature state, design decisions
+- `ROADMAP.md` — Version log, future considerations, architectural questions

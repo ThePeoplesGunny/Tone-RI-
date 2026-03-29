@@ -1224,6 +1224,12 @@
   .play-nav-caged {
     color: var(--text-dim); font-style: italic;
   }
+  .play-nav-next {
+    color: var(--text-dim); opacity: 0.6; margin-left: 0.3rem;
+  }
+  .play-nav-next-note {
+    color: var(--amber); opacity: 0.7;
+  }
   .play-fretboard-wrap {
     flex: 1; overflow: auto; padding: 1.25rem 1.25rem 0.5rem;
   }
@@ -5491,7 +5497,7 @@ const PLAY_CHORD_INTERVALS = {
   'add11': [0, 4, 5, 7],
 };
 
-let playState = { preset: null, activeChord: null };
+let playState = { preset: null, activeChord: null, activeChordBtn: null };
 
 function enterPlayMode(presetId) {
   const preset = PRESETS.find(p => p.id === presetId);
@@ -5525,13 +5531,14 @@ function enterPlayModeFromDecoder() {
 
 function exitPlayMode() {
   document.getElementById('play-overlay').style.display = 'none';
-  playState = { preset: null, activeChord: null };
+  playState = { preset: null, activeChord: null, activeChordBtn: null };
 }
 
 function selectPlayChord(chordName, btn) {
   document.querySelectorAll('.play-chord-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   playState.activeChord = chordName;
+  playState.activeChordBtn = btn;
   renderPlayFretboard(chordName);
 }
 
@@ -5631,32 +5638,69 @@ function renderPlayFretboard(chordName) {
     }
   }
 
+  // Forward vision — determine next chord in progression
+  let nextTargetNote = null;
+  let nextTargetRole = null;
+  let nextChordName = null;
+  const btns = document.querySelectorAll('.play-chord-btn');
+  if (btns.length > 1 && playState.activeChordBtn) {
+    const idx = Array.from(btns).indexOf(playState.activeChordBtn);
+    const nextIdx = (idx + 1) % btns.length;
+    nextChordName = btns[nextIdx]?.textContent;
+    if (nextChordName) {
+      const { root: nextRoot, intervals: nextIntervals } = parsePlayChord(nextChordName);
+      const nextTarget = getTargetNote(nextRoot, nextIntervals, pentaNotesSet);
+      nextTargetNote = nextTarget.note;
+      nextTargetRole = nextTarget.role;
+    }
+  }
+
+  // Approach notes — scale tones 1 semitone from next target (voice leading)
+  let approachNoteSet = new Set();
+  if (nextTargetNote) {
+    const scaleKey = keyMode === 'minor' ? 'natural_minor' : 'major';
+    const scaleNotes = new Set(SCALE_FORMULAS[scaleKey].intervals.map(i => noteAt(keyRoot, i)));
+    const nextTargetIdx = noteIndex(nextTargetNote);
+    // Half step below and above the next target
+    const below = noteAt('C', (nextTargetIdx - 1 + 12) % 12);
+    const above = noteAt('C', (nextTargetIdx + 1) % 12);
+    if (scaleNotes.has(below) && below !== nextTargetNote) approachNoteSet.add(below);
+    if (scaleNotes.has(above) && above !== nextTargetNote) approachNoteSet.add(above);
+  }
+
   // Update nav prompt
+  const nextCue = nextChordName
+    ? ` <span class="play-nav-next">\u2192 next: <span class="play-nav-next-note">${nextTargetNote}</span> (${nextTargetRole})</span>`
+    : '';
   const prompt = document.getElementById('play-nav-prompt');
   if (prompt) {
     if (target.conflict && cagedZone) {
-      prompt.innerHTML = `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-caged">· ${cagedZone.label} fret ${cagedZone.fret}</span>`;
+      prompt.innerHTML = `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-caged">· ${cagedZone.label} fret ${cagedZone.fret}</span>${nextCue}`;
     } else if (target.conflict) {
-      prompt.innerHTML = `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-role" style="color:var(--c-b2)">· ${target.label}</span>`;
+      prompt.innerHTML = `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-role" style="color:var(--c-b2)">· ${target.label}</span>${nextCue}`;
     } else {
-      prompt.innerHTML = `<span class="play-nav-safe">&#10003;</span> <span class="play-nav-role">anchor: </span><span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-safe">· ${target.label}</span>`;
+      prompt.innerHTML = `<span class="play-nav-safe">&#10003;</span> <span class="play-nav-role">anchor: </span><span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-safe">· ${target.label}</span>${nextCue}`;
     }
   }
 
   const svg = buildPlayFretboardSVG({
     pentaNotesSet, chordToneSet, targetNote: target.note,
-    tuning, numFrets, cagedZone
+    tuning, numFrets, cagedZone, nextTargetNote, approachNoteSet
   });
 
   document.getElementById('play-fretboard-wrap').innerHTML =
     `<div class="fretboard-wrap">${svg}</div>`;
 
-  // Toggle CAGED legend item
+  // Toggle legend items
   const legendCaged = document.getElementById('play-legend-caged');
   if (legendCaged) legendCaged.style.display = cagedZone ? 'flex' : 'none';
+  const legendNext = document.getElementById('play-legend-next');
+  if (legendNext) legendNext.style.display = nextTargetNote ? 'flex' : 'none';
+  const legendApproach = document.getElementById('play-legend-approach');
+  if (legendApproach) legendApproach.style.display = approachNoteSet.size > 0 ? 'flex' : 'none';
 }
 
-function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, targetNote, tuning, numFrets, cagedZone }) {
+function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, targetNote, tuning, numFrets, cagedZone, nextTargetNote, approachNoteSet }) {
   const nStr = tuning.length;
   const SS   = 38;
   const FS   = 58;
@@ -5714,7 +5758,26 @@ function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, targetNote, tuning
     svg += `<text x="${(zLeftX + zRightX) / 2}" y="${neckTop - 4}" font-size="10" fill="#888" text-anchor="middle" font-weight="700" opacity="0.5">${cagedZone.label}</text>`;
   }
 
-  // RENDER ORDER: penta ghosts first (bottom), chord tones next, target on top
+  // RENDER ORDER: next target → penta ghosts → approach notes → chord tones → target
+
+  // Pass 0 — next target diamonds (faintest layer — where you're going next)
+  if (nextTargetNote) {
+    for (let s = 0; s < nStr; s++) {
+      for (let f = 0; f <= numFrets; f++) {
+        const note = noteFromStringFret(tuning[s], f);
+        if (note !== nextTargetNote) continue;
+        if (note === targetNote) continue; // don't double-render if same note
+        const x = f === 0 ? left : left + (f - 0.5) * FS;
+        const y = top + (nStr - 1 - s) * SS;
+        // Diamond shape
+        const r = 8;
+        svg += `<polygon points="${x},${y-r} ${x+r},${y} ${x},${y+r} ${x-r},${y}" fill="var(--amber)" opacity="0.25"/>`;
+        const fs = note.length > 2 ? '7' : '8';
+        svg += `<text x="${x}" y="${y + 3}" font-size="${fs}" fill="var(--amber)" text-anchor="middle" font-weight="700" opacity="0.35">${note}</text>`;
+      }
+    }
+  }
+
   // Pass 1 — pentatonic ghosts (non-chord-tone penta notes)
   for (let s = 0; s < nStr; s++) {
     for (let f = 0; f <= numFrets; f++) {
@@ -5724,6 +5787,25 @@ function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, targetNote, tuning
       const x = left + f * FS;
       const y = top  + (nStr - 1 - s) * SS;
       svg += `<circle cx="${x}" cy="${y}" r="7" fill="#888" opacity="0.18"/>`;
+    }
+  }
+
+  // Pass 1.5 — approach notes (scale tones one semitone from next target)
+  if (approachNoteSet && approachNoteSet.size > 0) {
+    for (let s = 0; s < nStr; s++) {
+      for (let f = 0; f <= numFrets; f++) {
+        const note = noteFromStringFret(tuning[s], f);
+        if (!approachNoteSet.has(note)) continue;
+        if (chordToneSet.has(note)) continue; // chord tones render in their own pass
+        if (note === targetNote) continue;
+        const x = f === 0 ? left : left + (f - 0.5) * FS;
+        const y = top + (nStr - 1 - s) * SS;
+        // Small upward triangle
+        const r = 6;
+        svg += `<polygon points="${x},${y-r} ${x+r},${y+r*0.6} ${x-r},${y+r*0.6}" fill="var(--c-b7)" opacity="0.45"/>`;
+        const fs = note.length > 2 ? '7' : '8';
+        svg += `<text x="${x}" y="${y + r + 10}" font-size="${fs}" fill="var(--c-b7)" text-anchor="middle" opacity="0.5">${note}</text>`;
+      }
     }
   }
 
@@ -6121,6 +6203,14 @@ function renderTriads() {
     <div class="play-legend-item" id="play-legend-caged" style="display:none">
       <svg width="18" height="18"><rect x="1" y="1" width="16" height="16" rx="3" fill="#888" fill-opacity="0.08" stroke="#888" stroke-width="1" stroke-opacity="0.5"/></svg>
       CAGED zone
+    </div>
+    <div class="play-legend-item" id="play-legend-next" style="display:none">
+      <svg width="18" height="18"><polygon points="9,2 16,9 9,16 2,9" fill="var(--amber)" opacity="0.3"/></svg>
+      next target
+    </div>
+    <div class="play-legend-item" id="play-legend-approach" style="display:none">
+      <svg width="18" height="18"><polygon points="9,3 15,15 3,15" fill="var(--c-b7)" opacity="0.5"/></svg>
+      approach note
     </div>
   </div>
 </div>

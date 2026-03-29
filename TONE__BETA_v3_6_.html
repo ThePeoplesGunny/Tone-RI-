@@ -1777,7 +1777,6 @@
       <div class="info-block"><div class="label">Steps</div><div class="value">W+H - W - W - W+H - W</div></div>
     </div></div>
       <div id="scale-insight-cards" class="scale-insight-cards"></div>
-      <div id="scale-neighbors"></div>
     </div>
   </section>
 
@@ -2767,23 +2766,6 @@ const SCALE_FORMULAS = {
   chromatic:       { intervals: [0,1,2,3,4,5,6,7,8,9,10,11], name: 'Chromatic',        mode: null          },
 };
 
-// ── Scale Neighbor Tendencies (Layer 5) ─────────────────
-// Key: "semitoneOut→semitoneIn" — what changes when one interval replaces another
-const NEIGHBOR_TENDENCIES = {
-  '5→6':  'fourth sharpens → dreamy, floating, less grounded',
-  '6→5':  'sharp four resolves to natural → grounded, familiar, centered',
-  '11→10': 'leading tone drops to \u266D7 → dominant flavor, rock edge, less pull to resolve',
-  '10→11': '\u266D7 raises to leading tone → stronger pull to I, brighter resolution',
-  '4→3':  'major 3rd dims to minor → darker color, jazz-inflected, sophisticated',
-  '3→4':  'minor 3rd brightens to major → full major brightness returns',
-  '8→9':  '\u266D6 raises → warmer minor, Santana/Motown warmth, brighter shade',
-  '9→8':  '6th drops to \u266D6 → deeper darkness, colder, more melancholy',
-  '2→1':  '2nd flattens → Spanish tension, exotic pull, Phrygian darkness',
-  '1→2':  '\u266D2 raises → less exotic, more conventional minor feel',
-  '7→6':  'perfect 5th flattens → maximum instability, tritone replaces power',
-  '6→7':  'tritone resolves to perfect 5th → stability returns, grounded again',
-};
-
 // Pentatonic ↔ 7-note expansion pathways
 const PENTA_PATHWAYS = {
   pentatonic_major: {
@@ -2807,40 +2789,6 @@ const PENTA_PATHWAYS = {
     reverseHeadline: 'Natural Minor minus 2 notes = your Pentatonic',
   },
 };
-
-function findScaleNeighbors(scaleKey) {
-  const base = SCALE_FORMULAS[scaleKey];
-  if (!base) return [];
-  const baseSet = new Set(base.intervals);
-  const baseCount = base.intervals.length;
-  const neighbors = [];
-
-  for (const [key, formula] of Object.entries(SCALE_FORMULAS)) {
-    if (key === scaleKey) continue;
-    if (formula.intervals.length !== baseCount) continue;
-
-    const otherSet = new Set(formula.intervals);
-    const inBaseOnly = base.intervals.filter(i => !otherSet.has(i));
-    const inOtherOnly = formula.intervals.filter(i => !baseSet.has(i));
-
-    if (inBaseOnly.length === 1 && inOtherOnly.length === 1) {
-      const out = inBaseOnly[0];
-      const inn = inOtherOnly[0];
-      const tendencyKey = out + '\u2192' + inn;
-      const tendency = NEIGHBOR_TENDENCIES[tendencyKey] || (
-        intervalInfo(out).symbol + ' becomes ' + intervalInfo(inn).symbol
-      );
-      neighbors.push({
-        key: key,
-        name: formula.name,
-        intervalOut: out,
-        intervalIn: inn,
-        tendency: tendency,
-      });
-    }
-  }
-  return neighbors;
-}
 
 function findPentaPathway(scaleKey) {
   // Direct match: viewing a pentatonic scale
@@ -3187,9 +3135,6 @@ function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, ov
         const isChordTone = ovCtx.chordIntervals.has(semiFromChord);
         const isPenta = ovCtx.pentaIntervals.has(semi);
         const isRoot = semiFromChord === 0;
-        // Determine 3rd: semitone 3 or 4 from chord root
-        const is3rd = semiFromChord === 3 || semiFromChord === 4;
-        const is5th = semiFromChord === 7;
 
         let labelText = iv.symbol;
         if (labelMode === 'notes') labelText = note;
@@ -3201,30 +3146,27 @@ function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, ov
 
         if (overlayMode === 'overlay') {
           if (isChordTone) {
-            const fill = isRoot ? '#E24B4A' : is3rd ? '#EF9F27' : '#1D9E75';
-            const r = (isRoot || is3rd) ? dotR + 1 : dotR;
-            svg += isRoot ? rootDotSVG(x, y, r, fill, 0.9) : `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="0.9"/>`;
-            svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="#fff" text-anchor="middle" font-weight="700">${labelText}</text>`;
+            const r = isRoot ? dotR + 1 : dotR;
+            svg += isRoot ? rootDotSVG(x, y, r, iv.color, 0.9) : `<circle cx="${x}" cy="${y}" r="${r}" fill="${iv.color}" opacity="0.9"/>`;
+            svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="#0e0e0f" text-anchor="middle" font-weight="700">${labelText}</text>`;
           } else if (isPenta) {
-            svg += `<circle cx="${x}" cy="${y}" r="${dotR}" fill="none" stroke="#378ADD" stroke-width="2.5" opacity="0.85"/>`;
+            svg += isRoot ? rootRingSVG(x, y, dotR, iv.color, 2.5) : `<circle cx="${x}" cy="${y}" r="${dotR}" fill="none" stroke="${iv.color}" stroke-width="2.5" opacity="0.8"/>`;
             svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="${iv.color}" text-anchor="middle" font-weight="700">${labelText}</text>`;
           } else {
-            svg += `<circle cx="${x}" cy="${y}" r="${dotR}" fill="none" stroke="var(--text-dim)" stroke-width="1.5" opacity="0.5"/>`;
-            svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="var(--text-dim)" text-anchor="middle" font-weight="600" opacity="0.6">${labelText}</text>`;
+            svg += `<circle cx="${x}" cy="${y}" r="${dotR}" fill="none" stroke="${iv.color}" stroke-width="1.5" opacity="0.4"/>`;
+            svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="${iv.color}" text-anchor="middle" font-weight="600" opacity="0.5">${labelText}</text>`;
           }
         } else if (overlayMode === 'chord-tones') {
           if (isChordTone) {
-            const fill = isRoot ? '#E24B4A' : is3rd ? '#EF9F27' : '#1D9E75';
-            const r = (isRoot || is3rd) ? dotR + 1 : dotR;
-            svg += isRoot ? rootDotSVG(x, y, r, fill, 0.9) : `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="0.9"/>`;
-            svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="#fff" text-anchor="middle" font-weight="700">${labelText}</text>`;
+            const r = isRoot ? dotR + 1 : dotR;
+            svg += isRoot ? rootDotSVG(x, y, r, iv.color, 0.9) : `<circle cx="${x}" cy="${y}" r="${r}" fill="${iv.color}" opacity="0.9"/>`;
+            svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="#0e0e0f" text-anchor="middle" font-weight="700">${labelText}</text>`;
           }
           // non-chord-tones: skip entirely
         } else if (overlayMode === 'pentatonic') {
           if (isPenta) {
-            const fill = isRoot ? '#E24B4A' : is3rd ? '#EF9F27' : is5th ? '#1D9E75' : '#378ADD';
-            svg += isRoot ? rootDotSVG(x, y, dotR, fill, 0.85) : `<circle cx="${x}" cy="${y}" r="${dotR}" fill="${fill}" opacity="0.85"/>`;
-            svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="#fff" text-anchor="middle" font-weight="700">${labelText}</text>`;
+            svg += isRoot ? rootDotSVG(x, y, dotR, iv.color, 0.9) : `<circle cx="${x}" cy="${y}" r="${dotR}" fill="${iv.color}" opacity="0.9"/>`;
+            svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="#0e0e0f" text-anchor="middle" font-weight="700">${labelText}</text>`;
           }
           // non-penta: skip entirely
         }
@@ -3717,32 +3659,25 @@ function renderScale() {
   const legEl = document.getElementById('scale-overlay-legend');
   if (_scaleViewMode === 'overlay') {
     legEl.innerHTML =
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot" style="background:#E24B4A"></div>Root</div>' +
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot" style="background:#EF9F27"></div>3rd — target</div>' +
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot" style="background:#1D9E75"></div>Chord tone</div>' +
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot ring" style="border-color:#378ADD"></div>Pentatonic</div>' +
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot ring" style="border-color:var(--text-dim)"></div>Passing</div>';
+      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot" style="background:var(--text-dim)"></div><b>Solid</b> = chord tone (land here)</div>' +
+      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot ring" style="border-color:var(--text-dim)"></div><b>Ring</b> = pentatonic (comfort zone)</div>' +
+      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot ring" style="border-color:var(--text-dim); opacity:0.4"></div><b>Dim</b> = passing (move through)</div>';
     legEl.style.display = '';
   } else if (_scaleViewMode === 'chord-tones') {
     legEl.innerHTML =
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot" style="background:#E24B4A"></div>Root</div>' +
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot" style="background:#EF9F27"></div>3rd — target</div>' +
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot" style="background:#1D9E75"></div>5th / ext</div>';
+      '<div class="scale-overlay-legend-item" style="font-size:0.75rem;color:var(--text-dim)">Showing chord tones only &mdash; color = interval from scale root</div>';
     legEl.style.display = '';
   } else if (_scaleViewMode === 'pentatonic') {
     legEl.innerHTML =
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot" style="background:#E24B4A"></div>Root</div>' +
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot" style="background:#EF9F27"></div>3rd</div>' +
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot" style="background:#1D9E75"></div>5th</div>' +
-      '<div class="scale-overlay-legend-item"><div class="scale-overlay-legend-dot" style="background:#378ADD"></div>Pentatonic</div>';
+      '<div class="scale-overlay-legend-item" style="font-size:0.75rem;color:var(--text-dim)">Showing pentatonic notes only &mdash; color = interval from scale root</div>';
     legEl.style.display = '';
   } else {
     legEl.style.display = 'none';
   }
 
-  // Show/hide standard color legend
+  // Standard color legend — visible in all modes (interval colors are universal)
   const stdLeg = document.getElementById('legend-scales');
-  if (stdLeg) stdLeg.style.display = _scaleViewMode === 'standard' ? '' : 'none';
+  if (stdLeg) stdLeg.style.display = '';
 
   // Scale notes info
   const noteChips = scaleNotes.map(n => {
@@ -3773,10 +3708,6 @@ function renderScale() {
     insightEl.innerHTML = '';
   }
 
-  // Scale neighbors and pentatonic pathway cards removed —
-  // content folded into overlay insight cards (Beta 3.5)
-  const neighborsEl = document.getElementById('scale-neighbors');
-  if (neighborsEl) neighborsEl.innerHTML = '';
 }
 
 function getStepPattern(intervals) {
@@ -5984,7 +5915,6 @@ function triadMiniSVG(voicing, stringIndices, tuning, invDef, chordTones, invOrd
   }
 
   // Dots — one per string
-  const intervalColors = { 0: 'var(--c-I)', 4: 'var(--c-III)', 7: 'var(--c-V)', 3: 'var(--c-b3)', 6: 'var(--c-b5)' };
   const rootNote = chordTones[0];
 
   for (let si = 0; si < nStr; si++) {
@@ -5993,7 +5923,7 @@ function triadMiniSVG(voicing, stringIndices, tuning, invDef, chordTones, invOrd
     const x = left + (fret - windowStart) * FS;
     const y = top + (nStr - 1 - si) * SS;
     const semi = (noteIndex(note) - noteIndex(rootNote) + 12) % 12;
-    const fill = intervalColors[semi] || 'var(--c-V)';
+    const fill = intervalInfo(semi).color;
     const isRoot = note === rootNote;
     const r = isRoot ? 14 : 12;
 

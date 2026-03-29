@@ -2667,6 +2667,17 @@ function noteFromStringFret(openNote, fret) {
   return noteAt(openNote, parseInt(fret));
 }
 
+// ── Root dot shape helper (DEF-20) ──────────────────
+// Renders a rounded square instead of circle for root notes
+function rootDotSVG(cx, cy, r, fill, opacity) {
+  const s = r * 1.6; // side length slightly smaller than circle diameter
+  return `<rect x="${cx - s/2}" y="${cy - s/2}" width="${s}" height="${s}" rx="3" fill="${fill}" opacity="${opacity}"/>`;
+}
+function rootRingSVG(cx, cy, r, strokeColor, strokeWidth) {
+  const s = r * 1.6;
+  return `<rect x="${cx - s/2}" y="${cy - s/2}" width="${s}" height="${s}" rx="3" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}"/>`;
+}
+
 // ── Interval definitions ─────────────────────────────
 const INTERVALS = [
   { semitones: 0,  symbol: 'I',    name: 'Root',             short: 'P1',  color: 'var(--c-I)'   },
@@ -3168,7 +3179,7 @@ function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, ov
           if (isChordTone) {
             const fill = isRoot ? '#E24B4A' : is3rd ? '#EF9F27' : '#1D9E75';
             const r = (isRoot || is3rd) ? dotR + 1 : dotR;
-            svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="0.9"/>`;
+            svg += isRoot ? rootDotSVG(x, y, r, fill, 0.9) : `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="0.9"/>`;
             svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="#fff" text-anchor="middle" font-weight="700">${labelText}</text>`;
           } else if (isPenta) {
             svg += `<circle cx="${x}" cy="${y}" r="${dotR}" fill="none" stroke="#378ADD" stroke-width="2.5" opacity="0.85"/>`;
@@ -3181,14 +3192,14 @@ function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, ov
           if (isChordTone) {
             const fill = isRoot ? '#E24B4A' : is3rd ? '#EF9F27' : '#1D9E75';
             const r = (isRoot || is3rd) ? dotR + 1 : dotR;
-            svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="0.9"/>`;
+            svg += isRoot ? rootDotSVG(x, y, r, fill, 0.9) : `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="0.9"/>`;
             svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="#fff" text-anchor="middle" font-weight="700">${labelText}</text>`;
           }
           // non-chord-tones: skip entirely
         } else if (overlayMode === 'pentatonic') {
           if (isPenta) {
             const fill = isRoot ? '#E24B4A' : is3rd ? '#EF9F27' : is5th ? '#1D9E75' : '#378ADD';
-            svg += `<circle cx="${x}" cy="${y}" r="${dotR}" fill="${fill}" opacity="0.85"/>`;
+            svg += isRoot ? rootDotSVG(x, y, dotR, fill, 0.85) : `<circle cx="${x}" cy="${y}" r="${dotR}" fill="${fill}" opacity="0.85"/>`;
             svg += `<text x="${x}" y="${y + 4}" font-size="${fontSize}" fill="#fff" text-anchor="middle" font-weight="700">${labelText}</text>`;
           }
           // non-penta: skip entirely
@@ -3196,8 +3207,8 @@ function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, ov
         continue;
       }
 
-      // ── Standard mode (unchanged) ──
-      svg += `<circle cx="${x}" cy="${y}" r="${dotR}" fill="${iv.color}" opacity="0.9"/>`;
+      // ── Standard mode ──
+      svg += semi === 0 ? rootDotSVG(x, y, dotR, iv.color, 0.9) : `<circle cx="${x}" cy="${y}" r="${dotR}" fill="${iv.color}" opacity="0.9"/>`;
 
       let labelText = iv.symbol;
       if (labelMode === 'notes') labelText = note;
@@ -3443,8 +3454,8 @@ function chordFretboardSVG(root, chordIntervals, tuningNotes, numFrets, labelMod
       if (voicingMap) {
         if (!voicingMap[s + ',' + f]) continue;
         const isRoot = semi === 0;
-        svg += `<circle cx="${x}" cy="${y}" r="${dotR}" fill="${iv.color}" opacity="0.9"/>`;
-        if (isRoot) svg += `<circle cx="${x}" cy="${y}" r="${dotR}" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>`;
+        svg += isRoot ? rootDotSVG(x, y, dotR, iv.color, 0.9) : `<circle cx="${x}" cy="${y}" r="${dotR}" fill="${iv.color}" opacity="0.9"/>`;
+        if (isRoot) svg += rootRingSVG(x, y, dotR, 'rgba(255,255,255,0.7)', 2);
       } else {
         // Original behavior: inversionMap or uniform
         const opacity = inversionMap ? (inversionMap[s + ',' + f] || 0) : 0.9;
@@ -5684,7 +5695,7 @@ function renderPlayFretboard(chordName) {
   }
 
   const svg = buildPlayFretboardSVG({
-    pentaNotesSet, chordToneSet, targetNote: target.note,
+    pentaNotesSet, chordToneSet, chordRoot, targetNote: target.note,
     tuning, numFrets, cagedZone, nextTargetNote, approachNoteSet
   });
 
@@ -5700,7 +5711,7 @@ function renderPlayFretboard(chordName) {
   if (legendApproach) legendApproach.style.display = approachNoteSet.size > 0 ? 'flex' : 'none';
 }
 
-function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, targetNote, tuning, numFrets, cagedZone, nextTargetNote, approachNoteSet }) {
+function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, chordRoot, targetNote, tuning, numFrets, cagedZone, nextTargetNote, approachNoteSet }) {
   const nStr = tuning.length;
   const SS   = 38;
   const FS   = 58;
@@ -5817,7 +5828,9 @@ function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, targetNote, tuning
       if (note === targetNote) continue;
       const x  = left + f * FS;
       const y  = top  + (nStr - 1 - s) * SS;
-      svg += `<circle cx="${x}" cy="${y}" r="12" fill="#4a6080" opacity="0.7"/>`;
+      const isRoot = chordRoot && note === chordRoot;
+      svg += isRoot ? rootDotSVG(x, y, 12, '#4a6080', 0.7) : `<circle cx="${x}" cy="${y}" r="12" fill="#4a6080" opacity="0.7"/>`;
+      if (isRoot) svg += rootRingSVG(x, y, 12, 'rgba(255,255,255,0.5)', 1.5);
       const fs = note.length > 2 ? '8' : '10';
       svg += `<text x="${x}" y="${y + 3}" font-size="${fs}" fill="#c8c8cc" text-anchor="middle" font-weight="700">${note}</text>`;
     }
@@ -5830,8 +5843,9 @@ function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, targetNote, tuning
       if (note !== targetNote) continue;
       const x = left + f * FS;
       const y = top  + (nStr - 1 - s) * SS;
-      svg += `<circle cx="${x}" cy="${y}" r="17" fill="var(--amber)" opacity="0.95"/>`;
-      svg += `<circle cx="${x}" cy="${y}" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"/>`;
+      const isRoot = chordRoot && note === chordRoot;
+      svg += isRoot ? rootDotSVG(x, y, 17, 'var(--amber)', 0.95) : `<circle cx="${x}" cy="${y}" r="17" fill="var(--amber)" opacity="0.95"/>`;
+      svg += isRoot ? rootRingSVG(x, y, 17, 'rgba(255,255,255,0.9)', 2.5) : `<circle cx="${x}" cy="${y}" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"/>`;
       const fs = note.length > 2 ? '9' : '12';
       svg += `<text x="${x}" y="${y + 4}" font-size="${fs}" fill="#0e0e0f" text-anchor="middle" font-weight="700">${note}</text>`;
     }
@@ -5954,8 +5968,8 @@ function triadMiniSVG(voicing, stringIndices, tuning, invDef, chordTones, invOrd
     const isRoot = note === rootNote;
     const r = isRoot ? 14 : 12;
 
-    svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="${isRoot ? '1' : '0.85'}"/>`;
-    if (isRoot) svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2"/>`;
+    svg += isRoot ? rootDotSVG(x, y, r, fill, 1) : `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" opacity="0.85"/>`;
+    if (isRoot) svg += rootRingSVG(x, y, r, 'rgba(255,255,255,0.8)', 2);
     const fs = note.length > 2 ? '8' : '10';
     svg += `<text x="${x}" y="${y + 4}" font-size="${fs}" fill="#0e0e0f" text-anchor="middle" font-weight="700">${note}</text>`;
   }
@@ -6078,8 +6092,8 @@ function triadFullNeckSVG(voicings, tuning, chordTones) {
       const y = stringY(chordStringIndices[si]);
       const isRoot = note === rootNote;
       const r = isRoot ? 12 : 10;
-      svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="${accentColor}" opacity="${invOpacity}"/>`;
-      if (isRoot) svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>`;
+      svg += isRoot ? rootDotSVG(x, y, r, accentColor, invOpacity) : `<circle cx="${x}" cy="${y}" r="${r}" fill="${accentColor}" opacity="${invOpacity}"/>`;
+      if (isRoot) svg += rootRingSVG(x, y, r, 'rgba(255,255,255,0.7)', 1.5);
       const fs = note.length > 2 ? '7' : '9';
       svg += `<text x="${x}" y="${y + 3}" font-size="${fs}" fill="#0e0e0f" text-anchor="middle" font-weight="700">${note}</text>`;
     }
@@ -6093,8 +6107,8 @@ function triadFullNeckSVG(voicings, tuning, chordTones) {
     const y = stringY(5);
     const isRoot = note === rootNote;
     const r = isRoot ? 8 : 7;
-    svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="#85B7EB" opacity="0.45"/>`;
-    if (isRoot) svg += `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>`;
+    svg += isRoot ? rootDotSVG(x, y, r, '#85B7EB', 0.45) : `<circle cx="${x}" cy="${y}" r="${r}" fill="#85B7EB" opacity="0.45"/>`;
+    if (isRoot) svg += rootRingSVG(x, y, r, 'rgba(255,255,255,0.5)', 1.5);
     const fs = note.length > 2 ? '6' : '7';
     svg += `<text x="${x}" y="${y + 3}" font-size="${fs}" fill="#0e0e0f" text-anchor="middle" font-weight="700">${note}</text>`;
   }

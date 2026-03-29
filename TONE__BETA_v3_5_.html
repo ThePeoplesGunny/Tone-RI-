@@ -1206,6 +1206,24 @@
     border-color: var(--amber); color: var(--amber);
     background: var(--bg);
   }
+  .play-nav-prompt {
+    font-family: var(--mono); font-size: 0.72rem;
+    color: var(--text); padding: 0.45rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2); flex-shrink: 0;
+  }
+  .play-nav-target {
+    color: var(--amber); font-weight: 700;
+  }
+  .play-nav-role {
+    color: var(--text-dim);
+  }
+  .play-nav-safe {
+    color: var(--c-IV);
+  }
+  .play-nav-caged {
+    color: var(--text-dim); font-style: italic;
+  }
   .play-fretboard-wrap {
     flex: 1; overflow: auto; padding: 1.25rem 1.25rem 0.5rem;
   }
@@ -5582,24 +5600,63 @@ function renderPlayFretboard(chordName) {
   // Target note — the navigation destination
   const target = getTargetNote(chordRoot, chordToneIntervals, pentaNotesSet);
 
+  // CAGED zone — only when zoom-in is needed (non-diatonic chord)
+  let cagedZone = null;
+  if (target.conflict) {
+    const landmarks = getPentaLandmarks(keyRoot, keyMode);
+    const caged = getNearestCAGED(chordRoot, landmarks);
+    const allShapes = getCAGEDShapesForRoot(chordRoot, tuning, numFrets);
+    // Map 3-pair name to individual CAGED shape(s)
+    const letterMap = { 'E shape': ['E'], 'A/G shape': ['A','G'], 'D/C shape': ['D','C'] };
+    const candidates = (letterMap[caged.name] || [])
+      .flatMap(letter => allShapes.filter(sh => sh.nm === letter));
+    if (candidates.length > 0) {
+      // Pick the shape whose fret range contains caged.fret, or closest
+      const matched = candidates.reduce((best, sh) => {
+        const inside = caged.fret >= sh.minFret && caged.fret <= sh.maxFret;
+        const bestInside = caged.fret >= best.minFret && caged.fret <= best.maxFret;
+        if (inside && !bestInside) return sh;
+        if (!inside && bestInside) return best;
+        const dist = Math.min(Math.abs(caged.fret - sh.minFret), Math.abs(caged.fret - sh.maxFret));
+        const bestDist = Math.min(Math.abs(caged.fret - best.minFret), Math.abs(caged.fret - best.maxFret));
+        return dist < bestDist ? sh : best;
+      });
+      cagedZone = {
+        label: caged.name,
+        fret: caged.fret,
+        nearLandmark: caged.nearLandmark,
+        minFret: matched.minFret,
+        maxFret: matched.maxFret,
+      };
+    }
+  }
+
   // Update nav prompt
   const prompt = document.getElementById('play-nav-prompt');
   if (prompt) {
-    prompt.innerHTML = target.conflict
-      ? `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-role" style="color:var(--c-b2)">· ${target.label}</span>`
-      : `<span class="play-nav-safe">&#10003;</span> <span class="play-nav-role">anchor: </span><span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-safe">· ${target.label}</span>`;
+    if (target.conflict && cagedZone) {
+      prompt.innerHTML = `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-caged">· ${cagedZone.label} fret ${cagedZone.fret}</span>`;
+    } else if (target.conflict) {
+      prompt.innerHTML = `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-role" style="color:var(--c-b2)">· ${target.label}</span>`;
+    } else {
+      prompt.innerHTML = `<span class="play-nav-safe">&#10003;</span> <span class="play-nav-role">anchor: </span><span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-safe">· ${target.label}</span>`;
+    }
   }
 
   const svg = buildPlayFretboardSVG({
     pentaNotesSet, chordToneSet, targetNote: target.note,
-    tuning, numFrets
+    tuning, numFrets, cagedZone
   });
 
   document.getElementById('play-fretboard-wrap').innerHTML =
     `<div class="fretboard-wrap">${svg}</div>`;
+
+  // Toggle CAGED legend item
+  const legendCaged = document.getElementById('play-legend-caged');
+  if (legendCaged) legendCaged.style.display = cagedZone ? 'flex' : 'none';
 }
 
-function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, targetNote, tuning, numFrets }) {
+function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, targetNote, tuning, numFrets, cagedZone }) {
   const nStr = tuning.length;
   const SS   = 38;
   const FS   = 58;
@@ -5644,6 +5701,17 @@ function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, targetNote, tuning
     const x  = left + f * FS;
     const lc = f === 0 ? '#c8c8cc' : '#1c1c1f';
     svg += `<line x1="${x}" y1="${top - 4}" x2="${x}" y2="${top + (nStr-1)*SS + 4}" stroke="${lc}" stroke-width="1.5"/>`;
+  }
+
+  // CAGED zone overlay — non-diatonic chords only (sits behind everything)
+  if (cagedZone) {
+    const dotX = (f) => f === 0 ? left : left + (f - 0.5) * FS;
+    const zLeftX = cagedZone.minFret === 0 ? left - 14 : (dotX(cagedZone.minFret - 1) + dotX(cagedZone.minFret)) / 2;
+    const zRightX = cagedZone.maxFret >= numFrets ? dotX(cagedZone.maxFret) + FS * 0.4 : (dotX(cagedZone.maxFret) + dotX(cagedZone.maxFret + 1)) / 2;
+    const neckTop = top - 10;
+    const neckBot = top + (nStr - 1) * SS + 10;
+    svg += `<rect x="${zLeftX}" y="${neckTop}" width="${zRightX - zLeftX}" height="${neckBot - neckTop}" rx="8" fill="#888" fill-opacity="0.05" stroke="#888" stroke-width="0.7" stroke-opacity="0.4"/>`;
+    svg += `<text x="${(zLeftX + zRightX) / 2}" y="${neckTop - 4}" font-size="10" fill="#888" text-anchor="middle" font-weight="700" opacity="0.5">${cagedZone.label}</text>`;
   }
 
   // RENDER ORDER: penta ghosts first (bottom), chord tones next, target on top
@@ -6049,6 +6117,10 @@ function renderTriads() {
     <div class="play-legend-item">
       <svg width="18" height="18"><circle cx="9" cy="9" r="5" fill="var(--c-V)" opacity="0.18"></circle></svg>
       pentatonic (safe background)
+    </div>
+    <div class="play-legend-item" id="play-legend-caged" style="display:none">
+      <svg width="18" height="18"><rect x="1" y="1" width="16" height="16" rx="3" fill="#888" fill-opacity="0.08" stroke="#888" stroke-width="1" stroke-opacity="0.5"/></svg>
+      CAGED zone
     </div>
   </div>
 </div>

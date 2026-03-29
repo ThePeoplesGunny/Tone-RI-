@@ -324,16 +324,16 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 
 ---
 
-## Current Feature State — Beta 3.5 (current baseline)
+## Current Feature State — Beta 3.6 (current baseline)
 
 ### How Features Map to the Structural Skills + New Layers
 
 | Structural Skill | TONE Feature | Status |
 |-----------------|-------------|--------|
 | Number System | Decoder (analysis, function, tendency, forward map) | **Strong** — most mature layer |
-| Landmark Pentatonic | Play Mode (target note, 3-level fretboard) + Forward Map (landmark positions) | **Connected** |
-| CAGED | Chords tab: Voicings (CAGED zone voicing map) + Triads (ACE zone model) + Forward Map (nearest shape hint) | **Strong** |
-| Technique Bridge | Scales tab: Brewster chord-scale overlay (4-mode view, note classification, CAGED zone, chord context) | **Partial** — overlay done, arpeggio/triad chaining/approach notes remaining |
+| Landmark Pentatonic | Play Mode (target note, forward vision, approach notes) + Forward Map (landmark positions) | **Strong** |
+| CAGED | Chords tab: Voicings (CAGED zone voicing map) + Triads (ACE zone model) + Forward Map (nearest shape hint) + Play Mode CAGED overlay | **Strong** |
+| Technique Bridge | Scales tab: Brewster overlay + Play Mode: CAGED overlay, forward vision, approach notes, root dot shapes | **Partial** — arpeggio view/triad chaining remaining |
 | Protocol Translator | *Not yet built* — Decoder identifies non-diatonic chords, but doesn't frame departures relative to user's SRV protocol | **Gap** |
 | Presentation Layer | *Not yet built* — gear inventory exists (gear.txt), no in-app features | **Gap** |
 
@@ -346,23 +346,32 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 - **Prog-card click** (updated in 3.5): `selectActiveChord()` writes `activeChordQuality` and `activeChordRoot` to `_activeContext`; toggle behavior; amber outline on selected card
 - **Navigation Map panel**: per-chord zoom indicator, tendency, target note, CAGED shape hint
 - **Color legend** (new in 3.3): collapsible "Color Key" button → 12 interval chips
-- Fretboard heat map, harmonic fingerprint, match engine (unchanged)
+- **Fretboard heat map** (updated in 3.6): interval/frequency/both toggle via `switchHeatMode()`, low E at bottom orientation fixed
+- Harmonic fingerprint, match engine (unchanged)
 
-### Play Mode (unchanged from 2.6)
+### Play Mode (updated in 3.6 — CAGED overlay + forward vision + approach notes)
 - Full-screen overlay: enter from Library ▶ button or Decoder ▶ PLAY button
 - Chord strip: all song chords as large tap targets
-- **Nav prompt bar:** single line between chord strip and fretboard
-  - Major chord: "navigate to: [note] · major 3rd · not in your pentatonic box · this is the one"
-  - Minor chord: "✓ anchor: [note] · root · pentatonic fits this chord"
-- **Fretboard — 3-level visual hierarchy (low E at bottom):**
+- **Nav prompt bar:** styled with CSS classes, single line between chord strip and fretboard
+  - Conflict: "navigate to: [note] · [role] · [CAGED shape] fret [N] → next: [note] ([role])"
+  - Safe: "✓ anchor: [note] · root · pentatonic fits this chord → next: [note] ([role])"
+- **Fretboard — 5-level visual hierarchy (low E at bottom):**
+  - CAGED zone: translucent rectangle + shape label (non-diatonic chords only)
+  - Pass 0: next target diamonds (r=8, dim amber, opacity 0.25) — where you're going next
   - Pass 1: pentatonic ghost dots (r=7, opacity 0.18) — safe background zone
-  - Pass 2: other chord tones (r=12, muted blue) — present, not competing
-  - Pass 3: TARGET note (r=17, amber + white ring) — the one thing to find
+  - Pass 1.5: approach note triangles (violet, opacity 0.45) — voice leading into next chord
+  - Pass 2: other chord tones (r=12, muted blue) — present, not competing. Root = rounded square.
+  - Pass 3: TARGET note (r=17, amber + white ring) — the one thing to find. Root = rounded square.
 - `getTargetNote()`: major chord → major 3rd; minor → root; power → root
-- **GAP:** No CAGED shape overlay showing *where near the player's position* the target note lives in a chord shape.
-- **GAP:** Root dot not visually distinct by shape (color only). Needs distinct shape (square, diamond) across all fretboard renderers.
-- **GAP:** No forward vision — current chord only, no preview of approaching chord change and where the hand needs to move.
-- **GAP:** No approach note indication — shows the target but not the note that leads into it (voice leading).
+- Forward vision: next chord determined cyclically from chord strip, target computed via `getTargetNote()`
+- Approach notes: scale tones 1 semitone from next target (diatonic approach within key)
+- CAGED overlay: uses `getPentaLandmarks()` + `getNearestCAGED()` + `getCAGEDShapesForRoot()`, only on non-diatonic chords
+- Reads global tuning setting (via `decoder-tuning` hidden input)
+- Legend: conditional items for CAGED zone, next target, approach note
+- ~~GAP (closed):~~ CAGED shape overlay — resolved in 3.6
+- ~~GAP (closed):~~ Root dot distinct shape — resolved in 3.6 (DEF-20)
+- ~~GAP (closed):~~ Forward vision — resolved in 3.6
+- ~~GAP (closed):~~ Approach notes — resolved in 3.6
 
 ### Chords Tab (updated in 3.4 — Voicings + Triads restructure)
 - Root + quality + Show (notes/intervals/degrees) — only three controls
@@ -415,7 +424,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 - **GAP:** Data accuracy depends on user entry
 
 ### Settings (unchanged)
-- Global tuning (8 options — **GAP:** missing Eb/half-step-down, full-step-down)
+- Global tuning (10 options — includes Eb/half-step-down, D standard/full-step-down)
 - Global frets (5, 7, 12, 15)
 - Color scheme (5 themes)
 - App Workflow and Vision overlay links
@@ -438,7 +447,7 @@ LAYER 6 — Physical validation     Pillar 3 — COMPLETE (Beta 2.9)
 LAYER 7 — Cross-tab continuity    COMPLETE (Beta 3.0-3.2)
 LAYER 8 — Theory activation       COMPLETE (Beta 3.3-3.4)
 ─────────────────────────────────────────────────────────────────────
-LAYER 9 — Technique bridge        IN PROGRESS (Beta 3.5) — chord-scale overlay done
+LAYER 9 — Technique bridge        IN PROGRESS (Beta 3.6) — overlay + Play Mode nav done
 LAYER 10 — Protocol translator    Harmonic protocol identification, SRV-delta framing
 LAYER 11 — Presentation layer     Gear/signal chain context (scope TBD)
 ```
@@ -455,10 +464,10 @@ Before writing any code for a new feature or layer, scan the open DEF list. Clas
 - ~~DEF-05~~: resolved in 2.9
 - ~~DEF-10~~: resolved in 2.9
 - ~~DEF-14~~: resolved in 3.3
-- DEF-11: heat map mode toggle missing — own pass
+- ~~DEF-11~~: resolved in 3.6 (heat map mode toggle)
 - DEF-17: Library mode field major/minor only — architectural fix needed
-- DEF-19: Missing Eb/half-step-down tuning in dropdown — own pass
-- DEF-20: Root dot needs distinct shape across all fretboard renderers — cross-renderer change
+- ~~DEF-19~~: resolved in 3.6 (Eb + D standard tunings added)
+- ~~DEF-20~~: resolved in 3.6 (root dot = rounded square across all renderers)
 
 ---
 
@@ -505,10 +514,14 @@ Before writing any code for a new feature or layer, scan the open DEF list. Clas
 | Voicings: one voicing per CAGED zone | Best playable voicing per zone. Works for any quality. |
 | Voicings: interval colors on dots, zone colors on backgrounds | Two information layers without conflict. |
 | Tab is GPS, not content | Tabs are not migrated. The principles they prove are distilled. |
-| Root dot needs distinct shape | Color alone insufficient for at-a-glance navigation during playing. |
+| Root dot = rounded square | Color alone insufficient for at-a-glance navigation. Square via `rootDotSVG()`/`rootRingSVG()` helpers. |
 | Tuning is a parameter | Engine is tuning-agnostic. Alternate tunings are option additions, not rebuilds. |
 | Arpeggios are not a separate data type | Chord tones rendered for sequential playing. Same engine, different view. |
 | buildPresetDropdown clears before appending | Prevents save-cycle bake-in duplication. |
+| Play Mode CAGED only on non-diatonic | Diatonic chords don't need spatial navigation aid. `target.conflict` triggers the overlay. |
+| Forward vision wraps cyclically | Last chord → first chord. Progressions repeat. |
+| Approach notes = 1 semitone from next target, in key | Chromatic approach within the diatonic scale. Strongest voice leading step. |
+| Visual vocabulary: shapes encode meaning | Square = root, circle = other notes, diamond = next target, triangle = approach note. |
 
 ---
 

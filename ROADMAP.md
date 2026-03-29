@@ -155,19 +155,32 @@ These three form a spiral, not a sequence. Each reinforces the others.
 - Pentatonic Core and One-Note Neighbors card rendering removed from Scales tab (engine functions retained)
 - Workflow and Vision overlays updated to reflect Technique Bridge as Layer 9
 
+#### Beta 3.6 — Play Mode Navigation + Debt Cleanup ✓ CONFIRMED
+- Play Mode: CAGED shape overlay on non-diatonic chords (translucent zone rectangle + shape label)
+- Play Mode: forward vision — next chord's target note as diamond shapes, nav prompt forward cue
+- Play Mode: approach notes — scale tones 1 semitone from next target as violet triangles (voice leading)
+- Play Mode: reads global tuning setting (was hardcoded to standard EADGBE)
+- Root dot distinct shape: rounded squares across all 7 fretboard renderers (rootDotSVG/rootRingSVG helpers)
+- Nav prompt properly styled with CSS classes (play-nav-target, play-nav-role, play-nav-safe, play-nav-caged, play-nav-next)
+- Play Mode legend: conditional items for CAGED zone, next target, approach note
+- DEF-11 resolved: heat map mode toggle (interval / frequency / both) with UI buttons
+- DEF-19 resolved: Eb/half-step-down and D standard/full-step-down tunings added
+- DEF-20 resolved: root dot distinct shape across all renderers
+- Heat map string orientation fixed (low E at bottom, matching all other renderers)
+- Dead code removed: legacy VOICINGS constant, unused renderScaleRelationships()
+- Workflow and Vision overlays updated to reflect 3.6 state
+
 #### Remaining for Layer 9 completion:
 - Arpeggio view: chord tones rendered for sequential playing
 - Triad chaining: progression as compact triad inversions with minimal position movement
-- Approach notes: directional signal for lead-in to next chord change
-- Forward vision: current chord + approaching chord change visible simultaneously
 - Song route mapping: per-chord CAGED zone + register stored in preset data
-- Note classification fully deployed on all playing fretboards (Play Mode, Decoder)
+- Note classification deployed to Decoder fretboard
 
 ---
 
 ## Next Target
 
-Layer 9 — Technique Bridge (continued). Chord-scale overlay complete. Next candidates: arpeggio view, triad chaining, approach notes, or Play Mode CAGED overlay.
+Layer 9 — Technique Bridge (continued). Play Mode navigation complete. Next candidates: arpeggio view, triad chaining, or note classification on Decoder.
 
 ---
 
@@ -207,18 +220,16 @@ Layer 9 — Technique Bridge (continued). Chord-scale overlay complete. Next can
 | ~~DEF-04~~ | ~~`saveAndDownload()`~~ | ~~HIGH~~ | ~~Save regex vulnerable~~ | ✓ resolved 2.6.9 |
 | ~~DEF-05~~ | ~~`computeVoicings` DFS~~ | ~~HIGH~~ | ~~Inner strings cannot be muted~~ | ✓ resolved 2.9 |
 | ~~DEF-10~~ | ~~`computeVoicings` span~~ | ~~MEDIUM~~ | ~~Span filter position-naive~~ | ✓ resolved 2.9 |
-| DEF-11 | `currentHeatMode` | MEDIUM | Heat map mode locked to `'both'` — no UI toggle | Own pass |
+| ~~DEF-11~~ | ~~`currentHeatMode`~~ | ~~MEDIUM~~ | ~~Heat map mode locked to `'both'` — no UI toggle~~ | ✓ resolved 3.6 |
 | ~~DEF-14~~ | ~~`renderTheory`~~ | ~~MEDIUM~~ | ~~Chromatic Spectrum hardcoded to C~~ | ✓ resolved 3.3 |
 | DEF-17 | Library mode field | LOW | Mode dropdown major/minor only — modal songs cannot be accurately recorded | Architectural |
 | ~~DEF-18~~ | ~~`deletePreset()`~~ | ~~MEDIUM~~ | ~~Delete with no confirmation~~ | ✓ resolved 2.6.9 |
-| DEF-19 | Global tuning dropdown | LOW | Missing Eb/half-step-down and D/full-step-down tunings — engine handles them, just needs options added | Own pass |
-| DEF-20 | All fretboard renderers | LOW | Root dot uses same circle shape as all other intervals — needs distinct shape (square/diamond) for at-a-glance identification during playing | Cross-renderer change |
+| ~~DEF-19~~ | ~~Global tuning dropdown~~ | ~~LOW~~ | ~~Missing Eb/half-step-down and D/full-step-down tunings~~ | ✓ resolved 3.6 |
+| ~~DEF-20~~ | ~~All fretboard renderers~~ | ~~LOW~~ | ~~Root dot uses same circle shape as all other intervals~~ | ✓ resolved 3.6 |
 
 ---
 
 ## Future Considerations (Not Scheduled)
-
-**Play Mode — CAGED shape overlay:** When a chord is tapped, show the nearest practical CAGED shape (A/G, E, or D/C) that contains the target note, positioned relative to the active pentatonic landmark. The zoom-in moment made physical.
 
 **Play Mode — position density / heatmap view:** 5-fret window showing chord tone density rather than full 12-fret board. Reduces visual search area.
 
@@ -271,3 +282,4 @@ Layer 9 — Technique Bridge (continued). Chord-scale overlay complete. Next can
 | 3.3  | 8 (complete)   | DEF-14 resolved. Theory activation: context-aware rendering, interval highlighting, active chord formula, color legend, scale tendencies, Nashville transposition, mode-aware diatonic pattern. Layer 8 COMPLETE. |
 | 3.4  | 8 (extended)   | Chords tab restructure: ACE zone model + CAGED voicing map. Defect cleanup: preset dropdown bake-in, preset area visibility, 3 dead functions removed. |
 | 3.5  | 9 (partial)    | Brewster chord-scale overlay on Scales tab. 4-mode view toggle, note classification (solid/ring), CAGED zone outline, chord context from Decoder, dynamic insight cards with pentatonic+2 folded in. Pentatonic Core + One-Note Neighbor cards removed from UI. Workflow/Vision overlays corrected to Technique Bridge. |
+| 3.6  | 9 (extended)   | Play Mode: CAGED shape overlay (non-diatonic), forward vision (next target diamonds), approach notes (voice leading triangles). DEF-11/19/20 resolved. Root dot squares across all renderers. Heat map orientation fix. Eb + D standard tunings. Heat map mode toggle. Dead code cleanup. Nav prompt CSS. |

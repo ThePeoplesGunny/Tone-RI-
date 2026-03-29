@@ -2372,7 +2372,7 @@
   <button class="io-close" onclick="closeInfoOverlay('workflow-overlay')">✕ close</button>
   <div style="max-width:960px;margin:0 auto">
     <h1>TONE</h1>
-    <div class="io-sub">// app workflow — beta 3.3</div>
+    <div class="io-sub">// app workflow — beta 3.6</div>
   </div>
 
   <div class="io-mission">
@@ -2395,7 +2395,7 @@
         <div class="io-card-item">Tendency labels on prog-cards</div>
         <div class="io-card-item">Active chord selection (click)</div>
         <div class="io-card-item">Navigation Map: zoom + target + CAGED</div>
-        <div class="io-card-item">Fretboard heat map</div>
+        <div class="io-card-item">Fretboard heat map (interval/frequency/both toggle)</div>
         <div class="io-card-item">Fingerprint + 4-tier match engine</div>
         <div class="io-card-item">▶ PLAY button → Play Mode</div>
         <div class="io-card-item">Color legend strip</div>
@@ -2454,8 +2454,11 @@
     <div class="io-card" style="border-color:var(--c-IV);max-width:960px;margin:0 auto">
       <div class="io-card-title" style="color:var(--c-IV)">Play Mode — full-screen overlay</div>
       <div class="io-card-item">Chord strip: tap any chord to update fretboard</div>
-      <div class="io-card-item">Nav prompt: target note, role, pentatonic conflict</div>
-      <div class="io-card-item">3-level fretboard: target (amber) → chord tones (blue) → pentatonic ghost</div>
+      <div class="io-card-item">Nav prompt: target note, role, CAGED hint, forward cue</div>
+      <div class="io-card-item">5-level fretboard: CAGED zone → next target (diamond) → pentatonic ghost → approach notes (triangle) → chord tones → target (amber)</div>
+      <div class="io-card-item">Root dots: distinct square shape across all renderers</div>
+      <div class="io-card-item">Forward vision: next chord's target + voice leading approach notes</div>
+      <div class="io-card-item">Reads global tuning setting</div>
       <div class="io-card-item">Entry: Library ▶ button or Decoder ▶ PLAY</div>
     </div>
   </div>
@@ -2473,7 +2476,7 @@
         <div class="io-card-item">Chord formula database</div>
         <div class="io-card-item">Scale formula database + tendencies</div>
         <div class="io-card-item">Voicing DFS generator</div>
-        <div class="io-card-item">SVG fretboard renderer</div>
+        <div class="io-card-item">SVG fretboard renderer (root dot = square)</div>
         <div class="io-card-item">CAGED skeleton system (5 shapes)</div>
       </div>
 
@@ -2547,7 +2550,8 @@
       <div class="io-card" style="border-color:var(--amber)">
         <div class="io-card-title" style="color:var(--amber)">Technique Bridge</div>
         <div class="io-card-item">Chord-scale overlay (Brewster) ✓</div>
-        <div class="io-card-item">Note classification (chord/passing/approach)</div>
+        <div class="io-card-item">Play Mode: CAGED overlay + forward vision + approach notes ✓</div>
+        <div class="io-card-item">Root dot distinct shape (all renderers) ✓</div>
         <div class="io-card-item">Arpeggio view + triad chaining</div>
         <div class="io-badge io-badge-next">Layer 9 — in progress</div>
       </div>
@@ -2620,20 +2624,22 @@
     <div class="io-section-title" style="color:var(--amber)">What's Next — Layer 9: Technique Bridge (continued)</div>
     <div class="vis-cols">
       <div class="vis-col" style="border-color:var(--amber)">
-        <div class="vis-col-title" style="color:var(--amber)">Done — Chord-Scale Overlay</div>
+        <div class="vis-col-title" style="color:var(--amber)">Done — Chord-Scale Overlay + Play Mode</div>
         <div class="vis-item"><strong class="vis-built">✓ Brewster overlay on Scales tab</strong></div>
         <div class="vis-item"><strong class="vis-built">✓ 4-mode view: Scale / Overlay / Chord Tones / Pentatonic</strong></div>
         <div class="vis-item"><strong class="vis-built">✓ Note classification: solid (chord) vs ring (penta/passing)</strong></div>
         <div class="vis-item"><strong class="vis-built">✓ CAGED zone dashed outline</strong></div>
         <div class="vis-item"><strong class="vis-built">✓ Chord context from Decoder + I-chord fallback</strong></div>
         <div class="vis-item"><strong class="vis-built">✓ Pentatonic +2 tendency descriptions in insight cards</strong></div>
+        <div class="vis-item"><strong class="vis-built">✓ Play Mode: CAGED shape overlay (non-diatonic)</strong></div>
+        <div class="vis-item"><strong class="vis-built">✓ Play Mode: forward vision (next target diamonds)</strong></div>
+        <div class="vis-item"><strong class="vis-built">✓ Play Mode: approach notes (voice leading triangles)</strong></div>
+        <div class="vis-item"><strong class="vis-built">✓ Root dot distinct shape (squares) across all renderers</strong></div>
       </div>
       <div class="vis-col" style="border-color:var(--amber)">
         <div class="vis-col-title" style="color:var(--amber)">Remaining — Melodic Navigation</div>
         <div class="vis-item"><strong class="vis-next">→ Arpeggio view (chord tones for sequential playing)</strong></div>
         <div class="vis-item"><strong class="vis-next">→ Triad chaining through progressions</strong></div>
-        <div class="vis-item"><strong class="vis-next">→ Approach notes (lead-in to next chord change)</strong></div>
-        <div class="vis-item"><strong class="vis-next">→ Forward vision (current + approaching chord)</strong></div>
         <div class="vis-item"><strong class="vis-next">→ Song route mapping (per-chord CAGED zone in preset)</strong></div>
       </div>
       <div class="vis-col" style="border-color:var(--amber)">

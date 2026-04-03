@@ -6,7 +6,7 @@
 
 ## Next Target
 
-Layer 9 — Technique Bridge (continued). Play Mode navigation complete. Next candidates: arpeggio view, triad chaining, or note classification on Decoder.
+Layer 9 complete (Beta 4.0). Next candidates: song-route mapping (4.1 — PRESETS schema, persistent per-section navigation routes), penta-switch (4.1/4.2 — major/minor pentatonic context switching over dominant chords).
 
 ---
 
@@ -16,7 +16,7 @@ Layer 9 — Technique Bridge (continued). Play Mode navigation complete. Next ca
 
 | DEF | Location | Severity | Issue | Status |
 |-----|----------|----------|-------|--------|
-| DEF-17 | Library mode field | LOW | Mode dropdown major/minor only — modal songs cannot be accurately recorded | Open — architectural |
+| DEF-17 | Library mode field | LOW | Mode dropdown major/minor only — modal songs cannot be accurately recorded | **Closed (4.0)** — all 7 modes supported |
 
 *All other DEFs resolved. See version log for resolution history.*
 
@@ -79,3 +79,4 @@ Layer 9 — Technique Bridge (continued). Play Mode navigation complete. Next ca
 | 3.7  | 9 (extended)   | Scales tab: universal interval color system (all 4 view modes use iv.color, role conveyed by rendering not color). Redundant Color Key removed. Layout shift fix across view modes. Agent Dashboard tab: Hendrix/EVH/SRV evaluation framework with weighted priorities, consensus, conflicts. Project docs consolidated. |
 | 3.8  | 9 (extended)   | Engine: 7#9 chord type (CHORD_FORMULAS, parser, Play Mode, Chords dropdown). PENTA_PATHWAYS_EXT: minor→Dorian (natural 6th) + minor→Blues (b5), findAllPentaPathways() surfaces all expansion options in insight cards. Dashboard: expanded to 7 agents (Architect, UI/UX, Guitar Systems Engineer, Tone Engineer) + 3-skill distillation pipeline (/analyze-tab, /tone-match, /distill). W3 priorities resolved. |
 | 3.9  | 9 (near-complete) | Engine 100%: 5 chord types added (min9, 13, maj13, 7sus4, aug7) + Mixolydian pathway. Bug fixes: chromatic approach notes (half-step below always included), Dorian ghost in Play Mode. Features: Decoder classify mode (4th heat mode), arpeggio view (dual-mode: position + wide/tapping), triad chaining (voice-leading optimized inversions). Architecture: dashboard data extracted to dashboard-data.js, all KPIs computed from live data, SUFFIX_DISPLAY single source of truth, global methodology codified, universal agent evaluation protocol. |
+| 4.0  | 9 (complete)      | MILESTONE. DEF-17 closed: Library + Decoder mode fields support all 7 modes (Major, Dorian, Phrygian, Lydian, Mixolydian, Minor, Locrian) with isModeMinor() helper for engine-wide mode-family routing. CAGED zone overlay on ALL chords (trust Stevie): subtle treatment on diatonic, bold on non-diatonic — spatial anchoring always present. Forward Map shows CAGED hint for every chord. Nav prompt includes position info on diatonic chords. Zero open defects. Orphaned v3.5 file removed. README updated. Layer 9 structurally complete. |

@@ -2234,8 +2234,13 @@
         <div class="ctrl-group">
           <label>Mode</label>
           <select id="decoder-mode" onchange="renderDecoder()">
-            <option value="major">Major</option>
-            <option value="minor">Minor</option>
+            <option value="major">Major (Ionian)</option>
+            <option value="dorian">Dorian</option>
+            <option value="phrygian">Phrygian</option>
+            <option value="lydian">Lydian</option>
+            <option value="mixolydian">Mixolydian</option>
+            <option value="minor">Minor (Aeolian)</option>
+            <option value="locrian">Locrian</option>
           </select>
         </div>
         <!-- AUTO: chord input -->
@@ -2405,8 +2410,13 @@
           <div class="lib-field">
             <label>Mode</label>
             <select id="lib-mode">
-              <option value="major">Major</option>
-              <option value="minor">Minor</option>
+              <option value="major">Major (Ionian)</option>
+              <option value="dorian">Dorian</option>
+              <option value="phrygian">Phrygian</option>
+              <option value="lydian">Lydian</option>
+              <option value="mixolydian">Mixolydian</option>
+              <option value="minor">Minor (Aeolian)</option>
+              <option value="locrian">Locrian</option>
             </select>
           </div>
           <div class="lib-field">
@@ -2576,7 +2586,7 @@
   <button class="io-close" onclick="closeInfoOverlay('workflow-overlay')">✕ close</button>
   <div style="max-width:960px;margin:0 auto">
     <h1>TONE</h1>
-    <div class="io-sub">// app workflow — beta 3.9</div>
+    <div class="io-sub">// app workflow — beta 4.0</div>
   </div>
 
   <div class="io-mission">
@@ -4150,7 +4160,7 @@ function renderTheory() {
   const theoryMode = hasCtx ? _activeContext.keyMode : 'major';
 
   // Compute active scale intervals (semitone set) for highlighting
-  const activeScaleKey = theoryMode === 'major' ? 'major' : 'natural_minor';
+  const activeScaleKey = !isModeMinor(theoryMode) ? 'major' : 'natural_minor';
   const activeScaleIntervals = new Set(SCALE_FORMULAS[activeScaleKey].intervals);
   const activeScaleNotes = new Set(SCALE_FORMULAS[activeScaleKey].intervals.map(i => noteAt(theoryRoot, i)));
 
@@ -4161,7 +4171,7 @@ function renderTheory() {
   let ctxBar = '';
   if (hasCtx) {
     ctxBar = `<div class="theory-context-bar">
-      <div><span class="tcb-label">Active Key</span><br><span class="tcb-key">${theoryRoot} ${theoryMode === 'major' ? 'Major' : 'Minor'}</span></div>
+      <div><span class="tcb-label">Active Key</span><br><span class="tcb-key">${theoryRoot} ${modeLabel(theoryMode)}</span></div>
       <span class="tcb-hint">All references rooted on ${theoryRoot}</span>
     </div>`;
   } else {
@@ -4299,7 +4309,7 @@ function renderTheory() {
   });
   nashCard += `</tbody></table>
     <p style="font-family:var(--mono);font-size:0.62rem;color:var(--text-dim);margin-top:0.75rem">
-      Roman numerals are key-independent. Upper = major, lower = minor. Examples shown in ${theoryRoot} ${theoryMode === 'major' ? 'Major' : 'Minor'}.</p>
+      Roman numerals are key-independent. Upper = major, lower = minor. Examples shown in ${theoryRoot} ${modeLabel(theoryMode)}.</p>
   </div>`;
 
   // ── Modes Parallel Reference ─────────────────────────
@@ -4352,11 +4362,11 @@ function renderTheory() {
     { num: 'VI',   qual: 'Major',      fn: 'Tonic',       tendency: 'warmth \u00b7 borrowed brightness' },
     { num: 'VII',  qual: 'Major',      fn: 'Subtonic',    tendency: 'rock momentum \u00b7 strong pull' },
   ];
-  const diatonicPattern = theoryMode === 'minor' ? diatonicMinor : diatonicMajor;
+  const diatonicPattern = isModeMinor(theoryMode) ? diatonicMinor : diatonicMajor;
   // Map each degree to the concrete chord in active key
   const qualSuffix = { 'Major':'', 'Minor':'m', 'Diminished':'dim' };
   let diatCard = `<div class="theory-card" style="grid-column:span 2">
-    <h3>Diatonic Pattern${hasCtx ? ' — ' + theoryRoot + ' ' + (theoryMode === 'major' ? 'Major' : 'Minor') : ' — Universal'}</h3>
+    <h3>Diatonic Pattern${hasCtx ? ' — ' + theoryRoot + ' ' + (modeLabel(theoryMode)) : ' — Universal'}</h3>
     <table class="diatonic-pattern-table"><tbody>`;
   diatonicPattern.forEach((d, i) => {
     const chord = diaChords[i];
@@ -4616,7 +4626,7 @@ function funcColor(fn) {
 function computeNumeral(semi, quality, keyMode) {
   const majorSemis = [0,2,4,5,7,9,11];
   const minorSemis = [0,2,3,5,7,8,10];
-  const scaleSemis = keyMode === 'major' ? majorSemis : minorSemis;
+  const scaleSemis = !isModeMinor(keyMode) ? majorSemis : minorSemis;
   const bases = ['I','II','III','IV','V','VI','VII'];
   let degIdx = scaleSemis.indexOf(semi), acc = '';
   if (degIdx < 0) {
@@ -4646,7 +4656,7 @@ function computeNumeral(semi, quality, keyMode) {
 }
 
 function checkModalBorrowing(semi, quality, keyMode) {
-  if (keyMode === 'major') {
+  if (!isModeMinor(keyMode)) {
     if (semi===1  && quality==='major') return 'Phrygian (♭II)';
     if (semi===3  && quality==='major') return 'Parallel minor (♭III)';
     if (semi===5  && quality==='minor') return 'Parallel minor (iv)';
@@ -4667,7 +4677,7 @@ function checkModalBorrowing(semi, quality, keyMode) {
 function analyzeChord(chord, keyRoot, keyMode) {
   const semi = (noteIndex(chord.root) - noteIndex(keyRoot) + 12) % 12;
   const quality = chord.qualityKey;
-  const degrees = keyMode === 'major' ? MAJOR_DEGREES : MINOR_DEGREES;
+  const degrees = !isModeMinor(keyMode) ? MAJOR_DEGREES : MINOR_DEGREES;
 
   // 1. Diatonic
   for (const deg of degrees) {
@@ -4829,7 +4839,7 @@ function renderDecoderClassify(keyRoot, keyMode, tuningNotes, numFrets) {
   if (!chordFormula) return null;
 
   // Build classification sets
-  const scaleKey = keyMode === 'minor' ? 'natural_minor' : 'major';
+  const scaleKey = isModeMinor(keyMode) ? 'natural_minor' : 'major';
   const scaleNotes = new Set(SCALE_FORMULAS[scaleKey].intervals.map(i => noteAt(keyRoot, i)));
   const chordTones = new Set(chordFormula.intervals.map(i => noteAt(chordRoot, i % 12)));
   const minorScales = ['natural_minor','harmonic_minor','melodic_minor','pentatonic_minor','blues','dorian','phrygian','locrian'];
@@ -5017,6 +5027,13 @@ function onPresetChange() {
 const PENTA_MAJOR_INTERVALS = [0, 2, 4, 7, 9];
 const PENTA_MINOR_INTERVALS  = [0, 3, 5, 7, 10];
 
+// Mode family — maps any mode value to its major/minor family for engine decisions
+// DEF-17 fix: Library and Decoder now support all 7 modes
+const MINOR_MODES = new Set(['minor', 'dorian', 'phrygian', 'aeolian', 'locrian']);
+function isModeMinor(mode) { return MINOR_MODES.has(mode); }
+const MODE_LABELS = { major:'Major', minor:'Minor', dorian:'Dorian', phrygian:'Phrygian', lydian:'Lydian', mixolydian:'Mixolydian', aeolian:'Aeolian', locrian:'Locrian' };
+function modeLabel(mode) { return MODE_LABELS[mode] || mode; }
+
 // Tendency labels by numeral — the emotional language layer
 const TENDENCY_MAP = {
   // Major key diatonic
@@ -5077,8 +5094,8 @@ function getPentaLandmarks(keyRoot, keyMode) {
 
   // For minor: index finger on root fret
   // For major: pinky on root fret → index is 3 frets below
-  const s1Fret = keyMode === 'minor' ? eStringFret : ((eStringFret - 3 + 12) % 12);
-  const s4Fret = keyMode === 'minor' ? aStringFret : ((aStringFret - 3 + 12) % 12);
+  const s1Fret = isModeMinor(keyMode) ? eStringFret : ((eStringFret - 3 + 12) % 12);
+  const s4Fret = isModeMinor(keyMode) ? aStringFret : ((aStringFret - 3 + 12) % 12);
 
   return {
     shape1: s1Fret || 12,  // 0 → 12 to avoid open-string ambiguity
@@ -5112,7 +5129,7 @@ function getNearestCAGED(chordRoot, landmarks) {
 
 function buildForwardMap(chords, keyRoot, keyMode) {
   const landmarks = getPentaLandmarks(keyRoot, keyMode);
-  const pentaIntervals = keyMode === 'minor' ? PENTA_MINOR_INTERVALS : PENTA_MAJOR_INTERVALS;
+  const pentaIntervals = isModeMinor(keyMode) ? PENTA_MINOR_INTERVALS : PENTA_MAJOR_INTERVALS;
   const pentaNotesSet = new Set(pentaIntervals.map(i => noteAt(keyRoot, i)));
 
 
@@ -5146,11 +5163,10 @@ function buildForwardMap(chords, keyRoot, keyMode) {
     html += `<span class="fwd-target-text">${target.role}${target.conflict ? ' · outside pentatonic' : ''}</span>`;
     html += `</div>`;
 
-    // CAGED hint for non-diatonic chords
-    if (zoom === 'zoom-in') {
-      const caged = getNearestCAGED(chord.root, landmarks);
-      html += `<div class="fwd-caged-hint">→ ${caged.name} fret ${caged.fret} (near ${caged.nearLandmark})</div>`;
-    }
+    // CAGED hint — always shown for spatial anchoring, bolder on non-diatonic
+    const caged = getNearestCAGED(chord.root, landmarks);
+    const cagedOpacity = zoom === 'zoom-in' ? '1' : '0.5';
+    html += `<div class="fwd-caged-hint" style="opacity:${cagedOpacity}">→ ${caged.name} fret ${caged.fret} (near ${caged.nearLandmark})</div>`;
 
     html += `</div>`;
   }
@@ -5226,11 +5242,11 @@ function renderDecoder() {
     chords     = buildDiatonicChordList(keyRoot, keyMode);
     confidence = 100;
     sourceLabel = 'Diatonic';
-    progSectionLabel = keyRoot + ' ' + (keyMode === 'major' ? 'Major' : 'Minor') + '  ·  Diatonic Chord Map';
+    progSectionLabel = keyRoot + ' ' + modeLabel(keyMode) + '  ·  Diatonic Chord Map';
   }
 
   // ── Key bar ──────────────────────────────────────────
-  const scaleIntervals = keyMode === 'major'
+  const scaleIntervals = !isModeMinor(keyMode)
     ? SCALE_FORMULAS.major.intervals : SCALE_FORMULAS.natural_minor.intervals;
   const scaleChips = scaleIntervals.map(i => noteAt(keyRoot, i)).map(n => {
     const iv = intervalBetween(keyRoot, n);
@@ -5248,14 +5264,14 @@ function renderDecoder() {
     <div class="info-bar" style="margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border);margin-top:0">
       <div class="info-block">
         <div class="label">Key</div>
-        <div class="value" style="font-size:1.2rem;color:var(--amber)">${keyRoot} ${keyMode==='major'?'Major':'Minor'}</div>
+        <div class="value" style="font-size:1.2rem;color:var(--amber)">${keyRoot} ${modeLabel(keyMode)}</div>
       </div>
       <div class="info-block">
         <div class="label">${confLabelTitle}</div>
         <div class="value" style="color:${confColor}">${confLabel}</div>
       </div>
       <div class="info-block">
-        <div class="label">${keyMode==='major'?'Major':'Natural Minor'} Scale</div>
+        <div class="label">${modeLabel(keyMode)} Scale</div>
         <div class="value"><div class="chromatic-row" style="margin-top:4px">${scaleChips}</div></div>
       </div>
     </div>`;
@@ -5340,7 +5356,7 @@ function renderDecoder() {
     ? progSectionLabel
     : keyVal === 'AUTO'
       ? 'Auto-detected: ' + keyRoot + ' ' + keyMode
-      : keyRoot + ' ' + (keyMode === 'major' ? 'Major' : 'Minor') + ' (manual)';
+      : keyRoot + ' ' + modeLabel(keyMode) + ' (manual)';
   renderMatchPanel(chords, keyRoot, keyMode, activePresetId, activeTitle);
 }
 
@@ -5790,7 +5806,7 @@ function fpChipsHtml(fp, keyRoot, keyMode) {
     const base = numeral.replace(/[^A-Za-z]/g,'').toLowerCase();
     const majorMap = {i:0,ii:2,iii:4,iv:5,v:7,vi:9,vii:11};
     const minorMap = {i:0,ii:2,iii:3,iv:5,v:7,vi:8,vii:10};
-    const map = keyMode === 'major' ? majorMap : minorMap;
+    const map = !isModeMinor(keyMode) ? majorMap : minorMap;
     let semi = map[base] ?? 0;
     if (numeral.startsWith('♭')) semi = (semi - 1 + 12) % 12;
     if (numeral.startsWith('♯')) semi = (semi + 1) % 12;
@@ -5820,7 +5836,7 @@ function renderLibrary() {
   });
 
   const rows = sorted.map(p => {
-    const keyLabel = p.key + ' ' + (p.mode === 'major' ? 'Maj' : 'Min');
+    const keyLabel = p.key + ' ' + (modeLabel(p.mode) || 'Maj');
     const chips    = fpChipsHtml(p.fp, p.key, p.mode);
     return `<div class="lib-song-row">
       <span class="lib-song-title" title="${p.title}">${p.title}</span>
@@ -6004,7 +6020,7 @@ function enterPlayMode(presetId) {
   document.getElementById('play-song-name').textContent =
     preset.title + (preset.artist ? '  —  ' + preset.artist : '');
   document.getElementById('play-song-meta').textContent =
-    preset.key + ' ' + (preset.mode === 'minor' ? 'Minor' : 'Major');
+    preset.key + ' ' + modeLabel(preset.mode);
 
   const chords = (preset.chords || '').split(/\s+/).filter(Boolean);
   const strip  = document.getElementById('play-chord-strip');
@@ -6094,7 +6110,7 @@ function renderPlayFretboard(chordName) {
   const numFrets = 12;
 
   // Pentatonic set (key-relative)
-  const pentaIntervals = keyMode === 'minor' ? PENTA_MINOR_INTERVALS : PENTA_MAJOR_INTERVALS;
+  const pentaIntervals = isModeMinor(keyMode) ? PENTA_MINOR_INTERVALS : PENTA_MAJOR_INTERVALS;
   const pentaNotesSet  = new Set(pentaIntervals.map(i => noteAt(keyRoot, i)));
 
   // Chord tones
@@ -6104,9 +6120,10 @@ function renderPlayFretboard(chordName) {
   // Target note — the navigation destination
   const target = getTargetNote(chordRoot, chordToneIntervals, pentaNotesSet);
 
-  // CAGED zone — only when zoom-in is needed (non-diatonic chord)
+  // CAGED zone — always computed for spatial anchoring ("trust Stevie")
+  // Subtle treatment on diatonic, bold on non-diatonic
   let cagedZone = null;
-  if (target.conflict) {
+  {
     const landmarks = getPentaLandmarks(keyRoot, keyMode);
     const caged = getNearestCAGED(chordRoot, landmarks);
     const allShapes = getCAGEDShapesForRoot(chordRoot, tuning, numFrets);
@@ -6131,6 +6148,7 @@ function renderPlayFretboard(chordName) {
         nearLandmark: caged.nearLandmark,
         minFret: matched.minFret,
         maxFret: matched.maxFret,
+        isConflict: target.conflict, // bold on non-diatonic, subtle on diatonic
       };
     }
   }
@@ -6157,7 +6175,7 @@ function renderPlayFretboard(chordName) {
   // Diatonic half-step ABOVE: included only when it's a scale member (less universal as approach direction)
   let approachNoteSet = new Set();
   if (nextTargetNote) {
-    const scaleKey = keyMode === 'minor' ? 'natural_minor' : 'major';
+    const scaleKey = isModeMinor(keyMode) ? 'natural_minor' : 'major';
     const scaleNotes = new Set(SCALE_FORMULAS[scaleKey].intervals.map(i => noteAt(keyRoot, i)));
     const nextTargetIdx = noteIndex(nextTargetNote);
     const below = noteAt('C', (nextTargetIdx - 1 + 12) % 12);
@@ -6174,12 +6192,11 @@ function renderPlayFretboard(chordName) {
     : '';
   const prompt = document.getElementById('play-nav-prompt');
   if (prompt) {
-    if (target.conflict && cagedZone) {
-      prompt.innerHTML = `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-caged">· ${cagedZone.label} fret ${cagedZone.fret}</span>${nextCue}`;
-    } else if (target.conflict) {
-      prompt.innerHTML = `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-role" style="color:var(--c-b2)">· ${target.label}</span>${nextCue}`;
+    const posInfo = cagedZone ? ` <span class="play-nav-caged" style="opacity:${cagedZone.isConflict ? '1' : '0.6'}">· ${cagedZone.label} fret ${cagedZone.fret}</span>` : '';
+    if (target.conflict) {
+      prompt.innerHTML = `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span>${posInfo}${nextCue}`;
     } else {
-      prompt.innerHTML = `<span class="play-nav-safe">&#10003;</span> <span class="play-nav-role">anchor: </span><span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-safe">· ${target.label}</span>${nextCue}`;
+      prompt.innerHTML = `<span class="play-nav-safe">&#10003;</span> <span class="play-nav-role">anchor: </span><span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-safe">· ${target.label}</span>${posInfo}${nextCue}`;
     }
   }
 
@@ -6250,15 +6267,19 @@ function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, chordRoot, targetN
     svg += `<line x1="${x}" y1="${top - 4}" x2="${x}" y2="${top + (nStr-1)*SS + 4}" stroke="${lc}" stroke-width="1.5"/>`;
   }
 
-  // CAGED zone overlay — non-diatonic chords only (sits behind everything)
+  // CAGED zone overlay — always shown for spatial anchoring
+  // Bold on non-diatonic (conflict), subtle on diatonic (position awareness)
   if (cagedZone) {
     const dotX = (f) => f === 0 ? left : left + (f - 0.5) * FS;
     const zLeftX = cagedZone.minFret === 0 ? left - 14 : (dotX(cagedZone.minFret - 1) + dotX(cagedZone.minFret)) / 2;
     const zRightX = cagedZone.maxFret >= numFrets ? dotX(cagedZone.maxFret) + FS * 0.4 : (dotX(cagedZone.maxFret) + dotX(cagedZone.maxFret + 1)) / 2;
     const neckTop = top - 10;
     const neckBot = top + (nStr - 1) * SS + 10;
-    svg += `<rect x="${zLeftX}" y="${neckTop}" width="${zRightX - zLeftX}" height="${neckBot - neckTop}" rx="8" fill="#888" fill-opacity="0.05" stroke="#888" stroke-width="0.7" stroke-opacity="0.4"/>`;
-    svg += `<text x="${(zLeftX + zRightX) / 2}" y="${neckTop - 4}" font-size="10" fill="#888" text-anchor="middle" font-weight="700" opacity="0.5">${cagedZone.label}</text>`;
+    const fillOp = cagedZone.isConflict ? '0.05' : '0.02';
+    const strokeOp = cagedZone.isConflict ? '0.4' : '0.18';
+    const textOp = cagedZone.isConflict ? '0.5' : '0.25';
+    svg += `<rect x="${zLeftX}" y="${neckTop}" width="${zRightX - zLeftX}" height="${neckBot - neckTop}" rx="8" fill="#888" fill-opacity="${fillOp}" stroke="#888" stroke-width="0.7" stroke-opacity="${strokeOp}"/>`;
+    svg += `<text x="${(zLeftX + zRightX) / 2}" y="${neckTop - 4}" font-size="10" fill="#888" text-anchor="middle" font-weight="700" opacity="${textOp}">${cagedZone.label}</text>`;
   }
 
   // RENDER ORDER: next target → penta ghosts → approach notes → chord tones → target

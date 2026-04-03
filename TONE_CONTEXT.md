@@ -324,7 +324,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 
 ---
 
-## Current Feature State — Beta 3.9 (current baseline)
+## Current Feature State — Beta 4.0 (current baseline)
 
 ### How Features Map to the Structural Skills + New Layers
 
@@ -464,7 +464,7 @@ LAYER 6 — Physical validation     Pillar 3 — COMPLETE (Beta 2.9)
 LAYER 7 — Cross-tab continuity    COMPLETE (Beta 3.0-3.2)
 LAYER 8 — Theory activation       COMPLETE (Beta 3.3-3.4)
 ─────────────────────────────────────────────────────────────────────
-LAYER 9 — Technique bridge        NEAR-COMPLETE (Beta 3.9) — engine 100%, chromatic approach, Dorian ghost, Decoder classify, arpeggio paths, triad chaining done. Remaining: song route mapping, penta-switch.
+LAYER 9 — Technique bridge        COMPLETE (Beta 4.0) — engine 100%, all navigation features built, CAGED on all chords, DEF-17 closed. Deferred to 4.x: song-route (PRESETS schema), penta-switch (engine architecture).
 LAYER 10 — Protocol translator    Harmonic protocol identification, SRV-delta framing
 LAYER 11 — Presentation layer     Gear/signal chain context (scope TBD)
 ```

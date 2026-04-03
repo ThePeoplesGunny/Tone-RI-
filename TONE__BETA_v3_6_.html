@@ -1545,6 +1545,138 @@
     line-height: 1.5;
     margin: 0;
   }
+
+  /* ── Agent Dashboard ──────────────────────────────────── */
+  .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+  .dash-full { grid-column: 1 / -1; }
+
+  .dash-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+  }
+  .dash-card-title {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .dash-card-title::before { content: '// '; color: var(--amber-dim); }
+
+  .dash-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.5;
+  }
+  .dash-item:last-child { border-bottom: none; }
+
+  .dash-weight {
+    flex-shrink: 0;
+    width: 36px;
+    height: 20px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .dash-w3 { background: var(--c-I)22; color: var(--c-I); border: 1px solid var(--c-I)44; }
+  .dash-w2 { background: var(--amber)22; color: var(--amber); border: 1px solid var(--amber)44; }
+  .dash-w1 { background: var(--c-V)22; color: var(--c-V); border: 1px solid var(--c-V)44; }
+
+  .dash-agent-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    padding: 0.1rem 0.35rem;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    margin-left: 0.25rem;
+  }
+  .dash-tag-hendrix { background: var(--c-b7)22; color: var(--c-b7); border: 1px solid var(--c-b7)44; }
+  .dash-tag-evh { background: var(--c-I)22; color: var(--c-I); border: 1px solid var(--c-I)44; }
+  .dash-tag-srv { background: var(--c-IV)22; color: var(--c-IV); border: 1px solid var(--c-IV)44; }
+
+  .dash-status {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    padding: 0.1rem 0.35rem;
+    border-radius: 2px;
+    margin-right: 0.4rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .dash-status-done { background: var(--c-IV)22; color: var(--c-IV); }
+  .dash-status-gap { background: var(--c-I)22; color: var(--c-I); }
+  .dash-status-future { background: var(--text-dim)22; color: var(--text-dim); }
+
+  .dash-bar-track {
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 3px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+  }
+  .dash-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+
+  .dash-score-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.35rem 0;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+  }
+  .dash-score-label { width: 200px; color: var(--text); }
+  .dash-score-bar { flex: 1; }
+  .dash-score-val { width: 36px; text-align: right; color: var(--text-hi); font-weight: 700; }
+
+  .dash-conflict {
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+    border-left: 2px solid var(--amber);
+    background: var(--amber)08;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .dash-conflict:last-child { margin-bottom: 0; }
+  .dash-conflict strong { color: var(--amber); font-weight: 600; }
+
+  .dash-consensus {
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+    border-left: 2px solid var(--c-IV);
+    background: var(--c-IV)08;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .dash-consensus:last-child { margin-bottom: 0; }
+
+  @media (max-width: 768px) {
+    .dash-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -1557,6 +1689,7 @@
     <button data-view="scales" onclick="switchView(&#39;scales&#39;, this)">Scales</button>
     <button data-view="theory" onclick="switchView(&#39;theory&#39;, this)">Theory</button>
     <button data-view="library" onclick="switchView(&#39;library&#39;, this)">Library</button>
+    <button data-view="dashboard" onclick="switchView(&#39;dashboard&#39;, this)">Dashboard</button>
   </nav>
   <button class="gear-btn" id="gear-btn" onclick="toggleSettings()" title="Settings">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -2357,6 +2490,57 @@
       </span>
     </div>
     </div></div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- AGENT DASHBOARD -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section class="view" id="view-dashboard">
+    <div class="view-inner">
+
+      <div class="section-label" style="margin-top:0">Agent Dashboard — Multi-Perspective Decision Support</div>
+
+      <!-- ── Alignment Scores ── -->
+      <div class="dash-grid">
+        <div class="dash-card dash-full">
+          <div class="dash-card-title">Alignment Scores — TONE v3.6 vs Agent Perspectives</div>
+          <div id="dash-scores"></div>
+        </div>
+      </div>
+
+      <!-- ── Priority Actions + Consensus ── -->
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-title">Priority Actions (Weighted)</div>
+          <div id="dash-priorities"></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Consensus — All Three Agree</div>
+          <div id="dash-consensus"></div>
+        </div>
+      </div>
+
+      <!-- ── Conflicts + Feature Status ── -->
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-title">Conflicts — Agent Disagreements</div>
+          <div id="dash-conflicts"></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Feature Status by Layer</div>
+          <div id="dash-features"></div>
+        </div>
+      </div>
+
+      <!-- ── Future Layer Items ── -->
+      <div class="dash-grid">
+        <div class="dash-card dash-full">
+          <div class="dash-card-title">Future Layers — Parked (Not Current Priority)</div>
+          <div id="dash-future"></div>
+        </div>
+      </div>
 
     </div>
   </section>
@@ -4008,6 +4192,10 @@ function switchView(name, btn) {
   // Re-render triads if chord sub-view is active
   if (name === 'chords' && _chordSubview === 'triads') {
     renderTriads();
+  }
+  // Render agent dashboard on tab switch
+  if (name === 'dashboard') {
+    renderDashboard();
   }
 }
 
@@ -6124,6 +6312,199 @@ function renderTriads() {
     `<span class="zone-item"><span class="zone-dot" style="background:var(--amber)"></span>chord · inversions</span>` +
     `<span class="zone-item"><span class="zone-dot" style="background:#85B7EB;opacity:0.6"></span>melody · chord tones</span>`;
 }
+
+// ══════════════════════════════════════════════════════════
+// AGENT DASHBOARD
+// ══════════════════════════════════════════════════════���═══
+
+const AGENT_DASHBOARD = {
+  scores: [
+    { label: 'Blues foundation respected',           hendrix: 9,  evh: 8,  srv: 9,  color: 'var(--c-IV)' },
+    { label: 'Pentatonic as skeleton',               hendrix: 8,  evh: 7,  srv: 9,  color: 'var(--c-IV)' },
+    { label: 'Chord-tone targeting',                 hendrix: 9,  evh: 7,  srv: 9,  color: 'var(--c-IV)' },
+    { label: 'Rhythm / lead integration',            hendrix: 6,  evh: 5,  srv: 7,  color: 'var(--amber)' },
+    { label: 'Physical instrument / position',       hendrix: 5,  evh: 5,  srv: 6,  color: 'var(--c-I)' },
+    { label: 'Modal extension visibility',           hendrix: 3,  evh: 4,  srv: 5,  color: 'var(--c-I)' },
+    { label: 'Forward vision / voice leading',       hendrix: 9,  evh: 9,  srv: 9,  color: 'var(--c-IV)' },
+    { label: 'Zoom spectrum accuracy',               hendrix: 8,  evh: 7,  srv: 9,  color: 'var(--c-IV)' },
+    { label: 'Chromatic vocabulary support',          hendrix: 4,  evh: 3,  srv: 5,  color: 'var(--c-I)' },
+    { label: 'Protocol translator readiness',        hendrix: 2,  evh: 2,  srv: 2,  color: 'var(--c-I)' },
+  ],
+
+  priorities: [
+    { weight: 3, action: 'Add 7#9 chord to CHORD_FORMULAS and PLAY_CHORD_INTERVALS',
+      agents: ['hendrix','evh','srv'], status: 'gap',
+      detail: 'Engine cannot analyze Hendrix-chord progressions. E7#9 parses as unknown. Intervals: [0,4,7,10,3]' },
+    { weight: 3, action: 'Expand PENTA_PATHWAYS: minor→dorian, minor→blues',
+      agents: ['hendrix','evh','srv'], status: 'gap',
+      detail: 'Dorian 6th and b5 blue note are critical departure notes. Code pattern exists, data missing.' },
+    { weight: 2, action: 'Major/minor pentatonic switch over dominant chords',
+      agents: ['srv','hendrix'], status: 'gap',
+      detail: 'Line 5562 uses single penta set per key. B.B. King/Albert King/SRV major penta tones over I7 invisible.' },
+    { weight: 2, action: 'Chromatic approach notes (half-step from below)',
+      agents: ['evh','hendrix'], status: 'gap',
+      detail: 'Lines 5620-5630 compute diatonic approach only. Strongest voice-leading move is chromatic half-step regardless of key.' },
+    { weight: 2, action: 'Dorian 6th as modal extension ghost in Play Mode',
+      agents: ['hendrix','evh'], status: 'gap',
+      detail: 'Natural 6th over minor keys is Hendrix\'s most identifiable non-pentatonic note. Falls through cracks of current system.' },
+    { weight: 1, action: 'Diminished geometry insight card',
+      agents: ['evh'], status: 'gap',
+      detail: 'Same fingering repeats every 3 frets (symmetrical). Scale data exists, geometric insight not surfaced.' },
+    { weight: 1, action: 'Approach note directional bias (below-first)',
+      agents: ['srv'], status: 'gap',
+      detail: 'SRV approach predominantly from below. Current algorithm shows both directions equally.' },
+  ],
+
+  consensus: [
+    'Target note algorithm (major 3rd for major, root for minor) is correct',
+    'Forward vision (next target diamonds + approach notes) is well-designed',
+    'CAGED overlay triggering only on non-diatonic chords is right',
+    'Pentatonic pathway framing ("your pentatonic + 2 notes") is correct',
+    'Brewster chord-scale overlay correctly implements the hierarchy',
+    'Zoom spectrum bias toward "stay home" over diatonic chords is correct',
+    'Architecture is sound and extensible — gaps are rendering, not math',
+    'Play Mode 5-level visual hierarchy is effective for at-a-glance use',
+  ],
+
+  conflicts: [
+    { topic: 'Zoom spectrum granularity',
+      positions: 'Hendrix: wants gradient (safe / one-note / full-zoom). EVH: wants depth levels. SRV: binary is correct.',
+      resolution: 'Binary is right for Phase 1. Expand later as player vocabulary grows.' },
+    { topic: 'Approach note direction',
+      positions: 'SRV: below-first is more authentic. EVH: both directions equally valid.',
+      resolution: 'Requires user judgment — general-purpose vs SRV-optimized.' },
+    { topic: 'Play Mode visual density',
+      positions: 'All three flag tension: adding chromatic approach, modal extensions, major penta = more layers vs at-a-glance clarity.',
+      resolution: 'Toggle-based: default to current 5-layer, user-selectable depth expansion.' },
+    { topic: 'Minor chord target note',
+      positions: 'SRV: root is correct (pentatonic fits). EVH: natural 6th (Dorian) is the departure that opens wider vocabulary.',
+      resolution: 'Phase 1 = root (current). Phase 2 = secondary target based on modal context from Decoder.' },
+  ],
+
+  features: [
+    { name: 'Decoder harmonic analysis',    layer: 'Core',    status: 'done' },
+    { name: 'Play Mode target notes',       layer: 'Core',    status: 'done' },
+    { name: 'Play Mode forward vision',     layer: 'Core',    status: 'done' },
+    { name: 'Play Mode approach notes',     layer: 'Core',    status: 'done' },
+    { name: 'CAGED zone overlay',           layer: 'Core',    status: 'done' },
+    { name: 'Brewster chord-scale overlay', layer: 'L9',      status: 'done' },
+    { name: 'Pentatonic pathways',          layer: 'L9',      status: 'done' },
+    { name: 'Fingerprint match engine',     layer: 'Core',    status: 'done' },
+    { name: 'Arpeggio view',               layer: 'L9',      status: 'gap' },
+    { name: 'Triad chaining',              layer: 'L9',      status: 'gap' },
+    { name: 'Song route mapping',           layer: 'L9',      status: 'gap' },
+    { name: 'Note classification on Decoder fretboard', layer: 'L9', status: 'gap' },
+    { name: '7#9 + 6/9 chord types',       layer: 'Engine',  status: 'gap' },
+    { name: 'Protocol Translator',          layer: 'L10',     status: 'future' },
+    { name: 'Presentation Layer (gear)',    layer: 'L11',     status: 'future' },
+  ],
+
+  future: [
+    { item: 'Tapping interval mapping', agent: 'evh', layer: 'L9+',
+      detail: 'Given left-hand position at fret N, show intervals available via tap at N+12, N+7, N+5' },
+    { item: 'Rhythm guitar dynamics / muting spectrum', agent: 'evh', layer: 'L11',
+      detail: 'Palm-mute-to-open transitions as compositional element. Voicing-to-voicing movement.' },
+    { item: 'Dynamics / phrasing encoding', agent: 'srv', layer: 'Out of scope',
+      detail: 'Acknowledged gap: "which note" is solvable, "how to play it" requires the guitar in hand.' },
+    { item: 'Position-specific vocabulary awareness', agent: 'hendrix', layer: 'L10',
+      detail: 'Frets 0-4 = chord-melody zone. Frets 12-15 = lead zone. Different vocabularies by register.' },
+    { item: 'Protocol Translator', agent: 'all', layer: 'L10',
+      detail: 'Identify whether a song runs blues OS (SRV/McCready) or modal OS (EVH/Cantrell). Frame departures relative to user\'s native protocol.' },
+    { item: 'Double-stop (3rds/6ths) navigation', agent: 'hendrix', layer: 'L9+',
+      detail: 'Two-note simultaneous concept requires different rendering paradigm than single-note targeting.' },
+  ]
+};
+
+function renderDashboard() {
+  // ── Alignment scores ──
+  const scEl = document.getElementById('dash-scores');
+  if (scEl) {
+    scEl.innerHTML = AGENT_DASHBOARD.scores.map(s => {
+      const avg = ((s.hendrix + s.evh + s.srv) / 3).toFixed(1);
+      const pct = Math.round((avg / 10) * 100);
+      return `<div class="dash-score-row">
+        <span class="dash-score-label">${s.label}</span>
+        <span class="dash-score-bar">
+          <div class="dash-bar-track"><div class="dash-bar-fill" style="width:${pct}%;background:${s.color}"></div></div>
+        </span>
+        <span class="dash-score-val" style="color:${s.color}">${avg}</span>
+        <span style="font-family:var(--mono);font-size:0.58rem;color:var(--text-dim);width:90px;text-align:right">
+          <span class="dash-agent-tag dash-tag-hendrix">${s.hendrix}</span>
+          <span class="dash-agent-tag dash-tag-evh">${s.evh}</span>
+          <span class="dash-agent-tag dash-tag-srv">${s.srv}</span>
+        </span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Priority actions ──
+  const prEl = document.getElementById('dash-priorities');
+  if (prEl) {
+    prEl.innerHTML = AGENT_DASHBOARD.priorities.map(p => {
+      const wClass = p.weight === 3 ? 'dash-w3' : p.weight === 2 ? 'dash-w2' : 'dash-w1';
+      const tags = p.agents.map(a => `<span class="dash-agent-tag dash-tag-${a}">${a}</span>`).join('');
+      return `<div class="dash-item">
+        <span class="dash-weight ${wClass}">W${p.weight}</span>
+        <span style="flex:1">
+          <span class="dash-status dash-status-${p.status}">${p.status}</span>
+          <strong style="color:var(--text-hi)">${p.action}</strong> ${tags}
+          <div style="color:var(--text-dim);margin-top:0.2rem;font-size:0.65rem">${p.detail}</div>
+        </span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Consensus ──
+  const coEl = document.getElementById('dash-consensus');
+  if (coEl) {
+    coEl.innerHTML = AGENT_DASHBOARD.consensus.map(c =>
+      `<div class="dash-consensus">${c}</div>`
+    ).join('');
+  }
+
+  // ── Conflicts ──
+  const cfEl = document.getElementById('dash-conflicts');
+  if (cfEl) {
+    cfEl.innerHTML = AGENT_DASHBOARD.conflicts.map(c =>
+      `<div class="dash-conflict">
+        <strong>${c.topic}</strong><br>
+        <span style="color:var(--text-dim)">${c.positions}</span><br>
+        <span style="color:var(--c-IV)">Resolution: ${c.resolution}</span>
+      </div>`
+    ).join('');
+  }
+
+  // ── Feature status ──
+  const ftEl = document.getElementById('dash-features');
+  if (ftEl) {
+    ftEl.innerHTML = AGENT_DASHBOARD.features.map(f => {
+      const sc = f.status === 'done' ? 'dash-status-done' : f.status === 'gap' ? 'dash-status-gap' : 'dash-status-future';
+      return `<div class="dash-item">
+        <span class="dash-status ${sc}">${f.status}</span>
+        <span style="flex:1;color:var(--text)">${f.name}</span>
+        <span style="color:var(--text-dim);font-size:0.62rem">${f.layer}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Future layer items ──
+  const fuEl = document.getElementById('dash-future');
+  if (fuEl) {
+    fuEl.innerHTML = AGENT_DASHBOARD.future.map(f => {
+      const tag = f.agent === 'all'
+        ? '<span class="dash-agent-tag dash-tag-hendrix">H</span><span class="dash-agent-tag dash-tag-evh">E</span><span class="dash-agent-tag dash-tag-srv">S</span>'
+        : `<span class="dash-agent-tag dash-tag-${f.agent}">${f.agent}</span>`;
+      return `<div class="dash-item">
+        <span style="color:var(--text-dim);font-size:0.62rem;width:50px;flex-shrink:0">${f.layer}</span>
+        <span style="flex:1">
+          <strong style="color:var(--text-hi)">${f.item}</strong> ${tag}
+          <div style="color:var(--text-dim);margin-top:0.2rem;font-size:0.65rem">${f.detail}</div>
+        </span>
+      </div>`;
+    }).join('');
+  }
+}
+
 </script>
 
 

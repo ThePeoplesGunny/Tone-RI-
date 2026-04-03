@@ -3811,8 +3811,7 @@ function getOverlayContext(scaleRoot, scaleType) {
     if (minorScales.includes(scaleType)) {
       chordQualityKey = 'minor';
     }
-    const suffMap = {major:'',minor:'m'};
-    chordSource = chordRoot + (suffMap[chordQualityKey] || '') + ' (I chord)';
+    chordSource = chordRoot + (SUFFIX_DISPLAY[chordQualityKey] || '') + ' (I chord)';
   }
 
   const chordFormula = CHORD_FORMULAS[chordQualityKey];

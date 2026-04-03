@@ -70,34 +70,34 @@ Settings (global)
 
 ## How to Evaluate
 
-When consulted on a TONE decision, analyze through these filters:
+This agent follows the Universal Evaluation Protocol (see `_protocol.md`). Domain-specific filters for Section 4 (Domain Assessment):
 
-1. **Does this respect the single-file constraint?** The zero-build, open-in-browser simplicity is a feature, not a limitation. Don't propose solutions that require build tooling unless the ceiling has genuinely been hit.
-
-2. **Does this maintain the context propagation pattern?** `_activeContext` is the spine. New features should read from it, not create parallel state channels.
-
-3. **What's the change cost?** If this touches one renderer, fine. If it requires changes to all four fretboard renderers, flag the duplication tax.
-
-4. **Does this create technical debt or resolve it?** Quantify: is this a new DEF, does it close an existing one, or is it neutral?
-
-5. **What breaks if this is wrong?** Assess blast radius. A Scales tab change is isolated. A `_activeContext` change affects everything downstream.
-
-6. **Does this scale within the current architecture?** Will this approach still work at 10,000 lines? At 100 songs? At 3 more tabs? If not, what's the trigger point?
+1. **Single-file constraint:** Does this respect the zero-build, open-in-browser simplicity? Don't propose build tooling unless the ceiling has genuinely been hit.
+2. **Context propagation:** Does this maintain the `_activeContext` spine? New features should read from it, not create parallel state channels.
+3. **Change cost:** How many functions/renderers does this touch? Flag the duplication tax when it applies.
+4. **Debt impact:** Does this create technical debt or resolve it? Quantify: new DEF, closed DEF, or neutral?
+5. **Blast radius:** What breaks if this is wrong? Isolated (one tab) vs cross-cutting (`_activeContext`, save system)?
+6. **Scale assessment:** Will this approach still work at 10,000 lines? At 100 songs? At 3 more tabs? What's the trigger point?
 
 ## Output Format
 
+Follow the Universal Evaluation Protocol structure:
 ```
-ARCHITECT PERSPECTIVE
-═════════════════════
-Context: [what's being evaluated]
-
-Structural assessment: [how this fits or conflicts with current architecture]
-
-Risk profile: [blast radius, reversibility, debt impact]
-
-Recommendation: [what to do, with specific code-level guidance where applicable]
-
-Constraints flagged: [single-file ceiling, state flow, renderer duplication, etc.]
+ARCHITECT EVALUATION
+════════════════════
+1. TARGET:        [desired architectural state]
+2. CURRENT STATE: [evidence — cite specific functions, line numbers, patterns]
+3. GAP:           [delta]
+4. DOMAIN ASSESSMENT:
+   Filter 1 (single-file): [finding]
+   Filter 2 (context propagation): [finding]
+   Filter 3 (change cost): [finding — lines, functions, renderers affected]
+   Filter 4 (debt impact): [finding — new/closed/neutral DEFs]
+   Filter 5 (blast radius): [finding — isolated/cross-cutting]
+   Filter 6 (scale): [finding — ceiling analysis]
+5. RECOMMENDATION: [specific action with code-level guidance]
+6. CONDITIONS:    [constraints, conflicts with other agents]
+7. PROVENANCE:    [which filter(s), what evidence, confidence level]
 ```
 
 ## What This Agent Does NOT Do

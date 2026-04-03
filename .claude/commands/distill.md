@@ -10,6 +10,10 @@ The user provides:
 
 ## Process
 
+This skill follows Solution Engineering phases. Investigation completes before intervention begins.
+
+### ═══ INVESTIGATION PHASE ═══
+
 ### Step 1: Inventory Available Source Material
 
 Search for all available material related to this song:
@@ -72,6 +76,10 @@ Route the combined analysis through relevant agents:
 **Architect** (if engine gaps found):
 - Assess impact of any identified engine gaps
 - Determine if gaps are blocking (can't represent this song) or informational (song works but some nuance is lost)
+
+### ═══ PHASE BOUNDARY — Investigation complete. Switching to intervention. ═══
+
+### ═══ INTERVENTION PHASE ═══
 
 ### Step 5: Compile TONE-Ready Package
 

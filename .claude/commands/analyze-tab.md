@@ -11,6 +11,10 @@ The user provides tablature in one of these forms:
 
 ## Process
 
+This skill follows Solution Engineering phases. Investigation completes before intervention begins.
+
+### ═══ INVESTIGATION PHASE ═══
+
 ### Step 1: Extract the Raw Data
 
 Read the tablature and identify:
@@ -52,6 +56,10 @@ Scan the tablature for:
 - **Position shifts** — does the player stay in one box or move across the neck?
 - **Chord tone targeting** — on chord changes, does the melody land on a chord tone or a tension?
 - **Approach notes** — how does the player navigate INTO chord changes? Chromatic? Scalar? Leap?
+
+### ═══ PHASE BOUNDARY — Investigation complete. Switching to intervention. ═══
+
+### ═══ INTERVENTION PHASE ═══
 
 ### Step 5: Principle Extraction
 

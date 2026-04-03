@@ -12,6 +12,10 @@ The user provides one or more of:
 
 ## Process
 
+This skill follows Solution Engineering phases. Investigation completes before intervention begins.
+
+### ═══ INVESTIGATION PHASE ═══
+
 ### Step 1: Identify the Reference Tone
 
 Characterize the target tone along these dimensions:
@@ -55,6 +59,10 @@ Read `gear.txt` from the repo for current inventory. For each element of the ori
 
 **Effects mapping:**
 Map each effect in the original chain to the user's equivalent. Flag any gaps (effects the user doesn't own).
+
+### ═══ PHASE BOUNDARY — Investigation complete. Switching to intervention. ═══
+
+### ═══ INTERVENTION PHASE ═══
 
 ### Step 4: Build the Signal Chain
 

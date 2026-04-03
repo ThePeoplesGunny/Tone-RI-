@@ -2942,6 +2942,12 @@ const CHORD_FORMULAS = {
   '7#9':    { intervals: [0,4,7,10,3], name: 'Dominant 7♯9',     formula: 'I  III  V  ♭VII  ♯IX'},
 };
 
+// ── Chord quality display suffixes (single source of truth) ──
+const SUFFIX_DISPLAY = {
+  major:'',minor:'m',dom7:'7',maj7:'maj7',min7:'m7',sus2:'sus2',sus4:'sus4',
+  dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9','7#9':'7♯9'
+};
+
 // ── Scale formulas (semitone arrays from root) ───────
 const SCALE_FORMULAS = {
   major:           { intervals: [0,2,4,5,7,9,11],       name: 'Major (Ionian)',        mode: 'Ionian'      },
@@ -4853,10 +4859,6 @@ function buildForwardMap(chords, keyRoot, keyMode) {
   const pentaIntervals = keyMode === 'minor' ? PENTA_MINOR_INTERVALS : PENTA_MAJOR_INTERVALS;
   const pentaNotesSet = new Set(pentaIntervals.map(i => noteAt(keyRoot, i)));
 
-  const suffixDisplay = {
-    major:'',minor:'m',dom7:'7',maj7:'maj7',min7:'m7',sus2:'sus2',sus4:'sus4',
-    dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9','7#9':'7♯9'
-  };
 
   // Header: pentatonic landmarks
   let html = '<div class="fwd-map-header">';
@@ -4868,7 +4870,7 @@ function buildForwardMap(chords, keyRoot, keyMode) {
   html += '<div class="fwd-row">';
   for (const chord of chords) {
     const analysis = analyzeChord(chord, keyRoot, keyMode);
-    const suffix = suffixDisplay[chord.qualityKey] ?? chord.qualityKey;
+    const suffix = SUFFIX_DISPLAY[chord.qualityKey] ?? chord.qualityKey;
     const zoom = getZoomLevel(analysis);
     const tendency = getTendencyLabel(analysis, chord.qualityKey);
 
@@ -5003,16 +5005,12 @@ function renderDecoder() {
     </div>`;
 
   // ── Progression cards ──
-  const suffixDisplay = {
-    major:'',minor:'m',dom7:'7',maj7:'maj7',min7:'m7',sus2:'sus2',sus4:'sus4',
-    dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9','7#9':'7♯9'
-  };
   const badgeLabels = { diatonic:'diatonic', borrowed:'borrowed', secondary:'sec. dom', chromatic:'chromatic' };
 
   let progHtml = '<div class="progression-row">';
   for (const chord of chords) {
     const analysis = analyzeChord(chord, keyRoot, keyMode);
-    const suffix   = suffixDisplay[chord.qualityKey] ?? chord.qualityKey;
+    const suffix   = SUFFIX_DISPLAY[chord.qualityKey] ?? chord.qualityKey;
     const tendency = getTendencyLabel(analysis, chord.qualityKey);
     progHtml += `<div class="prog-card ${analysis.status}" onclick="selectActiveChord(this, '${chord.qualityKey}', '${chord.root}')">
       <div class="prog-chord-name">${chord.root}${suffix}</div>
@@ -5297,10 +5295,6 @@ function openCompare(presetId) {
   const bToks = fpTokens(pFp);
   const maxLen = Math.max(aToks.length, bToks.length);
 
-  const suffixDisplay = {
-    major:'',minor:'m',dom7:'7',maj7:'maj7',min7:'m7',sus2:'sus2',sus4:'sus4',
-    dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9','7#9':'7♯9'
-  };
 
   function buildCards(chords, keyRoot, keyMode, aToks, bToks, side) {
     let html = '<div class="compare-cards">';
@@ -5313,7 +5307,7 @@ function openCompare(presetId) {
       }
       const cls = myTok === otherTok ? 'match' : 'deviate';
       const chord = chords[i];
-      const chordLabel = chord ? chord.root + (suffixDisplay[chord.qualityKey] ?? chord.qualityKey) : '';
+      const chordLabel = chord ? chord.root + (SUFFIX_DISPLAY[chord.qualityKey] ?? chord.qualityKey) : '';
       const semi = chord ? (noteIndex(chord.root) - noteIndex(keyRoot) + 12) % 12 : 0;
       const iv = intervalInfo(semi);
       html += `<div class="cmp-card ${cls}">
@@ -6406,7 +6400,7 @@ const AGENT_DASHBOARD = {
   priorities: [
     { weight: 3, action: 'Add 7#9 chord to CHORD_FORMULAS and PLAY_CHORD_INTERVALS',
       agents: ['hendrix','evh','srv'], status: 'done',
-      detail: 'Resolved 3.8: 7#9 added to CHORD_FORMULAS, QUALITY_SUFFIXES, PLAY_CHORD_INTERVALS, Chords dropdown, and all suffixDisplay maps.' },
+      detail: 'Resolved 3.8: 7#9 added to CHORD_FORMULAS, QUALITY_SUFFIXES, PLAY_CHORD_INTERVALS, Chords dropdown, and SUFFIX_DISPLAY.' },
     { weight: 3, action: 'Expand PENTA_PATHWAYS: minor→dorian, minor→blues',
       agents: ['hendrix','evh','srv'], status: 'done',
       detail: 'Resolved 3.8: PENTA_PATHWAYS_EXT added with minor→dorian (natural 6th) and minor→blues (♭5). findAllPentaPathways() surfaces all expansion options.' },

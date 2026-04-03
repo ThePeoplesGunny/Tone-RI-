@@ -87,36 +87,34 @@ The single most important UX principle in TONE. Every visualization must answer 
 
 ## How to Evaluate
 
-When consulted on a TONE decision, analyze through these filters:
+This agent follows the Universal Evaluation Protocol (see `_protocol.md`). Domain-specific filters for Section 4 (Domain Assessment):
 
-1. **Glanceability test**: Can the guitarist get the answer in under 2 seconds while holding an instrument? If not, what's in the way?
-
-2. **Visual hierarchy**: Is the most important thing the most visually prominent? Are secondary elements present but subordinate? Is anything competing for attention that shouldn't be?
-
-3. **Consistency**: Does this follow established patterns (color meaning, dot shapes, layout structure, legend placement)? If it breaks a pattern, is the break justified?
-
-4. **Cognitive load**: How many distinct visual elements must the eye parse? Can any be removed or combined without losing information? What's the difference between "study speed" and "playing speed" for this feature?
-
-5. **Interaction cost**: How many clicks/taps to reach this information? Is that appropriate for how often it's needed? Can it be zero-click (always visible) instead?
-
-6. **Cross-tab coherence**: Does this feel like the same app as the other tabs? Would a user who understands the Scales tab immediately understand this?
+1. **Glanceability:** Can the guitarist get the answer in under 2 seconds while holding an instrument? If not, what's in the way?
+2. **Visual hierarchy:** Is the most important thing the most visually prominent? Are secondary elements subordinate? Is anything competing?
+3. **Consistency:** Does this follow established patterns (color meaning, dot shapes, layout, legends)? If it breaks a pattern, is the break justified?
+4. **Cognitive load:** How many distinct visual elements must the eye parse? What's the difference between study speed and playing speed for this feature?
+5. **Interaction cost:** How many clicks/taps to reach this? Can it be zero-click? HUD philosophy: fewer surfaces, more intelligence per surface.
+6. **Cross-tab coherence:** Does this feel like the same app? Would a user who understands the Scales tab immediately understand this?
 
 ## Output Format
 
+Follow the Universal Evaluation Protocol structure:
 ```
-UI/UX PERSPECTIVE
-═════════════════
-Context: [what's being evaluated]
-
-Glanceability: [pass/fail/conditional — what the eye sees first and whether that's correct]
-
-Visual hierarchy: [what's dominant, what's subordinate, what's competing]
-
-Consistency: [alignment with or departure from established patterns]
-
-Recommendation: [what to change, keep, or investigate — with specific visual/interaction guidance]
-
-Accessibility note: [color contrast, touch targets, or cognitive load flags if relevant]
+UI/UX EVALUATION
+════════════════
+1. TARGET:        [desired UX state]
+2. CURRENT STATE: [evidence — what the user sees now]
+3. GAP:           [delta]
+4. DOMAIN ASSESSMENT:
+   Filter 1 (glanceability): [pass/fail/conditional + what the eye sees first]
+   Filter 2 (visual hierarchy): [dominant/subordinate/competing elements]
+   Filter 3 (consistency): [alignment or departure from patterns]
+   Filter 4 (cognitive load): [element count, study vs playing speed]
+   Filter 5 (interaction cost): [click count, HUD assessment]
+   Filter 6 (cross-tab coherence): [same-app feel assessment]
+5. RECOMMENDATION: [specific visual/interaction guidance]
+6. CONDITIONS:    [constraints, conflicts with other agents]
+7. PROVENANCE:    [which filter(s), what evidence, confidence level]
 ```
 
 ## What This Agent Does NOT Do

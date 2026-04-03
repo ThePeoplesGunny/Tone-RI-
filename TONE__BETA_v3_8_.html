@@ -6708,16 +6708,18 @@ function computeKPIs() {
   });
 
   // ── Navigation Readiness ──
-  // Capability checklist — each is a boolean: does the function/feature exist?
+  // Each check verifies the capability exists by testing the code, not a manual flag.
+  // Unbuilt features: test for the function that WOULD exist when built.
   const navChecks = [
-    { name: 'Target notes',     pass: typeof getTargetNote === 'function' },
-    { name: 'Forward vision',   pass: typeof renderPlayFretboard === 'function' },
-    { name: 'Forward map',      pass: typeof buildForwardMap === 'function' },
-    { name: 'Approach notes',   pass: typeof renderPlayFretboard === 'function' }, // exists but diatonic-only
-    { name: 'Chromatic approach', pass: true },  // fixed — half-step below always included
-    { name: 'Decoder classify', pass: false },   // not wired yet
-    { name: 'Arpeggio paths',  pass: false },    // not built
-    { name: 'Song routes',     pass: false },     // not built
+    { name: 'Target notes',       pass: typeof getTargetNote === 'function' },
+    { name: 'Forward vision',     pass: typeof renderPlayFretboard === 'function' },
+    { name: 'Forward map',        pass: typeof buildForwardMap === 'function' },
+    { name: 'Approach notes',     pass: typeof renderPlayFretboard === 'function' },
+    { name: 'Chromatic approach', pass: typeof renderPlayFretboard === 'function'
+        && !renderPlayFretboard.toString().includes('scaleNotes.has(below)') }, // verifies diatonic filter is removed
+    { name: 'Decoder classify',   pass: typeof renderDecoderClassify === 'function' },  // function won't exist until built
+    { name: 'Arpeggio paths',    pass: typeof renderArpeggioView === 'function' },      // function won't exist until built
+    { name: 'Song routes',       pass: typeof renderSongRoute === 'function' },          // function won't exist until built
   ];
   const navPassed = navChecks.filter(c => c.pass).length;
   const navPct = Math.round((navPassed / navChecks.length) * 100);
@@ -6728,15 +6730,16 @@ function computeKPIs() {
   });
 
   // ── Technique Bridge ──
+  // Each check verifies the capability by testing code state, not manual flags.
   const techChecks = [
     { name: 'Brewster overlay',    pass: typeof getOverlayContext === 'function' },
     { name: 'CAGED overlay',       pass: typeof getCAGEDShapesForRoot === 'function' },
     { name: 'Pentatonic pathways', pass: Object.keys(PENTA_PATHWAYS).length > 0 },
     { name: 'Extended pathways',   pass: Object.keys(PENTA_PATHWAYS_EXT).length > 0 },
     { name: 'Insight cards',       pass: typeof getScaleInsights === 'function' },
-    { name: 'Dorian ghost',       pass: false },  // data exists, not wired to Play Mode
-    { name: 'Arpeggio view',      pass: false },   // not built
-    { name: 'Triad chaining',     pass: false },   // not built
+    { name: 'Dorian ghost',       pass: typeof renderDorianGhost === 'function' },     // function won't exist until built
+    { name: 'Arpeggio view',      pass: typeof renderArpeggioView === 'function' },    // function won't exist until built
+    { name: 'Triad chaining',     pass: typeof renderTriadChain === 'function' },      // function won't exist until built
   ];
   const techPassed = techChecks.filter(c => c.pass).length;
   const techPct = Math.round((techPassed / techChecks.length) * 100);

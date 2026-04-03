@@ -6394,8 +6394,8 @@ const AGENT_DASHBOARD = {
       what: 'Can the user translate theory to fretboard execution?' },
     { label: 'Pipeline', value: 100, unit: '%', detail: '/analyze-tab ✓ · /tone-match ✓ · /distill ✓ · untested on real content',
       what: 'Can new content be systematically distilled into TONE?' },
-    { label: 'Gaps', value: 7, unit: '', detail: 'bugs: chromatic-approach · dorian-ghost | queued: note-classify-decoder · arpeggio-view · triad-chaining · song-route · penta-switch',
-      what: 'Active control loops with unresolved gaps' },
+    { label: 'Gaps', value: 0, unit: '', detail: '',
+      what: 'Active control loops with unresolved gaps — computed from loops data at render time' },
   ],
 
   // ── Alignment Dimensions (full control loops, not just scores) ──
@@ -6704,9 +6704,21 @@ function renderDashboard() {
       + resolved.map(renderLoop).join('');
   }
 
-  // ── KPI Bar ──
+  // ── KPI Bar (Gaps KPI computed from loops data) ──
   const kpEl = document.getElementById('dash-kpis');
   if (kpEl) {
+    // Compute gaps KPI from loops array
+    const activeLoops = AGENT_DASHBOARD.loops.filter(l => l.status !== 'done');
+    const bugs = activeLoops.filter(l => l.id === 'chromatic-approach' || l.id === 'dorian-ghost');
+    const queued = activeLoops.filter(l => !bugs.includes(l));
+    const gapsKpi = AGENT_DASHBOARD.kpis.find(k => k.label === 'Gaps');
+    if (gapsKpi) {
+      gapsKpi.value = activeLoops.length;
+      gapsKpi.detail = (bugs.length ? 'bugs: ' + bugs.map(l => l.id).join(' · ') : '')
+        + (bugs.length && queued.length ? ' | ' : '')
+        + (queued.length ? 'queued: ' + queued.map(l => l.id).join(' · ') : '');
+    }
+
     kpEl.innerHTML = AGENT_DASHBOARD.kpis.map(k => {
       const isCount = !k.unit;
       const valColor = isCount ? (k.value > 3 ? 'var(--c-I)' : k.value > 0 ? 'var(--amber)' : 'var(--c-IV)')

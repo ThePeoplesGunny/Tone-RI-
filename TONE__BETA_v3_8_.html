@@ -2505,7 +2505,18 @@
   <section class="view" id="view-dashboard">
     <div class="view-inner">
 
-      <div class="section-label" style="margin-top:0">Control Surface — Active Loops + Intersections</div>
+      <div class="section-label" style="margin-top:0">Control Surface — Mission KPIs + Active Loops</div>
+
+      <!-- ── KPI Bar (health at a glance) ── -->
+      <div id="dash-kpis" style="display:flex;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap"></div>
+
+      <!-- ── Alignment Dimensions (target → current → gap → what moves it) ── -->
+      <div class="dash-grid">
+        <div class="dash-card dash-full">
+          <div class="dash-card-title">Alignment Dimensions — Target vs Current vs What Moves It</div>
+          <div id="dash-dimensions"></div>
+        </div>
+      </div>
 
       <!-- ── Active Control Loops (the decisions) ── -->
       <div class="dash-grid">
@@ -2515,14 +2526,10 @@
         </div>
       </div>
 
-      <!-- ── System Health: Alignment + Feature Status ── -->
+      <!-- ── System Health: Feature Status ── -->
       <div class="dash-grid">
-        <div class="dash-card">
-          <div class="dash-card-title">Alignment — Target vs Current by Dimension</div>
-          <div id="dash-scores"></div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-card-title">Feature Status by Layer</div>
+        <div class="dash-card dash-full">
+          <div class="dash-card-title">Feature Status</div>
           <div id="dash-features"></div>
         </div>
       </div>
@@ -6376,17 +6383,104 @@ function renderTriads() {
 // ══════════════════════════════════════════════════════���═══
 
 const AGENT_DASHBOARD = {
-  scores: [
-    { label: 'Blues foundation respected',           hendrix: 9,  evh: 8,  srv: 9,  color: 'var(--c-IV)' },
-    { label: 'Pentatonic as skeleton',               hendrix: 8,  evh: 7,  srv: 9,  color: 'var(--c-IV)' },
-    { label: 'Chord-tone targeting',                 hendrix: 9,  evh: 7,  srv: 9,  color: 'var(--c-IV)' },
-    { label: 'Rhythm / lead integration',            hendrix: 6,  evh: 5,  srv: 7,  color: 'var(--amber)' },
-    { label: 'Physical instrument / position',       hendrix: 5,  evh: 5,  srv: 6,  color: 'var(--c-I)' },
-    { label: 'Modal extension visibility',           hendrix: 3,  evh: 4,  srv: 5,  color: 'var(--c-I)' },
-    { label: 'Forward vision / voice leading',       hendrix: 9,  evh: 9,  srv: 9,  color: 'var(--c-IV)' },
-    { label: 'Zoom spectrum accuracy',               hendrix: 8,  evh: 7,  srv: 9,  color: 'var(--c-IV)' },
-    { label: 'Chromatic vocabulary support',          hendrix: 4,  evh: 3,  srv: 5,  color: 'var(--c-I)' },
-    { label: 'Protocol translator readiness',        hendrix: 2,  evh: 2,  srv: 2,  color: 'var(--c-I)' },
+
+  // ── Mission-level KPIs (top bar — health at a glance) ──
+  kpis: [
+    { label: 'Engine', value: 85, unit: '%', detail: '17/20 chord types · 3/5 pathways · 16 scales',
+      what: 'Harmonic vocabulary coverage — can the engine parse what the user plays?' },
+    { label: 'Navigation', value: 63, unit: '%', detail: 'Target notes ✓ · Forward vision ✓ · Approach ◐ · Arpeggios ✗ · Routes ✗',
+      what: 'Can the user see what to play + where + how to get there?' },
+    { label: 'Technique', value: 42, unit: '%', detail: 'Overlay ✓ · CAGED ✓ · Approach ◐ · Arpeggio paths ✗ · Triad chains ✗',
+      what: 'Can the user translate theory to fretboard execution?' },
+    { label: 'Pipeline', value: 100, unit: '%', detail: '/analyze-tab ✓ · /tone-match ✓ · /distill ✓ · untested on real content',
+      what: 'Can new content be systematically distilled into TONE?' },
+    { label: 'Gaps', value: 5, unit: '', detail: '2 bugs · 3 features queued',
+      what: 'Active control loops with unresolved gaps' },
+  ],
+
+  // ── Alignment Dimensions (full control loops, not just scores) ──
+  // Each dimension: target definition, current score with evidence, drivers, linked build items
+  dimensions: [
+    { label: 'Blues foundation respected',
+      target: 10, current: 8.7, scores: { hendrix: 9, evh: 8, srv: 9 },
+      targetDef: 'TONE treats pentatonic+blues as the operating system, not a starting point to leave behind',
+      drivers: ['Pentatonic always visible as default', 'Chord-tone targeting built on pentatonic skeleton', 'Blues scale b5 pathway added (3.8)'],
+      limiters: ['Major/minor penta switching over dominant chords not yet implemented'],
+      linkedLoops: ['penta-switch'],
+      projected: '+0.5 when penta-switch resolved',
+    },
+    { label: 'Pentatonic as skeleton',
+      target: 10, current: 8.0, scores: { hendrix: 8, evh: 7, srv: 9 },
+      targetDef: 'Every navigation feature frames pentatonic as the foundation that extensions build on',
+      drivers: ['Brewster overlay shows penta as rings (comfort zone)', 'Pentatonic view mode isolates the skeleton', 'Pathways frame expansions as "penta + N notes"'],
+      limiters: ['EVH scores lower — intervallic expansion beyond penta not yet visualized as paths'],
+      linkedLoops: ['arpeggio-view'],
+      projected: '+0.8 when arpeggio-view shows chord-tone paths within penta positions',
+    },
+    { label: 'Chord-tone targeting',
+      target: 10, current: 8.3, scores: { hendrix: 9, evh: 7, srv: 9 },
+      targetDef: 'TONE shows which notes ARE the chord at every position, at playing speed',
+      drivers: ['Play Mode target note logic correct', 'Overlay shows chord tones as solid dots', 'Forward vision shows next target'],
+      limiters: ['EVH scores lower — no sequential arpeggio paths through chord tones', 'Decoder fretboard lacks classification'],
+      linkedLoops: ['arpeggio-view', 'note-classify-decoder'],
+      projected: '+1.0 when arpeggio paths + decoder classification done',
+    },
+    { label: 'Rhythm / lead integration',
+      target: 8, current: 6.0, scores: { hendrix: 6, evh: 5, srv: 7 },
+      targetDef: 'TONE helps the user move between chord voicings and melodic phrases seamlessly',
+      drivers: ['Brewster overlay shows chord shapes in position', 'ACE zone model maps triad voicings'],
+      limiters: ['No triad chaining through progressions', 'No voicing-to-melody transition paths', 'This may be partially unsolvable through visualization — flagged by all agents'],
+      linkedLoops: ['triad-chaining'],
+      projected: '+1.5 when triad chaining implemented. Ceiling may be ~8 — dynamics/phrasing require the guitar in hand.',
+    },
+    { label: 'Physical instrument / position',
+      target: 9, current: 5.3, scores: { hendrix: 5, evh: 5, srv: 6 },
+      targetDef: 'TONE shows navigation in terms of fretboard geography — zones, positions, hand movement — not abstract theory',
+      drivers: ['CAGED zone overlay exists (non-diatonic chords)', 'Root dot squares provide spatial anchoring', 'Between-fret dots aid position awareness'],
+      limiters: ['CAGED zone not shown on diatonic chords (decided to add — trust Stevie)', 'No arpeggio paths showing hand movement through positions', 'No song route mapping showing position changes per section', 'Decoder fretboard is analysis-only, no position context'],
+      linkedLoops: ['arpeggio-view', 'song-route', 'note-classify-decoder'],
+      projected: '+1.5 from CAGED-on-diatonic + arpeggio paths. +2.5 if song routes added.',
+    },
+    { label: 'Modal extension visibility',
+      target: 8, current: 4.0, scores: { hendrix: 3, evh: 4, srv: 5 },
+      targetDef: 'Dorian, Mixolydian, and chromatic extensions are visible as departure options from the pentatonic default',
+      drivers: ['PENTA_PATHWAYS_EXT data exists for Dorian + Blues', 'Insight cards describe extensions in pentatonic view'],
+      limiters: ['Dorian 6th NOT visible as ghost in Play Mode', 'Chromatic approach notes filtered to diatonic only', 'Major penta tones over dominant chords not surfaced'],
+      linkedLoops: ['dorian-ghost', 'chromatic-approach', 'penta-switch'],
+      projected: '+2.0 from dorian ghost + chromatic approach. +3.0 if penta-switch added.',
+    },
+    { label: 'Forward vision / voice leading',
+      target: 10, current: 9.0, scores: { hendrix: 9, evh: 9, srv: 9 },
+      targetDef: 'TONE shows where the player is going NEXT — the upcoming chord\'s target and how to approach it',
+      drivers: ['Next target diamonds (Play Mode)', 'Approach note triangles (voice leading)', 'Nav prompt shows next note + role'],
+      limiters: ['Approach notes are diatonic-only — chromatic half-step excluded'],
+      linkedLoops: ['chromatic-approach'],
+      projected: '+0.5 when chromatic approach fixed. Near ceiling.',
+    },
+    { label: 'Zoom spectrum accuracy',
+      target: 10, current: 8.0, scores: { hendrix: 8, evh: 7, srv: 9 },
+      targetDef: 'TONE correctly identifies when to zoom in (non-diatonic = navigate carefully) vs zoom out (diatonic = pentatonic is safe)',
+      drivers: ['Zoom level assessment in Forward Map', 'CAGED overlay triggers on non-diatonic', 'Tendency labels guide zoom decisions'],
+      limiters: ['EVH wants more granularity in zoom levels', 'Binary zoom decided as correct for current phase'],
+      linkedLoops: [],
+      projected: 'Stable. Binary zoom is the resolved design decision.',
+    },
+    { label: 'Chromatic vocabulary support',
+      target: 8, current: 4.0, scores: { hendrix: 4, evh: 3, srv: 5 },
+      targetDef: 'Chromatic passing tones, approach notes, and non-diatonic connections are visible as navigation options',
+      drivers: ['7#9 chord type added (contains b3 + 3 tension)', 'Blues scale b5 pathway added'],
+      limiters: ['Approach notes diatonic-only — the primary gap', 'No chromatic enclosure visualization', 'EVH-specific chromatic passing patterns not surfaced'],
+      linkedLoops: ['chromatic-approach'],
+      projected: '+2.0 from chromatic approach fix. Further gains require Layer 10 (Protocol Translator).',
+    },
+    { label: 'Protocol translator readiness',
+      target: 4, current: 2.0, scores: { hendrix: 2, evh: 2, srv: 2 },
+      targetDef: 'TONE can identify which harmonic protocol a song uses and frame departures relative to the user\'s native protocol',
+      drivers: ['Chord function analysis identifies non-diatonic chords', 'Tendency labels provide directional context'],
+      limiters: ['No protocol identification (blues OS vs modal OS)', 'No user-protocol baseline defined', 'This is Layer 10+ scope — not expected to score high yet'],
+      linkedLoops: [],
+      projected: 'Target is 4 for now — acknowledging the gap exists. Scores will improve when Layer 10 work begins.',
+    },
   ],
 
   // ── Active Control Loops ──
@@ -6610,23 +6704,58 @@ function renderDashboard() {
       + resolved.map(renderLoop).join('');
   }
 
-  // ── Alignment scores ──
-  const scEl = document.getElementById('dash-scores');
-  if (scEl) {
-    scEl.innerHTML = AGENT_DASHBOARD.scores.map(s => {
-      const avg = ((s.hendrix + s.evh + s.srv) / 3).toFixed(1);
-      const pct = Math.round((avg / 10) * 100);
-      return `<div class="dash-score-row">
-        <span class="dash-score-label">${s.label}</span>
-        <span class="dash-score-bar">
-          <div class="dash-bar-track"><div class="dash-bar-fill" style="width:${pct}%;background:${s.color}"></div></div>
-        </span>
-        <span class="dash-score-val" style="color:${s.color}">${avg}</span>
-        <span style="font-family:var(--mono);font-size:0.58rem;color:var(--text-dim);width:90px;text-align:right">
-          <span class="dash-agent-tag dash-tag-hendrix">${s.hendrix}</span>
-          <span class="dash-agent-tag dash-tag-evh">${s.evh}</span>
-          <span class="dash-agent-tag dash-tag-srv">${s.srv}</span>
-        </span>
+  // ── KPI Bar ──
+  const kpEl = document.getElementById('dash-kpis');
+  if (kpEl) {
+    kpEl.innerHTML = AGENT_DASHBOARD.kpis.map(k => {
+      const isCount = !k.unit;
+      const valColor = isCount ? (k.value > 3 ? 'var(--c-I)' : k.value > 0 ? 'var(--amber)' : 'var(--c-IV)')
+                     : k.value >= 80 ? 'var(--c-IV)' : k.value >= 60 ? 'var(--amber)' : 'var(--c-I)';
+      return `<div style="flex:1;min-width:140px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:0.75rem 1rem;text-align:center">
+        <div style="font-family:var(--mono);font-size:1.6rem;font-weight:700;color:${valColor}">${k.value}${k.unit}</div>
+        <div style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);margin:0.25rem 0">${k.label}</div>
+        <div style="font-family:var(--mono);font-size:0.58rem;color:var(--text-dim);line-height:1.4">${k.detail}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Alignment Dimensions (full control loops) ──
+  const dmEl = document.getElementById('dash-dimensions');
+  if (dmEl) {
+    dmEl.innerHTML = AGENT_DASHBOARD.dimensions.map(d => {
+      const avg = ((d.scores.hendrix + d.scores.evh + d.scores.srv) / 3).toFixed(1);
+      const pct = Math.round((avg / d.target) * 100);
+      const gapVal = (d.target - parseFloat(avg)).toFixed(1);
+      const barColor = pct >= 80 ? 'var(--c-IV)' : pct >= 60 ? 'var(--amber)' : 'var(--c-I)';
+
+      const driversHtml = d.drivers.map(dr => `<span style="color:var(--c-IV)">✓</span> ${dr}`).join('<br>');
+      const limitersHtml = d.limiters.map(lm => `<span style="color:var(--c-I)">✗</span> ${lm}`).join('<br>');
+      const loopLinks = d.linkedLoops.length
+        ? d.linkedLoops.map(id => `<span style="color:var(--amber);font-weight:600">→ ${id}</span>`).join(' · ')
+        : '<span style="color:var(--text-dim)">none — stable</span>';
+
+      return `<div style="padding:0.6rem 0;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:0.7rem;line-height:1.6">
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.3rem">
+          <span style="flex:1;font-weight:700;color:var(--text-hi)">${d.label}</span>
+          <span style="color:${barColor};font-weight:700;width:45px;text-align:right">${avg}</span>
+          <span style="color:var(--text-dim);width:20px;text-align:center">/</span>
+          <span style="color:var(--text-dim);width:25px">${d.target}</span>
+          <span style="width:120px">
+            <div style="height:6px;background:var(--bg3);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px"></div>
+            </div>
+          </span>
+          <span style="color:var(--c-I);font-size:0.6rem;width:50px;text-align:right">gap ${gapVal}</span>
+        </div>
+        <div style="font-size:0.6rem;color:var(--text-dim);margin-bottom:0.2rem;font-style:italic">${d.targetDef}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem 1rem;margin:0.3rem 0;font-size:0.62rem">
+          <div>${driversHtml}</div>
+          <div>${limitersHtml}</div>
+        </div>
+        <div style="font-size:0.6rem;margin-top:0.25rem">
+          <span style="color:var(--text-dim)">moves when:</span> ${loopLinks}
+          <span style="color:var(--text-dim);margin-left:0.8rem">${d.projected}</span>
+        </div>
       </div>`;
     }).join('');
   }

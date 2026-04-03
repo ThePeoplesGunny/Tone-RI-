@@ -324,7 +324,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 
 ---
 
-## Current Feature State — Beta 3.6 (current baseline)
+## Current Feature State — Beta 3.7 (current baseline)
 
 ### How Features Map to the Structural Skills + New Layers
 
@@ -333,7 +333,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 | Number System | Decoder (analysis, function, tendency, forward map) | **Strong** — most mature layer |
 | Landmark Pentatonic | Play Mode (target note, forward vision, approach notes) + Forward Map (landmark positions) | **Strong** |
 | CAGED | Chords tab: Voicings (CAGED zone voicing map) + Triads (ACE zone model) + Forward Map (nearest shape hint) + Play Mode CAGED overlay | **Strong** |
-| Technique Bridge | Scales tab: Brewster overlay + Play Mode: CAGED overlay, forward vision, approach notes, root dot shapes | **Partial** — arpeggio view/triad chaining remaining |
+| Technique Bridge | Scales tab: Brewster overlay + universal interval colors + Play Mode: CAGED overlay, forward vision, approach notes, root dot shapes | **Partial** — arpeggio view/triad chaining remaining |
 | Protocol Translator | *Not yet built* — Decoder identifies non-diatonic chords, but doesn't frame departures relative to user's SRV protocol | **Gap** |
 | Presentation Layer | *Not yet built* — gear inventory exists (gear.txt), no in-app features | **Gap** |
 
@@ -394,17 +394,19 @@ These sources inform TONE's approach — they are not content to reproduce, but 
   - Melody zone (high E): chord tones, subtle blue
 - Zone legend below fretboard
 
-### Scales Tab (updated in 3.5 — Brewster overlay)
+### Scales Tab (updated in 3.7 — universal interval color system)
 - 16 scale types, full fretboard SVG
 - Interval/note/degree label modes, theme-aware colors
 - **4-mode view toggle**: Scale (standard) / Overlay / Chord Tones / Pentatonic
-- **Overlay mode (Brewster principle)**: solid filled dots for chord tones (root=red, 3rd=amber, 5th=green), blue rings for pentatonic non-chord tones, gray rings for passing scale tones. CAGED zone dashed outline around nearest shape zone.
+- **Universal interval color system (3.7)**: all 4 view modes use `iv.color` (12-interval color palette). Color always means interval identity. Navigational role (chord tone, pentatonic, passing) conveyed through rendering: solid fill, ring, dim ring. No more hardcoded CAGED_COLORS.
+- **Overlay mode (Brewster principle)**: solid filled dots for chord tones, rings for pentatonic non-chord tones, dim rings for passing scale tones. CAGED zone dashed outline around nearest shape zone.
 - **Chord Tones mode**: only chord tones visible on fretboard — landing pads
 - **Pentatonic mode**: only pentatonic tones visible — comfort zone
 - **Chord context**: reads `_activeContext.activeChordRoot` + `activeChordQuality` from Decoder prog-card click; falls back to I chord of current scale root/mode when no Decoder context
 - **Overlay legend**: swaps per view mode, replaces standard interval color legend in non-standard modes
+- **Layout stability (3.7)**: chord context and overlay legend always occupy space — no vertical shift between view modes
 - **Dynamic insight cards** via `getScaleInsights()`: 2-4 cards below info bar explaining current view's principle; pentatonic +2 tendency descriptions from `PENTA_PATHWAYS` folded in
-- **Engine functions retained**: `findScaleNeighbors()`, `findPentaPathway()`, `PENTA_PATHWAYS`, `NEIGHBOR_TENDENCIES` — no longer rendered as cards on Scales tab but available for future use
+- **Dead code removed (3.7)**: `NEIGHBOR_TENDENCIES` constant, `findScaleNeighbors()` function, `scale-neighbors` div removed. Redundant Color Key toggle removed (info bar already shows interval context).
 - **GAP (closed):** Neighbor network fretboard visualization — superseded by overlay system which shows note classification directly on the fretboard
 
 ### Theory Tab (updated in 3.3 — Layer 8 activation)
@@ -415,6 +417,15 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 - **Nashville Number System**: 13 progressions, transposed to active key
 - **Modes — Parallel View**: ordered bright→dark
 - **Diatonic Pattern**: mode-aware (major/minor), chord names from active key
+
+### Dashboard Tab (new in 3.7)
+- Agent-based evaluation framework: Hendrix, EVH, SRV perspectives
+- Alignment scores: each agent rates TONE against their player's principles
+- Weighted priority actions (W1-W3): consolidated from all three agent evaluations
+- Consensus areas: where all agents agree TONE is strong
+- Conflict areas: where agents disagree on priorities or approach
+- Future layer recommendations: agent-identified gaps for Layers 10-11
+- Agent definitions stored in `.claude/agents/` (hendrix.md, evh.md, srv.md)
 
 ### Library Tab (unchanged)
 - Form: title, artist, key, mode, chords, genre, year, tempo, capo, tags, notes
@@ -447,7 +458,7 @@ LAYER 6 — Physical validation     Pillar 3 — COMPLETE (Beta 2.9)
 LAYER 7 — Cross-tab continuity    COMPLETE (Beta 3.0-3.2)
 LAYER 8 — Theory activation       COMPLETE (Beta 3.3-3.4)
 ─────────────────────────────────────────────────────────────────────
-LAYER 9 — Technique bridge        IN PROGRESS (Beta 3.6) — overlay + Play Mode nav done
+LAYER 9 — Technique bridge        IN PROGRESS (Beta 3.7) — overlay + Play Mode nav + interval color unification done
 LAYER 10 — Protocol translator    Harmonic protocol identification, SRV-delta framing
 LAYER 11 — Presentation layer     Gear/signal chain context (scope TBD)
 ```

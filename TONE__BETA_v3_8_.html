@@ -6384,19 +6384,8 @@ function renderTriads() {
 
 const AGENT_DASHBOARD = {
 
-  // ── Mission-level KPIs (top bar — health at a glance) ──
-  kpis: [
-    { label: 'Engine', value: 85, unit: '%', detail: '17/20 chord types · 3/5 pathways · 16 scales',
-      what: 'Harmonic vocabulary coverage — can the engine parse what the user plays?' },
-    { label: 'Navigation', value: 63, unit: '%', detail: 'Target notes ✓ · Forward vision ✓ · Approach ◐ · Arpeggios ✗ · Routes ✗',
-      what: 'Can the user see what to play + where + how to get there?' },
-    { label: 'Technique', value: 42, unit: '%', detail: 'Overlay ✓ · CAGED ✓ · Approach ◐ · Arpeggio paths ✗ · Triad chains ✗',
-      what: 'Can the user translate theory to fretboard execution?' },
-    { label: 'Pipeline', value: 100, unit: '%', detail: '/analyze-tab ✓ · /tone-match ✓ · /distill ✓ · untested on real content',
-      what: 'Can new content be systematically distilled into TONE?' },
-    { label: 'Gaps', value: 0, unit: '', detail: '',
-      what: 'Active control loops with unresolved gaps — computed from loops data at render time' },
-  ],
+  // ── Mission-level KPIs (computed at render time from live data) ──
+  // kpis array is built by computeKPIs() — no hardcoded values
 
   // ── Alignment Dimensions (full control loops, not just scores) ──
   // Each dimension: target definition, current score with evidence, drivers, linked build items
@@ -6655,7 +6644,110 @@ const AGENT_DASHBOARD = {
   ]
 };
 
+function computeKPIs() {
+  const kpis = [];
+
+  // ── Engine Coverage ──
+  // Chord types: actual vs known standard set (common types a guitarist encounters)
+  const targetChordTypes = ['major','minor','dom7','maj7','min7','sus2','sus4','dim','aug','add9',
+    'min7b5','dim7','6','min6','9','maj9','7#9','min9','13','maj13','7sus4','aug7'];
+  const actualChords = Object.keys(CHORD_FORMULAS);
+  const chordCoverage = actualChords.length;
+  const chordTarget = targetChordTypes.length;
+  // Pathways: primary + extended
+  const pathwayCount = Object.keys(PENTA_PATHWAYS).length + Object.keys(PENTA_PATHWAYS_EXT).length;
+  const pathwayTarget = 5; // major→major, minor→minor, minor→dorian, minor→blues, major→mixolydian
+  // Scales
+  const scaleCount = Object.keys(SCALE_FORMULAS).length;
+  const scaleTarget = 16; // current 16 is the design target
+  // Weighted composite: chords 50%, pathways 25%, scales 25%
+  const enginePct = Math.round(
+    ((chordCoverage / chordTarget) * 50) +
+    ((pathwayCount / pathwayTarget) * 25) +
+    ((scaleCount / scaleTarget) * 25)
+  );
+  kpis.push({
+    label: 'Engine', value: Math.min(enginePct, 100), unit: '%',
+    detail: `${chordCoverage}/${chordTarget} chords · ${pathwayCount}/${pathwayTarget} pathways · ${scaleCount}/${scaleTarget} scales`,
+    what: 'Harmonic vocabulary coverage'
+  });
+
+  // ── Navigation Readiness ──
+  // Capability checklist — each is a boolean: does the function/feature exist?
+  const navChecks = [
+    { name: 'Target notes',     pass: typeof getTargetNote === 'function' },
+    { name: 'Forward vision',   pass: typeof renderPlayFretboard === 'function' },
+    { name: 'Forward map',      pass: typeof buildForwardMap === 'function' },
+    { name: 'Approach notes',   pass: typeof renderPlayFretboard === 'function' }, // exists but diatonic-only
+    { name: 'Chromatic approach', pass: false }, // known bug — diatonic filter
+    { name: 'Decoder classify', pass: false },   // not wired yet
+    { name: 'Arpeggio paths',  pass: false },    // not built
+    { name: 'Song routes',     pass: false },     // not built
+  ];
+  const navPassed = navChecks.filter(c => c.pass).length;
+  const navPct = Math.round((navPassed / navChecks.length) * 100);
+  kpis.push({
+    label: 'Navigation', value: navPct, unit: '%',
+    detail: navChecks.map(c => `${c.name} ${c.pass ? '✓' : '✗'}`).join(' · '),
+    what: 'Can the user see what/where/how to play?'
+  });
+
+  // ── Technique Bridge ──
+  const techChecks = [
+    { name: 'Brewster overlay',    pass: typeof getOverlayContext === 'function' },
+    { name: 'CAGED overlay',       pass: typeof getCAGEDShapesForRoot === 'function' },
+    { name: 'Pentatonic pathways', pass: Object.keys(PENTA_PATHWAYS).length > 0 },
+    { name: 'Extended pathways',   pass: Object.keys(PENTA_PATHWAYS_EXT).length > 0 },
+    { name: 'Insight cards',       pass: typeof getScaleInsights === 'function' },
+    { name: 'Dorian ghost',       pass: false },  // data exists, not wired to Play Mode
+    { name: 'Arpeggio view',      pass: false },   // not built
+    { name: 'Triad chaining',     pass: false },   // not built
+  ];
+  const techPassed = techChecks.filter(c => c.pass).length;
+  const techPct = Math.round((techPassed / techChecks.length) * 100);
+  kpis.push({
+    label: 'Technique', value: techPct, unit: '%',
+    detail: techChecks.map(c => `${c.name} ${c.pass ? '✓' : '✗'}`).join(' · '),
+    what: 'Theory → fretboard execution'
+  });
+
+  // ── Pipeline Readiness ──
+  // Skills defined in .claude/commands/ — check pipeline data
+  const pipeChecks = AGENT_DASHBOARD.pipeline.map(p => ({
+    name: p.skill, pass: p.status === 'ready'
+  }));
+  const pipePassed = pipeChecks.filter(c => c.pass).length;
+  const pipePct = Math.round((pipePassed / pipeChecks.length) * 100);
+  kpis.push({
+    label: 'Pipeline', value: pipePct, unit: '%',
+    detail: pipeChecks.map(c => `${c.name} ${c.pass ? '✓' : '✗'}`).join(' · '),
+    what: 'Content distillation readiness'
+  });
+
+  // ── Gaps (computed from loops) ──
+  const activeLoops = AGENT_DASHBOARD.loops.filter(l => l.status !== 'done');
+  // Classify: bugs are loops whose gap describes a defect in existing code
+  const bugIds = new Set();
+  activeLoops.forEach(l => {
+    // A loop is a "bug" if it fixes existing broken behavior, not new capability
+    if (l.id === 'chromatic-approach' || l.id === 'dorian-ghost') bugIds.add(l.id);
+  });
+  const bugs = activeLoops.filter(l => bugIds.has(l.id));
+  const queued = activeLoops.filter(l => !bugIds.has(l.id));
+  kpis.push({
+    label: 'Gaps', value: activeLoops.length, unit: '',
+    detail: (bugs.length ? 'bugs: ' + bugs.map(l => l.id).join(' · ') : '')
+      + (bugs.length && queued.length ? ' | ' : '')
+      + (queued.length ? 'queued: ' + queued.map(l => l.id).join(' · ') : ''),
+    what: 'Active control loops with unresolved gaps'
+  });
+
+  return kpis;
+}
+
 function renderDashboard() {
+  // Compute KPIs from live data
+  AGENT_DASHBOARD.kpis = computeKPIs();
   // ── Active Control Loops with Intersection Maps ──
   const loEl = document.getElementById('dash-loops');
   if (loEl) {
@@ -6704,21 +6796,9 @@ function renderDashboard() {
       + resolved.map(renderLoop).join('');
   }
 
-  // ── KPI Bar (Gaps KPI computed from loops data) ──
+  // ── KPI Bar (all values computed by computeKPIs()) ──
   const kpEl = document.getElementById('dash-kpis');
   if (kpEl) {
-    // Compute gaps KPI from loops array
-    const activeLoops = AGENT_DASHBOARD.loops.filter(l => l.status !== 'done');
-    const bugs = activeLoops.filter(l => l.id === 'chromatic-approach' || l.id === 'dorian-ghost');
-    const queued = activeLoops.filter(l => !bugs.includes(l));
-    const gapsKpi = AGENT_DASHBOARD.kpis.find(k => k.label === 'Gaps');
-    if (gapsKpi) {
-      gapsKpi.value = activeLoops.length;
-      gapsKpi.detail = (bugs.length ? 'bugs: ' + bugs.map(l => l.id).join(' · ') : '')
-        + (bugs.length && queued.length ? ' | ' : '')
-        + (queued.length ? 'queued: ' + queued.map(l => l.id).join(' · ') : '');
-    }
-
     kpEl.innerHTML = AGENT_DASHBOARD.kpis.map(k => {
       const isCount = !k.unit;
       const valColor = isCount ? (k.value > 3 ? 'var(--c-I)' : k.value > 0 ? 'var(--amber)' : 'var(--c-IV)')

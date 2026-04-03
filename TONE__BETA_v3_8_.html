@@ -2313,6 +2313,7 @@
           <button class="heat-mode-btn active" data-mode="both" onclick="switchHeatMode('both')">both</button>
           <button class="heat-mode-btn" data-mode="interval" onclick="switchHeatMode('interval')">interval</button>
           <button class="heat-mode-btn" data-mode="frequency" onclick="switchHeatMode('frequency')">frequency</button>
+          <button class="heat-mode-btn" data-mode="classify" onclick="switchHeatMode('classify')" id="heat-classify-btn" title="Select a chord in the progression to enable">classify</button>
         </span>
       </div>
       <div id="decoder-heatmap"><div class="fretboard-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 772 210" preserveAspectRatio="xMidYMid meet" style="font-family:&#39;Space Mono&#39;,monospace; display:block"><circle cx="191" cy="95" r="4" fill="#2a2a2f"></circle><circle cx="307" cy="95" r="4" fill="#2a2a2f"></circle><circle cx="423" cy="95" r="4" fill="#2a2a2f"></circle><circle cx="539" cy="95" r="4" fill="#2a2a2f"></circle><circle cx="713" cy="74" r="4" fill="#2a2a2f"></circle><circle cx="713" cy="116" r="4" fill="#2a2a2f"></circle><text x="46" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">0</text><text x="104" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">1</text><text x="162" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">2</text><text x="220" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">3</text><text x="278" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">4</text><text x="336" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">5</text><text x="394" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">6</text><text x="452" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">7</text><text x="510" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">8</text><text x="568" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">9</text><text x="626" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">10</text><text x="684" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">11</text><text x="742" y="204" font-size="11" fill="#3a3a4a" text-anchor="middle">12</text><rect x="43" y="16" width="5" height="158" fill="#c8c8cc" rx="1"></rect><line x1="46" y1="20" x2="742" y2="20" stroke="#2a2a2f" stroke-width="2.75"></line><text x="32" y="24" font-size="11" fill="#6a6a78" text-anchor="middle">E</text><line x1="46" y1="50" x2="742" y2="50" stroke="#2a2a2f" stroke-width="2.4"></line><text x="32" y="54" font-size="11" fill="#6a6a78" text-anchor="middle">A</text><line x1="46" y1="80" x2="742" y2="80" stroke="#2a2a2f" stroke-width="2.05"></line><text x="32" y="84" font-size="11" fill="#6a6a78" text-anchor="middle">D</text><line x1="46" y1="110" x2="742" y2="110" stroke="#2a2a2f" stroke-width="1.7"></line><text x="32" y="114" font-size="11" fill="#6a6a78" text-anchor="middle">G</text><line x1="46" y1="140" x2="742" y2="140" stroke="#2a2a2f" stroke-width="1.35"></line><text x="32" y="144" font-size="11" fill="#6a6a78" text-anchor="middle">B</text><line x1="46" y1="170" x2="742" y2="170" stroke="#2a2a2f" stroke-width="1"></line><text x="32" y="174" font-size="11" fill="#6a6a78" text-anchor="middle">E</text><line x1="46" y1="16" x2="46" y2="174" stroke="#c8c8cc" stroke-width="1.5"></line><line x1="104" y1="16" x2="104" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="162" y1="16" x2="162" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="220" y1="16" x2="220" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="278" y1="16" x2="278" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="336" y1="16" x2="336" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="394" y1="16" x2="394" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="452" y1="16" x2="452" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="510" y1="16" x2="510" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="568" y1="16" x2="568" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="626" y1="16" x2="626" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="684" y1="16" x2="684" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="742" y1="16" x2="742" y2="174" stroke="#1c1c1f" stroke-width="1.5"></line><circle cx="46" cy="20" r="12" fill="var(--c-I)" opacity="1.00"></circle><text x="46" y="24" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="1.00">I</text><circle cx="162" cy="20" r="12" fill="var(--c-II)" opacity="0.71"></circle><text x="162" y="24" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">II</text><circle cx="278" cy="20" r="12" fill="var(--c-III)" opacity="0.71"></circle><text x="278" y="24" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">III</text><circle cx="336" cy="20" r="12" fill="var(--c-IV)" opacity="0.71"></circle><text x="336" y="24" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">IV</text><circle cx="452" cy="20" r="12" fill="var(--c-V)" opacity="0.71"></circle><text x="452" y="24" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">V</text><circle cx="568" cy="20" r="12" fill="var(--c-VI)" opacity="0.71"></circle><text x="568" y="24" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">VI</text><circle cx="626" cy="20" r="12" fill="var(--c-b7)" opacity="0.41"></circle><text x="626" y="24" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">♭VII</text><circle cx="684" cy="20" r="12" fill="var(--c-VII)" opacity="0.41"></circle><text x="684" y="24" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">VII</text><circle cx="742" cy="20" r="12" fill="var(--c-I)" opacity="1.00"></circle><text x="742" y="24" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="1.00">I</text><circle cx="46" cy="50" r="12" fill="var(--c-IV)" opacity="0.71"></circle><text x="46" y="54" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">IV</text><circle cx="162" cy="50" r="12" fill="var(--c-V)" opacity="0.71"></circle><text x="162" y="54" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">V</text><circle cx="278" cy="50" r="12" fill="var(--c-VI)" opacity="0.71"></circle><text x="278" y="54" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">VI</text><circle cx="336" cy="50" r="12" fill="var(--c-b7)" opacity="0.41"></circle><text x="336" y="54" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">♭VII</text><circle cx="394" cy="50" r="12" fill="var(--c-VII)" opacity="0.41"></circle><text x="394" y="54" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">VII</text><circle cx="452" cy="50" r="12" fill="var(--c-I)" opacity="1.00"></circle><text x="452" y="54" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="1.00">I</text><circle cx="568" cy="50" r="12" fill="var(--c-II)" opacity="0.71"></circle><text x="568" y="54" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">II</text><circle cx="684" cy="50" r="12" fill="var(--c-III)" opacity="0.71"></circle><text x="684" y="54" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">III</text><circle cx="742" cy="50" r="12" fill="var(--c-IV)" opacity="0.71"></circle><text x="742" y="54" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">IV</text><circle cx="46" cy="80" r="12" fill="var(--c-b7)" opacity="0.41"></circle><text x="46" y="84" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">♭VII</text><circle cx="104" cy="80" r="12" fill="var(--c-VII)" opacity="0.41"></circle><text x="104" y="84" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">VII</text><circle cx="162" cy="80" r="12" fill="var(--c-I)" opacity="1.00"></circle><text x="162" y="84" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="1.00">I</text><circle cx="278" cy="80" r="12" fill="var(--c-II)" opacity="0.71"></circle><text x="278" y="84" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">II</text><circle cx="394" cy="80" r="12" fill="var(--c-III)" opacity="0.71"></circle><text x="394" y="84" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">III</text><circle cx="452" cy="80" r="12" fill="var(--c-IV)" opacity="0.71"></circle><text x="452" y="84" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">IV</text><circle cx="568" cy="80" r="12" fill="var(--c-V)" opacity="0.71"></circle><text x="568" y="84" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">V</text><circle cx="684" cy="80" r="12" fill="var(--c-VI)" opacity="0.71"></circle><text x="684" y="84" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">VI</text><circle cx="742" cy="80" r="12" fill="var(--c-b7)" opacity="0.41"></circle><text x="742" y="84" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">♭VII</text><circle cx="104" cy="110" r="12" fill="var(--c-III)" opacity="0.71"></circle><text x="104" y="114" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">III</text><circle cx="162" cy="110" r="12" fill="var(--c-IV)" opacity="0.71"></circle><text x="162" y="114" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">IV</text><circle cx="278" cy="110" r="12" fill="var(--c-V)" opacity="0.71"></circle><text x="278" y="114" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">V</text><circle cx="394" cy="110" r="12" fill="var(--c-VI)" opacity="0.71"></circle><text x="394" y="114" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">VI</text><circle cx="452" cy="110" r="12" fill="var(--c-b7)" opacity="0.41"></circle><text x="452" y="114" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">♭VII</text><circle cx="510" cy="110" r="12" fill="var(--c-VII)" opacity="0.41"></circle><text x="510" y="114" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">VII</text><circle cx="568" cy="110" r="12" fill="var(--c-I)" opacity="1.00"></circle><text x="568" y="114" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="1.00">I</text><circle cx="684" cy="110" r="12" fill="var(--c-II)" opacity="0.71"></circle><text x="684" y="114" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">II</text><circle cx="46" cy="140" r="12" fill="var(--c-V)" opacity="0.71"></circle><text x="46" y="144" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">V</text><circle cx="162" cy="140" r="12" fill="var(--c-VI)" opacity="0.71"></circle><text x="162" y="144" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">VI</text><circle cx="220" cy="140" r="12" fill="var(--c-b7)" opacity="0.41"></circle><text x="220" y="144" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">♭VII</text><circle cx="278" cy="140" r="12" fill="var(--c-VII)" opacity="0.41"></circle><text x="278" y="144" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">VII</text><circle cx="336" cy="140" r="12" fill="var(--c-I)" opacity="1.00"></circle><text x="336" y="144" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="1.00">I</text><circle cx="452" cy="140" r="12" fill="var(--c-II)" opacity="0.71"></circle><text x="452" y="144" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">II</text><circle cx="568" cy="140" r="12" fill="var(--c-III)" opacity="0.71"></circle><text x="568" y="144" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">III</text><circle cx="626" cy="140" r="12" fill="var(--c-IV)" opacity="0.71"></circle><text x="626" y="144" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">IV</text><circle cx="742" cy="140" r="12" fill="var(--c-V)" opacity="0.71"></circle><text x="742" y="144" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">V</text><circle cx="46" cy="170" r="12" fill="var(--c-I)" opacity="1.00"></circle><text x="46" y="174" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="1.00">I</text><circle cx="162" cy="170" r="12" fill="var(--c-II)" opacity="0.71"></circle><text x="162" y="174" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">II</text><circle cx="278" cy="170" r="12" fill="var(--c-III)" opacity="0.71"></circle><text x="278" y="174" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">III</text><circle cx="336" cy="170" r="12" fill="var(--c-IV)" opacity="0.71"></circle><text x="336" y="174" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">IV</text><circle cx="452" cy="170" r="12" fill="var(--c-V)" opacity="0.71"></circle><text x="452" y="174" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">V</text><circle cx="568" cy="170" r="12" fill="var(--c-VI)" opacity="0.71"></circle><text x="568" y="174" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.71">VI</text><circle cx="626" cy="170" r="12" fill="var(--c-b7)" opacity="0.41"></circle><text x="626" y="174" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">♭VII</text><circle cx="684" cy="170" r="12" fill="var(--c-VII)" opacity="0.41"></circle><text x="684" y="174" font-size="9" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="0.41">VII</text><circle cx="742" cy="170" r="12" fill="var(--c-I)" opacity="1.00"></circle><text x="742" y="174" font-size="11" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="1.00">I</text></svg></div></div>
@@ -3803,8 +3804,7 @@ function getOverlayContext(scaleRoot, scaleType) {
   if (_activeContext.activeChordRoot && _activeContext.activeChordQuality) {
     chordRoot = _activeContext.activeChordRoot;
     chordQualityKey = _activeContext.activeChordQuality;
-    const suffMap = {major:'',minor:'m',dom7:'7',maj7:'maj7',min7:'m7',sus2:'sus2',sus4:'sus4',dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9'};
-    chordSource = chordRoot + (suffMap[chordQualityKey] || chordQualityKey) + ' (from Decoder)';
+    chordSource = chordRoot + (SUFFIX_DISPLAY[chordQualityKey] || chordQualityKey) + ' (from Decoder)';
   } else {
     // Infer quality from scale mode
     const minorScales = ['natural_minor','harmonic_minor','melodic_minor','pentatonic_minor','blues','dorian','phrygian','locrian'];
@@ -4716,6 +4716,112 @@ function heatMapSVG(heatData, keyRoot, tuningNotes, numFrets, mode) {
   return svg;
 }
 
+// ── Decoder Classify Mode (note classification on Decoder fretboard) ──
+// Reuses overlay context logic from Scales tab — same visual vocabulary:
+// solid filled = chord tone, ring = pentatonic non-chord, dim ring = passing scale tone
+function renderDecoderClassify(keyRoot, keyMode, tuningNotes, numFrets) {
+  if (!_activeContext.activeChordRoot || !_activeContext.activeChordQuality) return null;
+
+  const chordRoot = _activeContext.activeChordRoot;
+  const chordQualityKey = _activeContext.activeChordQuality;
+  const chordFormula = CHORD_FORMULAS[chordQualityKey];
+  if (!chordFormula) return null;
+
+  // Build classification sets
+  const scaleKey = keyMode === 'minor' ? 'natural_minor' : 'major';
+  const scaleNotes = new Set(SCALE_FORMULAS[scaleKey].intervals.map(i => noteAt(keyRoot, i)));
+  const chordTones = new Set(chordFormula.intervals.map(i => noteAt(chordRoot, i % 12)));
+  const minorScales = ['natural_minor','harmonic_minor','melodic_minor','pentatonic_minor','blues','dorian','phrygian','locrian'];
+  const pentaKey = minorScales.includes(scaleKey) ? 'pentatonic_minor' : 'pentatonic_major';
+  const pentaNotes = new Set(SCALE_FORMULAS[pentaKey].intervals.map(i => noteAt(keyRoot, i)));
+
+  const numStrings = tuningNotes.length;
+  const fretSpacing = 58, stringSpacing = 30;
+  const left = 46, top = 20, dotR = 12;
+  const W = left + numFrets * fretSpacing + 30;
+  const H = top + (numStrings - 1) * stringSpacing + 40;
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace; display:block">`;
+
+  // Fret markers
+  const markers = [3,5,7,9,12,15,17,19];
+  const doubleMarkers = [12,24];
+  for (let f = 0; f <= numFrets; f++) {
+    if (markers.includes(f)) {
+      const x = left + f * fretSpacing - fretSpacing / 2;
+      const yMid = top + (numStrings - 1) * stringSpacing / 2;
+      if (doubleMarkers.includes(f)) {
+        svg += `<circle cx="${x}" cy="${yMid - stringSpacing*0.7}" r="4" fill="#2a2a2f"/>`;
+        svg += `<circle cx="${x}" cy="${yMid + stringSpacing*0.7}" r="4" fill="#2a2a2f"/>`;
+      } else {
+        svg += `<circle cx="${x}" cy="${yMid}" r="4" fill="#2a2a2f"/>`;
+      }
+    }
+  }
+
+  // Fret numbers
+  for (let f = 0; f <= numFrets; f++) {
+    svg += `<text x="${left+f*fretSpacing}" y="${H-6}" font-size="11" fill="#3a3a4a" text-anchor="middle">${f}</text>`;
+  }
+
+  // Nut
+  svg += `<rect x="${left-3}" y="${top-4}" width="5" height="${(numStrings-1)*stringSpacing+8}" fill="#c8c8cc" rx="1"/>`;
+
+  // Strings — low E at bottom
+  for (let s = 0; s < numStrings; s++) {
+    const y = top + (numStrings - 1 - s) * stringSpacing;
+    const thickness = 1 + (numStrings - 1 - s) * 0.35;
+    svg += `<line x1="${left}" y1="${y}" x2="${left+numFrets*fretSpacing}" y2="${y}" stroke="#2a2a2f" stroke-width="${thickness}"/>`;
+    svg += `<text x="${left-14}" y="${y+4}" font-size="11" fill="#6a6a78" text-anchor="middle">${tuningNotes[s]}</text>`;
+  }
+
+  // Fret lines
+  for (let f = 0; f <= numFrets; f++) {
+    const x = left + f * fretSpacing;
+    svg += `<line x1="${x}" y1="${top-4}" x2="${x}" y2="${top+(numStrings-1)*stringSpacing+4}" stroke="${f===0?'#c8c8cc':'#1c1c1f'}" stroke-width="1.5"/>`;
+  }
+
+  // Classified dots
+  for (let s = 0; s < numStrings; s++) {
+    for (let f = 0; f <= numFrets; f++) {
+      const note = noteFromStringFret(tuningNotes[s], f);
+      if (!scaleNotes.has(note) && !chordTones.has(note)) continue;
+
+      const x = left + f * fretSpacing;
+      const y = top + (numStrings - 1 - s) * stringSpacing;
+      const semi = (noteIndex(note) - noteIndex(keyRoot) + 12) % 12;
+      const iv = intervalInfo(semi);
+      const isRoot = note === chordRoot;
+      const isChordTone = chordTones.has(note);
+      const isPenta = pentaNotes.has(note);
+      const label = iv.symbol;
+      const fs = label.length > 2 ? 9 : 11;
+
+      if (isChordTone) {
+        // Solid filled — chord tone (landing pad)
+        if (isRoot) {
+          svg += `<rect x="${x-10}" y="${y-10}" width="20" height="20" rx="5" fill="${iv.color}" opacity="0.9"/>`;
+          svg += `<text x="${x}" y="${y+4}" font-size="${fs}" fill="#0e0e0f" text-anchor="middle" font-weight="700">${label}</text>`;
+        } else {
+          svg += `<circle cx="${x}" cy="${y}" r="${dotR}" fill="${iv.color}" opacity="0.9"/>`;
+          svg += `<text x="${x}" y="${y+4}" font-size="${fs}" fill="#0e0e0f" text-anchor="middle" font-weight="700">${label}</text>`;
+        }
+      } else if (isPenta) {
+        // Ring — pentatonic non-chord tone (comfort zone)
+        svg += `<circle cx="${x}" cy="${y}" r="${dotR-1}" fill="none" stroke="${iv.color}" stroke-width="2" opacity="0.6"/>`;
+        svg += `<text x="${x}" y="${y+4}" font-size="${fs}" fill="${iv.color}" text-anchor="middle" font-weight="600" opacity="0.6">${label}</text>`;
+      } else if (scaleNotes.has(note)) {
+        // Dim ring — passing scale tone
+        svg += `<circle cx="${x}" cy="${y}" r="${dotR-2}" fill="none" stroke="${iv.color}" stroke-width="1.5" opacity="0.25"/>`;
+        svg += `<text x="${x}" y="${y+4}" font-size="${fs-1}" fill="${iv.color}" text-anchor="middle" font-weight="400" opacity="0.25">${label}</text>`;
+      }
+    }
+  }
+
+  svg += '</svg>';
+  return svg;
+}
+
 // ── Heat mode state ──────────────────────────────────
 let currentHeatMode = 'both';
 function switchHeatMode(mode) {
@@ -5058,11 +5164,31 @@ function renderDecoder() {
   show('decoder-fwd-label');
   document.getElementById('decoder-forward-map').innerHTML = buildForwardMap(chords, keyRoot, keyMode);
 
-  // ── Heat map ──
+  // ── Heat map / Classify mode ──
   const heatData = buildHeatMap(chords, keyRoot);
   show('decoder-heatmap-label');
-  document.getElementById('decoder-heatmap').innerHTML =
-    `<div class="fretboard-wrap">${heatMapSVG(heatData, keyRoot, tuningNotes, numFrets, currentHeatMode)}</div>`;
+
+  // Enable/disable classify button based on active chord selection
+  const classifyBtn = document.getElementById('heat-classify-btn');
+  if (classifyBtn) {
+    const hasChord = _activeContext.activeChordRoot && _activeContext.activeChordQuality;
+    classifyBtn.disabled = !hasChord;
+    classifyBtn.style.opacity = hasChord ? '1' : '0.3';
+  }
+
+  if (currentHeatMode === 'classify') {
+    const classifySvg = renderDecoderClassify(keyRoot, keyMode, tuningNotes, numFrets);
+    if (classifySvg) {
+      document.getElementById('decoder-heatmap').innerHTML = `<div class="fretboard-wrap">${classifySvg}</div>`;
+    } else {
+      // Fall back to heat map if no chord selected
+      document.getElementById('decoder-heatmap').innerHTML =
+        `<div class="fretboard-wrap">${heatMapSVG(heatData, keyRoot, tuningNotes, numFrets, 'both')}</div>`;
+    }
+  } else {
+    document.getElementById('decoder-heatmap').innerHTML =
+      `<div class="fretboard-wrap">${heatMapSVG(heatData, keyRoot, tuningNotes, numFrets, currentHeatMode)}</div>`;
+  }
 
   // ── Info bar: note frequency legend ──
   const sortedNotes = Object.entries(heatData).sort((a,b) => b[1].count - a[1].count);
@@ -6538,11 +6664,11 @@ const AGENT_DASHBOARD = {
         { agent: 'architect', align: 'neutral', note: 'Rendering change only, data exists — filter 3 (change cost)' },
       ],
     },
-    { id: 'note-classify-decoder', weight: 0, status: 'queued',
+    { id: 'note-classify-decoder', weight: 0, status: 'done',
       target: 'Decoder fretboard shows chord tone / passing / approach classification when chord selected',
-      current: 'Decoder heat map shows interval/frequency only — no note function classification',
-      gap: 'Classification engine exists (getOverlayContext) but is not wired to Decoder renderer',
-      action: 'Priority 4 in Layer 9 build sequence (after tech debt)',
+      current: 'Resolved: 4th heat mode "classify" renders solid/ring/dim-ring on Decoder fretboard via renderDecoderClassify()',
+      gap: 'Closed',
+      action: 'Complete',
       intersections: [
         { agent: 'uiux',    align: 'close', note: 'Highest consistency win — reuses Scales Overlay visual vocabulary — filter 3 (consistency)' },
         { agent: 'architect', align: 'close', note: '~40-60 lines, isolated to heatMapSVG — filter 5 (blast radius)' },

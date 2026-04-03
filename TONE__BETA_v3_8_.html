@@ -3462,7 +3462,104 @@ function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, ov
     }
   }
 
+  // Arpeggio paths — rendered after dots so lines sit behind labels
+  if (ovCtx && (overlayMode === 'overlay' || overlayMode === 'chord-tones')) {
+    svg += renderArpeggioView(ovCtx.chordRoot, ovCtx.chordIntervals, tuningNotes, numFrets, fretSpacing, stringSpacing, left, top, 'position');
+    svg += renderArpeggioView(ovCtx.chordRoot, ovCtx.chordIntervals, tuningNotes, numFrets, fretSpacing, stringSpacing, left, top, 'wide');
+  }
+
   svg += '</svg>';
+  return svg;
+}
+
+// ── Arpeggio View — sequential chord tone paths on fretboard ──
+// Generates SVG connecting lines between chord tone positions, showing
+// traversal paths (ascending low→high within position zones).
+// Called after dots are rendered, so lines appear behind dot labels.
+// Two modes: 'position' (within 4-5 fret span) and 'wide' (cross-position, EVH tapping zones)
+function renderArpeggioView(chordRoot, chordIntervals, tuningNotes, numFrets, fretSpacing, stringSpacing, left, top, mode) {
+  if (!chordRoot || !chordIntervals || chordIntervals.size === 0) return '';
+
+  // Collect all chord tone positions on the fretboard
+  const positions = [];
+  const numStrings = tuningNotes.length;
+  for (let s = 0; s < numStrings; s++) {
+    for (let f = 0; f <= numFrets; f++) {
+      const note = noteFromStringFret(tuningNotes[s], f);
+      const semi = (noteIndex(note) - noteIndex(chordRoot) + 12) % 12;
+      if (!chordIntervals.has(semi)) continue;
+      const x = f === 0 ? left : left + (f - 0.5) * fretSpacing;
+      const y = top + (numStrings - 1 - s) * stringSpacing;
+      positions.push({ s, f, note, semi, x, y });
+    }
+  }
+
+  if (positions.length < 2) return '';
+
+  let svg = '';
+
+  if (mode === 'position') {
+    // Within-position paths: group chord tones into 5-fret windows,
+    // connect ascending (low string to high string) within each window
+    const windowSize = 5;
+    const windows = [];
+    for (let startFret = 0; startFret <= numFrets - windowSize + 1; startFret += 3) {
+      const inWindow = positions.filter(p => p.f >= startFret && p.f < startFret + windowSize);
+      if (inWindow.length >= 2) {
+        // Sort by string (low to high = ascending s index)
+        inWindow.sort((a, b) => a.s - b.s || a.f - b.f);
+        windows.push(inWindow);
+      }
+    }
+
+    // Deduplicate overlapping windows: keep the one with more notes
+    const usedPositions = new Set();
+    const bestWindows = [];
+    for (const w of windows.sort((a, b) => b.length - a.length)) {
+      const key = w.map(p => `${p.s},${p.f}`).join('|');
+      const isNew = w.some(p => !usedPositions.has(`${p.s},${p.f}`));
+      if (isNew) {
+        bestWindows.push(w);
+        w.forEach(p => usedPositions.add(`${p.s},${p.f}`));
+      }
+    }
+
+    // Draw connecting lines within each window
+    for (const w of bestWindows) {
+      for (let i = 0; i < w.length - 1; i++) {
+        svg += `<line x1="${w[i].x}" y1="${w[i].y}" x2="${w[i+1].x}" y2="${w[i+1].y}" stroke="var(--text-dim)" stroke-width="1" opacity="0.2" stroke-dasharray="3,3"/>`;
+      }
+    }
+  } else if (mode === 'wide') {
+    // Cross-position paths: connect same chord tone across octaves
+    // Shows tapping reach — position at fret N connects to fret N+12
+    const byInterval = {};
+    positions.forEach(p => {
+      if (!byInterval[p.semi]) byInterval[p.semi] = [];
+      byInterval[p.semi].push(p);
+    });
+
+    for (const [, group] of Object.entries(byInterval)) {
+      if (group.length < 2) continue;
+      // Connect across positions on the same string
+      const byString = {};
+      group.forEach(p => {
+        if (!byString[p.s]) byString[p.s] = [];
+        byString[p.s].push(p);
+      });
+      for (const [, stringGroup] of Object.entries(byString)) {
+        stringGroup.sort((a, b) => a.f - b.f);
+        for (let i = 0; i < stringGroup.length - 1; i++) {
+          const fretGap = stringGroup[i+1].f - stringGroup[i].f;
+          // Only connect wide intervals (tapping range: 7+ frets)
+          if (fretGap >= 7) {
+            svg += `<line x1="${stringGroup[i].x}" y1="${stringGroup[i].y}" x2="${stringGroup[i+1].x}" y2="${stringGroup[i+1].y}" stroke="var(--amber)" stroke-width="1.5" opacity="0.15" stroke-dasharray="6,4"/>`;
+          }
+        }
+      }
+    }
+  }
+
   return svg;
 }
 
@@ -6704,11 +6801,11 @@ const AGENT_DASHBOARD = {
         { agent: 'guitar-sys', align: 'close', note: 'Engine exists, needs wiring — filter 2 (completeness)' },
       ],
     },
-    { id: 'arpeggio-view', weight: 0, status: 'queued',
+    { id: 'arpeggio-view', weight: 0, status: 'done',
       target: 'Chord tones rendered as sequential paths (not just dots) — dual mode: within-position (SRV/Hendrix) + cross-position (EVH)',
-      current: 'Chord Tones view shows dots without sequential connection or traversal paths',
-      gap: 'User sees WHERE chord tones are but not HOW to move through them',
-      action: 'Priority 5 in Layer 9 build sequence. HUD philosophy: surfaces in existing views, not new tab.',
+      current: 'Resolved: renderArpeggioView() adds connecting paths in Overlay + Chord Tones modes. Position mode (dashed, within 5-fret window) + Wide mode (amber dashed, 7+ fret tapping reach)',
+      gap: 'Closed',
+      action: 'Complete',
       intersections: [
         { agent: 'hendrix', align: 'close', note: '"Little Wing" cascading embellishments ARE sequential arpeggio paths — filter 3 (chord tones in penta)' },
         { agent: 'evh',     align: 'close', note: 'Must show wide-interval connections (tapping zones) — filter 1 (intervallic expansion)' },

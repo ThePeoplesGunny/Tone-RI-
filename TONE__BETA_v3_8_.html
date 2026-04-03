@@ -1805,6 +1805,11 @@
             <option value="9">Dominant 9</option>
             <option value="maj9">Major 9</option>
             <option value="7#9">Dominant 7♯9</option>
+            <option value="min9">Minor 9</option>
+            <option value="13">Dominant 13</option>
+            <option value="maj13">Major 13</option>
+            <option value="7sus4">Dominant 7sus4</option>
+            <option value="aug7">Augmented 7</option>
           </select>
         </div>
         <div class="ctrl-group">
@@ -2939,12 +2944,18 @@ const CHORD_FORMULAS = {
   '9':      { intervals: [0,4,7,10,14],name: 'Dominant 9',       formula: 'I  III  V  ♭VII  II'},
   maj9:     { intervals: [0,4,7,11,14],name: 'Major 9',          formula: 'I  III  V  VII  II'},
   '7#9':    { intervals: [0,4,7,10,3], name: 'Dominant 7♯9',     formula: 'I  III  V  ♭VII  ♯IX'},
+  min9:     { intervals: [0,3,7,10,14],name: 'Minor 9',          formula: 'I  ♭III  V  ♭VII  II'},
+  '13':     { intervals: [0,4,7,10,14,21],name: 'Dominant 13',   formula: 'I  III  V  ♭VII  II  VI'},
+  maj13:    { intervals: [0,4,7,11,14,21],name: 'Major 13',      formula: 'I  III  V  VII  II  VI'},
+  '7sus4':  { intervals: [0,5,7,10],  name: 'Dominant 7sus4',    formula: 'I  IV  V  ♭VII' },
+  aug7:     { intervals: [0,4,8,10],  name: 'Augmented 7',       formula: 'I  III  ♯V  ♭VII'},
 };
 
 // ── Chord quality display suffixes (single source of truth) ──
 const SUFFIX_DISPLAY = {
   major:'',minor:'m',dom7:'7',maj7:'maj7',min7:'m7',sus2:'sus2',sus4:'sus4',
-  dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9','7#9':'7♯9'
+  dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9','7#9':'7♯9',
+  min9:'m9','13':'13',maj13:'maj13','7sus4':'7sus4',aug7:'aug7'
 };
 
 // ── Scale formulas (semitone arrays from root) ───────
@@ -3005,6 +3016,17 @@ const PENTA_PATHWAYS_EXT = {
       9:  'the natural 6th — the Dorian signature: bittersweet over minor, not dark. Hendrix\'s most identifiable non-pentatonic note.',
     },
     reverseHeadline: 'Dorian minus 2 notes = your Pentatonic',
+  },
+  pentatonic_major__mixolydian: {
+    pentaKey: 'pentatonic_major',
+    parent: 'mixolydian',
+    addedIntervals: [5, 10],
+    headline: 'your pentatonic + 2 notes = Mixolydian mode',
+    noteDescs: {
+      5:  'the 4th — suspension, departure, subdominant pull. The note that makes a dominant chord want to resolve.',
+      10: 'the ♭7 — the Mixolydian signature: major scale with a blues edge. The note that makes a major chord feel dominant, not resolved.',
+    },
+    reverseHeadline: 'Mixolydian minus 2 notes = your Pentatonic',
   },
   pentatonic_minor__blues: {
     pentaKey: 'pentatonic_minor',
@@ -4353,20 +4375,25 @@ const FLAT_TO_SHARP = {
 
 // ── Quality suffix table (longest first) ────────────
 const QUALITY_SUFFIXES = [
+  { suffix:'maj13', key:'maj13'  },
   { suffix:'maj9',  key:'maj9'   },
   { suffix:'maj7',  key:'maj7'   },
   { suffix:'m7b5',  key:'min7b5' },
   { suffix:'dim7',  key:'dim7'   },
+  { suffix:'aug7',  key:'aug7'   },
+  { suffix:'7sus4', key:'7sus4'  },
+  { suffix:'7#9',   key:'7#9'    },
   { suffix:'add9',  key:'add9'   },
   { suffix:'sus4',  key:'sus4'   },
   { suffix:'sus2',  key:'sus2'   },
+  { suffix:'m9',    key:'min9'   },
   { suffix:'m7',    key:'min7'   },
   { suffix:'m6',    key:'min6'   },
   { suffix:'dim',   key:'dim'    },
   { suffix:'aug',   key:'aug'    },
   { suffix:'maj',   key:'major'  },
   { suffix:'m',     key:'minor'  },
-  { suffix:'7#9',   key:'7#9'    },
+  { suffix:'13',    key:'13'     },
   { suffix:'7',     key:'dom7'   },
   { suffix:'9',     key:'9'      },
   { suffix:'6',     key:'6'      },
@@ -5710,6 +5737,11 @@ const PLAY_CHORD_INTERVALS = {
   'add9':  [0, 2, 4, 7],
   'add11': [0, 4, 5, 7],
   '7#9':   [0, 3, 4, 7, 10],
+  'm9':    [0, 2, 3, 7, 10],
+  '13':    [0, 2, 4, 7, 9, 10],
+  'maj13': [0, 2, 4, 7, 9, 11],
+  '7sus4': [0, 5, 7, 10],
+  'aug7':  [0, 4, 8, 10],
 };
 
 let playState = { preset: null, activeChord: null, activeChordBtn: null };

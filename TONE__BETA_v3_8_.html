@@ -1841,6 +1841,11 @@
           <div class="fretboard-wrap" id="triad-fullneck-svg"></div>
           <div id="triad-zone-legend" class="triad-zone-legend"></div>
         </div>
+        <div id="triad-chain-wrap" style="display:none;margin-top:1rem">
+          <div class="triad-section-label">chain — voice-leading path through progression</div>
+          <div id="triad-chain-strip" style="display:flex;flex-wrap:wrap;gap:0.3rem;margin:0.5rem 0"></div>
+          <div class="fretboard-wrap" id="triad-chain-svg"></div>
+        </div>
       </div>
 
       <!-- Primary view: full fretboard -->
@@ -5236,7 +5241,7 @@ function renderDecoder() {
   const confLabelTitle = sourceLabel === 'Auto-detected' ? 'Confidence' : 'Source';
 
   // Layer 7: write active context for cross-tab propagation
-  _activeContext = { keyRoot: keyRoot, keyMode: keyMode, source: sourceLabel || 'manual', activeChordQuality: null, activeChordRoot: null };
+  _activeContext = { keyRoot: keyRoot, keyMode: keyMode, source: sourceLabel || 'manual', activeChordQuality: null, activeChordRoot: null, chords: chords };
 
   show('decoder-key-bar');
   document.getElementById('decoder-key-bar').innerHTML = `
@@ -6662,6 +6667,104 @@ function renderTriads() {
     `<span class="zone-item"><span class="zone-dot" style="background:#5a6a7a;opacity:0.5"></span>bass · root anchors</span>` +
     `<span class="zone-item"><span class="zone-dot" style="background:var(--amber)"></span>chord · inversions</span>` +
     `<span class="zone-item"><span class="zone-dot" style="background:#85B7EB;opacity:0.6"></span>melody · chord tones</span>`;
+
+  // Triad chaining — shows when progression context exists
+  const chainWrap = document.getElementById('triad-chain-wrap');
+  const chainResult = renderTriadChain();
+  if (chainWrap) {
+    if (chainResult) {
+      chainWrap.style.display = 'block';
+      document.getElementById('triad-chain-strip').innerHTML = chainResult.strip;
+      document.getElementById('triad-chain-svg').innerHTML = chainResult.svg;
+    } else {
+      chainWrap.style.display = 'none';
+    }
+  }
+}
+
+// ── Triad Chaining — voice-leading optimized inversion sequence ──
+function renderTriadChain() {
+  if (!_activeContext.chords || _activeContext.chords.length < 2) return null;
+
+  const tuning = document.getElementById('decoder-tuning')
+    ? document.getElementById('decoder-tuning').value.split(' ')
+    : ['E','A','D','G','B','E'];
+  const stringIndices = ACE_CHORD_STRINGS;
+
+  const chain = [];
+  let prevCenter = 5;
+
+  for (const chord of _activeContext.chords) {
+    const quality = qualityToTriad(chord.qualityKey);
+    const intervals = TRIAD_QUALITY_INTERVALS[quality] || TRIAD_QUALITY_INTERVALS.major;
+    const chordTones = intervals.map(i => noteAt(chord.root, i));
+
+    const candidates = [];
+    for (let invIdx = 0; invIdx < TRIAD_INVERSION_DEFS.length; invIdx++) {
+      const invDef = TRIAD_INVERSION_DEFS[invIdx];
+      for (let startFret = Math.max(0, prevCenter - 5); startFret <= prevCenter + 5; startFret++) {
+        const v = findTriadInversion(chordTones, invDef.order, stringIndices, tuning, startFret);
+        if (v) {
+          const center = (v.minFret + v.maxFret) / 2;
+          candidates.push({ voicing: v, invIdx, invDef, movement: Math.abs(center - prevCenter), center, chord, chordTones });
+          break;
+        }
+      }
+    }
+
+    if (candidates.length === 0) continue;
+    candidates.sort((a, b) => a.movement - b.movement);
+    chain.push(candidates[0]);
+    prevCenter = candidates[0].center;
+  }
+
+  if (chain.length < 2) return null;
+
+  // Chain strip
+  const stripHtml = chain.map((c, i) => {
+    const isActive = _activeContext.activeChordRoot === c.chord.root && _activeContext.activeChordQuality === c.chord.qualityKey;
+    const suffix = SUFFIX_DISPLAY[c.chord.qualityKey] || c.chord.qualityKey;
+    return `<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.5rem;border:1px solid ${isActive ? 'var(--amber)' : 'var(--border)'};border-radius:3px;font-family:var(--mono);font-size:0.65rem;background:${isActive ? 'var(--amber)11' : 'var(--bg3)'}"><strong style="color:var(--text-hi)">${c.chord.root}${suffix}</strong><span style="color:var(--text-dim)">${c.invDef.aceShape}</span><span style="color:var(--text-dim)">f${c.voicing.minFret}</span></span>${i < chain.length - 1 ? '<span style="color:var(--text-dim);margin:0 0.15rem">→</span>' : ''}`;
+  }).join('');
+
+  // Voice-leading SVG
+  const numFrets = 15, SS = 30, FS = 46, leftM = 40, topM = 20, nStr = tuning.length;
+  const W = leftM + numFrets * FS + 20, H = topM + (nStr - 1) * SS + 40;
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace;display:block">`;
+  svg += `<rect x="${leftM-3}" y="${topM-4}" width="4" height="${(nStr-1)*SS+8}" fill="#c8c8cc" rx="1"/>`;
+  for (let s = 0; s < nStr; s++) {
+    const y = topM + (nStr - 1 - s) * SS;
+    svg += `<line x1="${leftM}" y1="${y}" x2="${leftM+numFrets*FS}" y2="${y}" stroke="#2a2a2f" stroke-width="${1+s*0.3}"/>`;
+  }
+  for (let f = 0; f <= numFrets; f++) {
+    svg += `<line x1="${leftM+f*FS}" y1="${topM-4}" x2="${leftM+f*FS}" y2="${topM+(nStr-1)*SS+4}" stroke="#1c1c1f" stroke-width="1"/>`;
+  }
+
+  for (let ci = 0; ci < chain.length; ci++) {
+    const c = chain[ci];
+    const isActive = _activeContext.activeChordRoot === c.chord.root && _activeContext.activeChordQuality === c.chord.qualityKey;
+    const opacity = isActive ? 0.9 : 0.4;
+    for (let si = 0; si < 3; si++) {
+      const stringIdx = stringIndices[si];
+      const fret = c.voicing.frets[si];
+      const note = c.voicing.notes[si];
+      const semi = (noteIndex(note) - noteIndex(c.chordTones[0]) + 12) % 12;
+      const iv = intervalInfo(semi);
+      const x = fret === 0 ? leftM : leftM + (fret - 0.5) * FS;
+      const y = topM + (nStr - 1 - stringIdx) * SS;
+      svg += `<circle cx="${x}" cy="${y}" r="9" fill="${iv.color}" opacity="${opacity}"/>`;
+      svg += `<text x="${x}" y="${y+3}" font-size="8" fill="#0e0e0f" text-anchor="middle" font-weight="700" opacity="${opacity}">${note}</text>`;
+      if (ci < chain.length - 1) {
+        const next = chain[ci + 1];
+        const nf = next.voicing.frets[si];
+        const nx = nf === 0 ? leftM : leftM + (nf - 0.5) * FS;
+        if (nf !== fret) svg += `<line x1="${x}" y1="${y}" x2="${nx}" y2="${y}" stroke="var(--amber)" stroke-width="1" opacity="0.2" stroke-dasharray="3,2"/>`;
+      }
+    }
+  }
+  svg += '</svg>';
+
+  return { strip: stripHtml, svg };
 }
 
 // ══════════════════════════════════════════════════════════
@@ -6815,11 +6918,11 @@ const AGENT_DASHBOARD = {
         { agent: 'tone-eng', align: 'neutral', note: 'Arpeggios through clean vs gain sound different — future Layer 11 annotation — filter 3 (gain staging)' },
       ],
     },
-    { id: 'triad-chaining', weight: 0, status: 'queued',
+    { id: 'triad-chaining', weight: 0, status: 'done',
       target: 'Triads chain through progressions with minimal hand movement — inversions selected for voice-leading proximity',
-      current: 'Triads subview shows 3 inversions for ONE chord — no progression-aware chaining',
-      gap: 'No voice-leading optimization across chord changes — the Brewster navigation principle without the navigation',
-      action: 'Priority 6 in Layer 9 build sequence. Depends on arpeggio view.',
+      current: 'Resolved: renderTriadChain() selects minimum-movement inversions per chord on D-G-B. Chain strip shows chord→inversion→fret sequence. SVG shows voice-leading lines between positions.',
+      gap: 'Closed',
+      action: 'Complete',
       intersections: [
         { agent: 'hendrix', align: 'close', note: '"Wind Cries Mary" IS triad chaining — filter 1 (rhythm/lead integration)' },
         { agent: 'srv',     align: 'close', note: '"Lenny" chord-melody uses chained upper-string triads — filter 2 (chord-tone targeting)' },

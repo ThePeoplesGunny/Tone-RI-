@@ -1800,6 +1800,7 @@
             <option value="min6">Minor 6</option>
             <option value="9">Dominant 9</option>
             <option value="maj9">Major 9</option>
+            <option value="7#9">Dominant 7♯9</option>
           </select>
         </div>
         <div class="ctrl-group">
@@ -2505,7 +2506,7 @@
       <!-- ── Alignment Scores ── -->
       <div class="dash-grid">
         <div class="dash-card dash-full">
-          <div class="dash-card-title">Alignment Scores — TONE v3.7 vs Agent Perspectives</div>
+          <div class="dash-card-title">Alignment Scores — TONE v3.8 vs Agent Perspectives</div>
           <div id="dash-scores"></div>
         </div>
       </div>
@@ -2534,6 +2535,18 @@
         </div>
       </div>
 
+      <!-- ── Agent System + Pipeline ── -->
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-title">Agent System — 7 Perspectives</div>
+          <div id="dash-agents"></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Distillation Pipeline — Content → TONE</div>
+          <div id="dash-pipeline"></div>
+        </div>
+      </div>
+
       <!-- ── Future Layer Items ── -->
       <div class="dash-grid">
         <div class="dash-card dash-full">
@@ -2553,7 +2566,7 @@
   <button class="io-close" onclick="closeInfoOverlay('workflow-overlay')">✕ close</button>
   <div style="max-width:960px;margin:0 auto">
     <h1>TONE</h1>
-    <div class="io-sub">// app workflow — beta 3.7</div>
+    <div class="io-sub">// app workflow — beta 3.8</div>
   </div>
 
   <div class="io-mission">
@@ -2926,6 +2939,7 @@ const CHORD_FORMULAS = {
   min6:     { intervals: [0,3,7,9],    name: 'Minor 6',          formula: 'I  ♭III  V  VI'  },
   '9':      { intervals: [0,4,7,10,14],name: 'Dominant 9',       formula: 'I  III  V  ♭VII  II'},
   maj9:     { intervals: [0,4,7,11,14],name: 'Major 9',          formula: 'I  III  V  VII  II'},
+  '7#9':    { intervals: [0,4,7,10,3], name: 'Dominant 7♯9',     formula: 'I  III  V  ♭VII  ♯IX'},
 };
 
 // ── Scale formulas (semitone arrays from root) ───────
@@ -2972,6 +2986,33 @@ const PENTA_PATHWAYS = {
   },
 };
 
+// ── Extended pentatonic pathways (same pentatonic, different parent) ──
+// These provide alternative expansion maps when the harmonic context
+// suggests a mode other than the default natural minor/major parent.
+const PENTA_PATHWAYS_EXT = {
+  pentatonic_minor__dorian: {
+    pentaKey: 'pentatonic_minor',
+    parent: 'dorian',
+    addedIntervals: [2, 9],
+    headline: 'your pentatonic + 2 notes = Dorian mode',
+    noteDescs: {
+      2:  'the 2nd — melodic range, smooth stepwise motion into the ♭3',
+      9:  'the natural 6th — the Dorian signature: bittersweet over minor, not dark. Hendrix\'s most identifiable non-pentatonic note.',
+    },
+    reverseHeadline: 'Dorian minus 2 notes = your Pentatonic',
+  },
+  pentatonic_minor__blues: {
+    pentaKey: 'pentatonic_minor',
+    parent: 'blues',
+    addedIntervals: [6],
+    headline: 'your pentatonic + 1 note = Blues scale',
+    noteDescs: {
+      6:  'the ♭5 (blue note) — tension, grit, the note that bends between the 4th and 5th. Rest on it for dissonance, pass through it for flavor.',
+    },
+    reverseHeadline: 'Blues minus 1 note = your Pentatonic',
+  },
+};
+
 function findPentaPathway(scaleKey) {
   // Direct match: viewing a pentatonic scale
   if (PENTA_PATHWAYS[scaleKey]) {
@@ -2984,7 +3025,30 @@ function findPentaPathway(scaleKey) {
       return { direction: 'contract', pathway: pw, pentaKey: pentaKey, parentKey: scaleKey };
     }
   }
+  // Extended pathways: same pentatonic, alternate parent scales
+  for (const [, pw] of Object.entries(PENTA_PATHWAYS_EXT)) {
+    if (pw.parent === scaleKey) {
+      return { direction: 'contract', pathway: pw, pentaKey: pw.pentaKey, parentKey: scaleKey };
+    }
+  }
   return null;
+}
+
+// Get ALL pathways for a pentatonic scale (primary + extended)
+function findAllPentaPathways(scaleKey) {
+  const results = [];
+  // Primary pathway
+  if (PENTA_PATHWAYS[scaleKey]) {
+    const pw = PENTA_PATHWAYS[scaleKey];
+    results.push({ direction: 'expand', pathway: pw, pentaKey: scaleKey, parentKey: pw.parent });
+  }
+  // Extended pathways for this pentatonic
+  for (const [, pw] of Object.entries(PENTA_PATHWAYS_EXT)) {
+    if (pw.pentaKey === scaleKey) {
+      results.push({ direction: 'expand', pathway: pw, pentaKey: scaleKey, parentKey: pw.parent });
+    }
+  }
+  return results;
 }
 
 // ── Chord voicings database ─────────────────────────
@@ -3760,26 +3824,19 @@ function getScaleInsights(mode, root, scaleType) {
     cards.push({ title: 'What changes', text: 'Pentatonic alone gives you 5 notes. The overlay adds the passing tones that connect chord tones into smooth legato lines — hammer-ons, pull-offs, slides between landings.' });
     cards.push({ title: 'The target note', text: 'The major 3rd (amber) is the note that defines the chord. When in doubt, aim here. The overlay shows you more paths to reach it.' });
 
-    // Fold in pentatonic+2 content from PENTA_PATHWAYS
+    // Fold in pentatonic pathway content (primary + extended)
     const pw = findPentaPathway(scaleType);
     if (pw) {
       const { direction, pathway } = pw;
+      const descs = pathway.addedIntervals.map(iv => {
+        const note = noteAt(root, iv);
+        const info = intervalInfo(iv);
+        return note + ' (' + info.symbol + ') — ' + pathway.noteDescs[iv];
+      }).join('. ');
       if (direction === 'expand') {
-        // Viewing pentatonic — show what 2 notes you add
-        const descs = pathway.addedIntervals.map(iv => {
-          const note = noteAt(root, iv);
-          const info = intervalInfo(iv);
-          return note + ' (' + info.symbol + ') — ' + pathway.noteDescs[iv];
-        }).join('. ');
-        cards.push({ title: 'Pentatonic + 2', text: pathway.headline + '. The gray rings are: ' + descs + '.' });
+        cards.push({ title: 'Pentatonic + ' + pathway.addedIntervals.length, text: pathway.headline + '. The gray rings are: ' + descs + '.' });
       } else {
-        // Viewing 7-note parent — show which 2 notes the pentatonic drops
-        const descs = pathway.addedIntervals.map(iv => {
-          const note = noteAt(root, iv);
-          const info = intervalInfo(iv);
-          return note + ' (' + info.symbol + ') — ' + pathway.noteDescs[iv];
-        }).join('. ');
-        cards.push({ title: 'The + 2 notes', text: pathway.reverseHeadline + '. The notes your pentatonic skips: ' + descs + '.' });
+        cards.push({ title: 'The added notes', text: pathway.reverseHeadline + '. The notes your pentatonic skips: ' + descs + '.' });
       }
     }
   } else if (mode === 'chord-tones') {
@@ -3788,15 +3845,28 @@ function getScaleInsights(mode, root, scaleType) {
   } else if (mode === 'pentatonic') {
     cards.push({ title: 'Your comfort zone', text: 'The pentatonic notes your hand already knows. This is the foundation — reliable over diatonic chords.' });
 
-    // Fold in expansion pathway
-    const pw = findPentaPathway(scaleType);
-    if (pw && pw.direction === 'expand') {
-      const descs = pw.pathway.addedIntervals.map(iv => {
+    // Fold in ALL expansion pathways (primary + extended)
+    const allPw = findAllPentaPathways(scaleType);
+    if (allPw.length > 0) {
+      // Primary pathway first
+      const primary = allPw[0];
+      const primaryDescs = primary.pathway.addedIntervals.map(iv => {
         const note = noteAt(root, iv);
         const info = intervalInfo(iv);
-        return note + ' (' + info.symbol + ') — ' + pw.pathway.noteDescs[iv];
+        return note + ' (' + info.symbol + ') — ' + primary.pathway.noteDescs[iv];
       }).join('. ');
-      cards.push({ title: 'The gap', text: 'Missing tones: ' + descs + '. Switch to Overlay to see where they fill in.' });
+      cards.push({ title: 'The gap', text: 'Missing tones: ' + primaryDescs + '. Switch to Overlay to see where they fill in.' });
+
+      // Extended pathways as additional cards
+      for (let i = 1; i < allPw.length; i++) {
+        const ext = allPw[i].pathway;
+        const extDescs = ext.addedIntervals.map(iv => {
+          const note = noteAt(root, iv);
+          const info = intervalInfo(iv);
+          return note + ' (' + info.symbol + ') — ' + ext.noteDescs[iv];
+        }).join('. ');
+        cards.push({ title: ext.headline, text: extDescs + '.' });
+      }
     } else {
       cards.push({ title: 'The gap', text: 'Missing tones leave holes. When the melody wants to pass through those intervals, your hand has nowhere to go. Switch to Overlay to see what fills them.' });
     }
@@ -4291,6 +4361,7 @@ const QUALITY_SUFFIXES = [
   { suffix:'aug',   key:'aug'    },
   { suffix:'maj',   key:'major'  },
   { suffix:'m',     key:'minor'  },
+  { suffix:'7#9',   key:'7#9'    },
   { suffix:'7',     key:'dom7'   },
   { suffix:'9',     key:'9'      },
   { suffix:'6',     key:'6'      },
@@ -4784,7 +4855,7 @@ function buildForwardMap(chords, keyRoot, keyMode) {
 
   const suffixDisplay = {
     major:'',minor:'m',dom7:'7',maj7:'maj7',min7:'m7',sus2:'sus2',sus4:'sus4',
-    dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9'
+    dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9','7#9':'7♯9'
   };
 
   // Header: pentatonic landmarks
@@ -4934,7 +5005,7 @@ function renderDecoder() {
   // ── Progression cards ──
   const suffixDisplay = {
     major:'',minor:'m',dom7:'7',maj7:'maj7',min7:'m7',sus2:'sus2',sus4:'sus4',
-    dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9'
+    dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9','7#9':'7♯9'
   };
   const badgeLabels = { diatonic:'diatonic', borrowed:'borrowed', secondary:'sec. dom', chromatic:'chromatic' };
 
@@ -5228,7 +5299,7 @@ function openCompare(presetId) {
 
   const suffixDisplay = {
     major:'',minor:'m',dom7:'7',maj7:'maj7',min7:'m7',sus2:'sus2',sus4:'sus4',
-    dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9'
+    dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9','7#9':'7♯9'
   };
 
   function buildCards(chords, keyRoot, keyMode, aToks, bToks, side) {
@@ -5645,6 +5716,7 @@ const PLAY_CHORD_INTERVALS = {
   '5':     [0, 7],
   'add9':  [0, 2, 4, 7],
   'add11': [0, 4, 5, 7],
+  '7#9':   [0, 3, 4, 7, 10],
 };
 
 let playState = { preset: null, activeChord: null, activeChordBtn: null };
@@ -6333,11 +6405,11 @@ const AGENT_DASHBOARD = {
 
   priorities: [
     { weight: 3, action: 'Add 7#9 chord to CHORD_FORMULAS and PLAY_CHORD_INTERVALS',
-      agents: ['hendrix','evh','srv'], status: 'gap',
-      detail: 'Engine cannot analyze Hendrix-chord progressions. E7#9 parses as unknown. Intervals: [0,4,7,10,3]' },
+      agents: ['hendrix','evh','srv'], status: 'done',
+      detail: 'Resolved 3.8: 7#9 added to CHORD_FORMULAS, QUALITY_SUFFIXES, PLAY_CHORD_INTERVALS, Chords dropdown, and all suffixDisplay maps.' },
     { weight: 3, action: 'Expand PENTA_PATHWAYS: minor→dorian, minor→blues',
-      agents: ['hendrix','evh','srv'], status: 'gap',
-      detail: 'Dorian 6th and b5 blue note are critical departure notes. Code pattern exists, data missing.' },
+      agents: ['hendrix','evh','srv'], status: 'done',
+      detail: 'Resolved 3.8: PENTA_PATHWAYS_EXT added with minor→dorian (natural 6th) and minor→blues (♭5). findAllPentaPathways() surfaces all expansion options.' },
     { weight: 2, action: 'Major/minor pentatonic switch over dominant chords',
       agents: ['srv','hendrix'], status: 'gap',
       detail: 'Line 5562 uses single penta set per key. B.B. King/Albert King/SRV major penta tones over I7 invisible.' },
@@ -6394,9 +6466,28 @@ const AGENT_DASHBOARD = {
     { name: 'Triad chaining',              layer: 'L9',      status: 'gap' },
     { name: 'Song route mapping',           layer: 'L9',      status: 'gap' },
     { name: 'Note classification on Decoder fretboard', layer: 'L9', status: 'gap' },
-    { name: '7#9 + 6/9 chord types',       layer: 'Engine',  status: 'gap' },
+    { name: '7#9 chord type',              layer: 'Engine',  status: 'done' },
+    { name: 'Dorian + Blues pentatonic pathways', layer: 'Engine', status: 'done' },
     { name: 'Protocol Translator',          layer: 'L10',     status: 'future' },
     { name: 'Presentation Layer (gear)',    layer: 'L11',     status: 'future' },
+  ],
+
+  // ── Operational Agent System ──
+  agents: [
+    { name: 'Hendrix',    type: 'player',  domain: 'Blues foundation, rhythm/lead integration, Dorian extensions' },
+    { name: 'EVH',        type: 'player',  domain: 'Tapping, harmonics, Brown Sound, high-gain vocabulary' },
+    { name: 'SRV',        type: 'player',  domain: 'Blues-rock, Strat dynamics, pentatonic mastery, feel' },
+    { name: 'Architect',  type: 'ops',     domain: 'Code structure, state flow, technical debt, single-file constraints' },
+    { name: 'UI/UX',      type: 'ops',     domain: 'Glanceability, visual hierarchy, interaction cost, consistency' },
+    { name: 'Guitar Sys',  type: 'ops',    domain: 'Theory engine correctness, interval math, scale formulas, CAGED' },
+    { name: 'Tone Eng',   type: 'ops',     domain: 'Signal chain, gear mapping, gain staging, tone matching' },
+  ],
+
+  // ── Distillation Pipeline ──
+  pipeline: [
+    { skill: '/analyze-tab', purpose: 'Tablature → harmonic analysis + technique inventory + transferable principles', status: 'ready' },
+    { skill: '/tone-match',  purpose: 'Reference tone → signal chain recipe mapped to user\'s gear with specific settings', status: 'ready' },
+    { skill: '/distill',     purpose: 'Master orchestrator: runs both skills, routes through agent quality gates, produces TONE-ready package', status: 'ready' },
   ],
 
   future: [
@@ -6483,6 +6574,37 @@ function renderDashboard() {
         <span class="dash-status ${sc}">${f.status}</span>
         <span style="flex:1;color:var(--text)">${f.name}</span>
         <span style="color:var(--text-dim);font-size:0.62rem">${f.layer}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Agent system ──
+  const agEl = document.getElementById('dash-agents');
+  if (agEl) {
+    agEl.innerHTML = AGENT_DASHBOARD.agents.map(a => {
+      const typeColor = a.type === 'player' ? 'var(--c-b7)' : 'var(--c-V)';
+      const typeLabel = a.type === 'player' ? 'player' : 'operational';
+      return `<div class="dash-item">
+        <span style="flex-shrink:0;font-size:0.58rem;padding:0.1rem 0.35rem;border-radius:2px;background:${typeColor}22;color:${typeColor};border:1px solid ${typeColor}44;font-weight:600">${typeLabel}</span>
+        <span style="flex:1">
+          <strong style="color:var(--text-hi)">${a.name}</strong>
+          <div style="color:var(--text-dim);margin-top:0.15rem;font-size:0.65rem">${a.domain}</div>
+        </span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Distillation pipeline ──
+  const plEl = document.getElementById('dash-pipeline');
+  if (plEl) {
+    plEl.innerHTML = AGENT_DASHBOARD.pipeline.map(p => {
+      const sc = p.status === 'ready' ? 'dash-status-done' : 'dash-status-gap';
+      return `<div class="dash-item">
+        <span class="dash-status ${sc}">${p.status}</span>
+        <span style="flex:1">
+          <strong style="color:var(--amber)">${p.skill}</strong>
+          <div style="color:var(--text-dim);margin-top:0.15rem;font-size:0.65rem">${p.purpose}</div>
+        </span>
       </div>`;
     }).join('');
   }

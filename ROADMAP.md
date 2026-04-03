@@ -42,12 +42,12 @@ Layer 9 — Technique Bridge (continued). Play Mode navigation complete. Next ca
 
 ---
 
-## Open Architectural Questions (March 2026)
+## Open Architectural Questions (April 2026)
 
 - **Data strategy:** Single file vs external data files. Content scale drives this decision. Undecided.
 - **Content scale:** How many songs, how much per-song data. Undecided.
-- **Distilled principles format:** What does "extract the principle from a tab" look like as a concrete feature? TBD.
-- **Presentation layer scope:** Gear context exists conceptually but has no designed features. TBD.
+- ~~**Distilled principles format:**~~ Resolved — `/distill` skill defines the format: harmonic analysis + technique inventory + tone recipe + transferable principles, routed through agent quality gates.
+- ~~**Presentation layer scope:**~~ Partially resolved — Tone Engineer agent + `/tone-match` skill provide gear-to-song mapping against user's rig. In-app UI features for gear context still TBD.
 
 ---
 
@@ -77,3 +77,4 @@ Layer 9 — Technique Bridge (continued). Play Mode navigation complete. Next ca
 | 3.5  | 9 (partial)    | Brewster chord-scale overlay on Scales tab. 4-mode view toggle, note classification (solid/ring), CAGED zone outline, chord context from Decoder, dynamic insight cards with pentatonic+2 folded in. Pentatonic Core + One-Note Neighbor cards removed from UI. Workflow/Vision overlays corrected to Technique Bridge. |
 | 3.6  | 9 (extended)   | Play Mode: CAGED shape overlay (non-diatonic), forward vision (next target diamonds), approach notes (voice leading triangles). DEF-11/19/20 resolved. Root dot squares across all renderers. Heat map orientation fix. Eb + D standard tunings. Heat map mode toggle. Dead code cleanup. Nav prompt CSS. |
 | 3.7  | 9 (extended)   | Scales tab: universal interval color system (all 4 view modes use iv.color, role conveyed by rendering not color). Redundant Color Key removed. Layout shift fix across view modes. Agent Dashboard tab: Hendrix/EVH/SRV evaluation framework with weighted priorities, consensus, conflicts. Project docs consolidated. |
+| 3.8  | 9 (extended)   | Engine: 7#9 chord type (CHORD_FORMULAS, parser, Play Mode, Chords dropdown). PENTA_PATHWAYS_EXT: minor→Dorian (natural 6th) + minor→Blues (b5), findAllPentaPathways() surfaces all expansion options in insight cards. Dashboard: expanded to 7 agents (Architect, UI/UX, Guitar Systems Engineer, Tone Engineer) + 3-skill distillation pipeline (/analyze-tab, /tone-match, /distill). W3 priorities resolved. |

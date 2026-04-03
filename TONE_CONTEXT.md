@@ -324,7 +324,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 
 ---
 
-## Current Feature State — Beta 3.7 (current baseline)
+## Current Feature State — Beta 3.8 (current baseline)
 
 ### How Features Map to the Structural Skills + New Layers
 
@@ -335,7 +335,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 | CAGED | Chords tab: Voicings (CAGED zone voicing map) + Triads (ACE zone model) + Forward Map (nearest shape hint) + Play Mode CAGED overlay | **Strong** |
 | Technique Bridge | Scales tab: Brewster overlay + universal interval colors + Play Mode: CAGED overlay, forward vision, approach notes, root dot shapes | **Partial** — arpeggio view/triad chaining remaining |
 | Protocol Translator | *Not yet built* — Decoder identifies non-diatonic chords, but doesn't frame departures relative to user's SRV protocol | **Gap** |
-| Presentation Layer | *Not yet built* — gear inventory exists (gear.txt), no in-app features | **Gap** |
+| Presentation Layer | Gear inventory (gear.txt) + Tone Engineer agent + /tone-match skill — no in-app UI features yet | **Partial** — pipeline exists, in-app rendering TBD |
 
 **The spiral is connected through Layer 7 + Layer 8.** `_activeContext` propagates Decoder key/mode/chord to Chords, Scales, and Theory tabs.
 
@@ -418,14 +418,20 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 - **Modes — Parallel View**: ordered bright→dark
 - **Diatonic Pattern**: mode-aware (major/minor), chord names from active key
 
-### Dashboard Tab (new in 3.7)
-- Agent-based evaluation framework: Hendrix, EVH, SRV perspectives
-- Alignment scores: each agent rates TONE against their player's principles
-- Weighted priority actions (W1-W3): consolidated from all three agent evaluations
-- Consensus areas: where all agents agree TONE is strong
+### Dashboard Tab (updated in 3.8 — full agent system + pipeline)
+- **7 agents** across two categories:
+  - Player perspectives (3): Hendrix, EVH, SRV — catalog-grounded evaluation
+  - Operational (4): Architect (code structure), UI/UX (glanceability), Guitar Systems Engineer (theory engine), Tone Engineer (signal chain + gear)
+- Alignment scores: player agents rate TONE against their principles
+- Weighted priority actions (W1-W3): consolidated from all agent evaluations. W3 items (7#9, PENTA_PATHWAYS) resolved in 3.8.
+- Consensus areas: where agents agree TONE is strong
 - Conflict areas: where agents disagree on priorities or approach
+- **Distillation pipeline (new in 3.8):** 3 skills visible on dashboard
+  - `/analyze-tab`: tablature → harmonic analysis + technique inventory + transferable principles
+  - `/tone-match`: reference tone → signal chain recipe mapped to user's gear
+  - `/distill`: master orchestrator, routes through agent quality gates, produces TONE-ready package
 - Future layer recommendations: agent-identified gaps for Layers 10-11
-- Agent definitions stored in `.claude/agents/` (hendrix.md, evh.md, srv.md)
+- Agent definitions stored in `.claude/agents/` (7 files), skill definitions in `.claude/commands/` (3 files)
 
 ### Library Tab (unchanged)
 - Form: title, artist, key, mode, chords, genre, year, tempo, capo, tags, notes
@@ -458,7 +464,7 @@ LAYER 6 — Physical validation     Pillar 3 — COMPLETE (Beta 2.9)
 LAYER 7 — Cross-tab continuity    COMPLETE (Beta 3.0-3.2)
 LAYER 8 — Theory activation       COMPLETE (Beta 3.3-3.4)
 ─────────────────────────────────────────────────────────────────────
-LAYER 9 — Technique bridge        IN PROGRESS (Beta 3.7) — overlay + Play Mode nav + interval color unification done
+LAYER 9 — Technique bridge        IN PROGRESS (Beta 3.8) — overlay + Play Mode nav + interval colors + 7#9 + Dorian/Blues pathways done
 LAYER 10 — Protocol translator    Harmonic protocol identification, SRV-delta framing
 LAYER 11 — Presentation layer     Gear/signal chain context (scope TBD)
 ```

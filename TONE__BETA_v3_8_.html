@@ -5902,16 +5902,19 @@ function renderPlayFretboard(chordName) {
     }
   }
 
-  // Approach notes — scale tones 1 semitone from next target (voice leading)
+  // Approach notes — voice leading into next target
+  // Chromatic half-step BELOW: always included (strongest voice-leading move in blues/rock — all 3 player agents concur)
+  // Diatonic half-step ABOVE: included only when it's a scale member (less universal as approach direction)
   let approachNoteSet = new Set();
   if (nextTargetNote) {
     const scaleKey = keyMode === 'minor' ? 'natural_minor' : 'major';
     const scaleNotes = new Set(SCALE_FORMULAS[scaleKey].intervals.map(i => noteAt(keyRoot, i)));
     const nextTargetIdx = noteIndex(nextTargetNote);
-    // Half step below and above the next target
     const below = noteAt('C', (nextTargetIdx - 1 + 12) % 12);
     const above = noteAt('C', (nextTargetIdx + 1) % 12);
-    if (scaleNotes.has(below) && below !== nextTargetNote) approachNoteSet.add(below);
+    // Below: chromatic — always (the pull into the target)
+    if (below !== nextTargetNote) approachNoteSet.add(below);
+    // Above: diatonic — only when in scale (less directionally certain)
     if (scaleNotes.has(above) && above !== nextTargetNote) approachNoteSet.add(above);
   }
 
@@ -6508,11 +6511,11 @@ const AGENT_DASHBOARD = {
   // Each loop is a Performance Control cycle: target → current → gap → intersections → action → conditions
   // Intersections show where agent domains converge/conflict on this specific decision
   loops: [
-    { id: 'chromatic-approach', weight: 2, status: 'queued',
+    { id: 'chromatic-approach', weight: 2, status: 'done',
       target: 'Approach notes include chromatic half-step from below, regardless of key membership',
-      current: 'Approach notes filtered to diatonic scale members only (renderPlayFretboard)',
-      gap: 'Strongest voice-leading move in blues is invisible when non-diatonic',
-      action: 'Priority 1 in Layer 9 build sequence',
+      current: 'Resolved: below always chromatic, above stays diatonic-filtered',
+      gap: 'Closed',
+      action: 'Complete',
       intersections: [
         { agent: 'hendrix', align: 'close', note: '"Wind Cries Mary" voice leading is chromatic — filter 2 (blues foundation)' },
         { agent: 'evh',     align: 'close', note: 'Chromatic passing is the connective tissue — filter 3 (chromatic connections)' },
@@ -6711,7 +6714,7 @@ function computeKPIs() {
     { name: 'Forward vision',   pass: typeof renderPlayFretboard === 'function' },
     { name: 'Forward map',      pass: typeof buildForwardMap === 'function' },
     { name: 'Approach notes',   pass: typeof renderPlayFretboard === 'function' }, // exists but diatonic-only
-    { name: 'Chromatic approach', pass: false }, // known bug — diatonic filter
+    { name: 'Chromatic approach', pass: true },  // fixed — half-step below always included
     { name: 'Decoder classify', pass: false },   // not wired yet
     { name: 'Arpeggio paths',  pass: false },    // not built
     { name: 'Song routes',     pass: false },     // not built

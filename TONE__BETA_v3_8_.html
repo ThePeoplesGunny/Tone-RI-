@@ -1609,6 +1609,10 @@
   .dash-tag-hendrix { background: var(--c-b7)22; color: var(--c-b7); border: 1px solid var(--c-b7)44; }
   .dash-tag-evh { background: var(--c-I)22; color: var(--c-I); border: 1px solid var(--c-I)44; }
   .dash-tag-srv { background: var(--c-IV)22; color: var(--c-IV); border: 1px solid var(--c-IV)44; }
+  .dash-tag-architect { background: var(--c-V)22; color: var(--c-V); border: 1px solid var(--c-V)44; }
+  .dash-tag-uiux { background: var(--c-III)22; color: var(--c-III); border: 1px solid var(--c-III)44; }
+  .dash-tag-guitar-sys { background: var(--amber)22; color: var(--amber); border: 1px solid var(--amber)44; }
+  .dash-tag-tone-eng { background: var(--c-VI)22; color: var(--c-VI); border: 1px solid var(--c-VI)44; }
 
   .dash-status {
     display: inline-block;
@@ -2501,33 +2505,21 @@
   <section class="view" id="view-dashboard">
     <div class="view-inner">
 
-      <div class="section-label" style="margin-top:0">Agent Dashboard — Multi-Perspective Decision Support</div>
+      <div class="section-label" style="margin-top:0">Control Surface — Active Loops + Intersections</div>
 
-      <!-- ── Alignment Scores ── -->
+      <!-- ── Active Control Loops (the decisions) ── -->
       <div class="dash-grid">
         <div class="dash-card dash-full">
-          <div class="dash-card-title">Alignment Scores — TONE v3.8 vs Agent Perspectives</div>
+          <div class="dash-card-title">Active Control Loops — Where Domains Intersect</div>
+          <div id="dash-loops"></div>
+        </div>
+      </div>
+
+      <!-- ── System Health: Alignment + Feature Status ── -->
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-title">Alignment — Target vs Current by Dimension</div>
           <div id="dash-scores"></div>
-        </div>
-      </div>
-
-      <!-- ── Priority Actions + Consensus ── -->
-      <div class="dash-grid">
-        <div class="dash-card">
-          <div class="dash-card-title">Priority Actions (Weighted)</div>
-          <div id="dash-priorities"></div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-card-title">Consensus — All Three Agree</div>
-          <div id="dash-consensus"></div>
-        </div>
-      </div>
-
-      <!-- ── Conflicts + Feature Status ── -->
-      <div class="dash-grid">
-        <div class="dash-card">
-          <div class="dash-card-title">Conflicts — Agent Disagreements</div>
-          <div id="dash-conflicts"></div>
         </div>
         <div class="dash-card">
           <div class="dash-card-title">Feature Status by Layer</div>
@@ -2535,7 +2527,7 @@
         </div>
       </div>
 
-      <!-- ── Agent System + Pipeline ── -->
+      <!-- ── System Architecture: Agents + Pipeline ── -->
       <div class="dash-grid">
         <div class="dash-card">
           <div class="dash-card-title">Agent System — 7 Perspectives</div>
@@ -2547,10 +2539,10 @@
         </div>
       </div>
 
-      <!-- ── Future Layer Items ── -->
+      <!-- ── Parked (not active loops) ── -->
       <div class="dash-grid">
         <div class="dash-card dash-full">
-          <div class="dash-card-title">Future Layers — Parked (Not Current Priority)</div>
+          <div class="dash-card-title">Parked — Not Active Loops (Future Layers)</div>
           <div id="dash-future"></div>
         </div>
       </div>
@@ -6397,54 +6389,123 @@ const AGENT_DASHBOARD = {
     { label: 'Protocol translator readiness',        hendrix: 2,  evh: 2,  srv: 2,  color: 'var(--c-I)' },
   ],
 
-  priorities: [
-    { weight: 3, action: 'Add 7#9 chord to CHORD_FORMULAS and PLAY_CHORD_INTERVALS',
-      agents: ['hendrix','evh','srv'], status: 'done',
-      detail: 'Resolved 3.8: 7#9 added to CHORD_FORMULAS, QUALITY_SUFFIXES, PLAY_CHORD_INTERVALS, Chords dropdown, and SUFFIX_DISPLAY.' },
-    { weight: 3, action: 'Expand PENTA_PATHWAYS: minor→dorian, minor→blues',
-      agents: ['hendrix','evh','srv'], status: 'done',
-      detail: 'Resolved 3.8: PENTA_PATHWAYS_EXT added with minor→dorian (natural 6th) and minor→blues (♭5). findAllPentaPathways() surfaces all expansion options.' },
-    { weight: 2, action: 'Major/minor pentatonic switch over dominant chords',
-      agents: ['srv','hendrix'], status: 'gap',
-      detail: 'Line 5562 uses single penta set per key. B.B. King/Albert King/SRV major penta tones over I7 invisible.' },
-    { weight: 2, action: 'Chromatic approach notes (half-step from below)',
-      agents: ['evh','hendrix'], status: 'gap',
-      detail: 'Lines 5620-5630 compute diatonic approach only. Strongest voice-leading move is chromatic half-step regardless of key.' },
-    { weight: 2, action: 'Dorian 6th as modal extension ghost in Play Mode',
-      agents: ['hendrix','evh'], status: 'gap',
-      detail: 'Natural 6th over minor keys is Hendrix\'s most identifiable non-pentatonic note. Falls through cracks of current system.' },
-    { weight: 1, action: 'Diminished geometry insight card',
-      agents: ['evh'], status: 'gap',
-      detail: 'Same fingering repeats every 3 frets (symmetrical). Scale data exists, geometric insight not surfaced.' },
-    { weight: 1, action: 'Approach note directional bias (below-first)',
-      agents: ['srv'], status: 'gap',
-      detail: 'SRV approach predominantly from below. Current algorithm shows both directions equally.' },
-  ],
-
-  consensus: [
-    'Target note algorithm (major 3rd for major, root for minor) is correct',
-    'Forward vision (next target diamonds + approach notes) is well-designed',
-    'CAGED overlay triggering only on non-diatonic chords is right',
-    'Pentatonic pathway framing ("your pentatonic + 2 notes") is correct',
-    'Brewster chord-scale overlay correctly implements the hierarchy',
-    'Zoom spectrum bias toward "stay home" over diatonic chords is correct',
-    'Architecture is sound and extensible — gaps are rendering, not math',
-    'Play Mode 5-level visual hierarchy is effective for at-a-glance use',
-  ],
-
-  conflicts: [
-    { topic: 'Zoom spectrum granularity',
-      positions: 'Hendrix: wants gradient (safe / one-note / full-zoom). EVH: wants depth levels. SRV: binary is correct.',
-      resolution: 'Binary is right for Phase 1. Expand later as player vocabulary grows.' },
-    { topic: 'Approach note direction',
-      positions: 'SRV: below-first is more authentic. EVH: both directions equally valid.',
-      resolution: 'Requires user judgment — general-purpose vs SRV-optimized.' },
-    { topic: 'Play Mode visual density',
-      positions: 'All three flag tension: adding chromatic approach, modal extensions, major penta = more layers vs at-a-glance clarity.',
-      resolution: 'Toggle-based: default to current 5-layer, user-selectable depth expansion.' },
-    { topic: 'Minor chord target note',
-      positions: 'SRV: root is correct (pentatonic fits). EVH: natural 6th (Dorian) is the departure that opens wider vocabulary.',
-      resolution: 'Phase 1 = root (current). Phase 2 = secondary target based on modal context from Decoder.' },
+  // ── Active Control Loops ──
+  // Each loop is a Performance Control cycle: target → current → gap → intersections → action → conditions
+  // Intersections show where agent domains converge/conflict on this specific decision
+  loops: [
+    { id: 'chromatic-approach', weight: 2, status: 'queued',
+      target: 'Approach notes include chromatic half-step from below, regardless of key membership',
+      current: 'Approach notes filtered to diatonic scale members only (renderPlayFretboard)',
+      gap: 'Strongest voice-leading move in blues is invisible when non-diatonic',
+      action: 'Priority 1 in Layer 9 build sequence',
+      intersections: [
+        { agent: 'hendrix', align: 'close', note: '"Wind Cries Mary" voice leading is chromatic — filter 2 (blues foundation)' },
+        { agent: 'evh',     align: 'close', note: 'Chromatic passing is the connective tissue — filter 3 (chromatic connections)' },
+        { agent: 'srv',     align: 'close', note: 'Bug: filtering out the strongest blues approach step — filter 2 (chord-tone targeting)' },
+        { agent: 'architect', align: 'neutral', note: 'Isolated change, ~10 lines in one function — filter 5 (blast radius)' },
+        { agent: 'uiux',    align: 'neutral', note: 'Reuse existing triangle rendering, no new visual elements — filter 1 (glanceability)' },
+        { agent: 'guitar-sys', align: 'close', note: 'Chromatic half-step below is universal voice-leading — filter 1 (theory correctness)' },
+      ],
+    },
+    { id: 'dorian-ghost', weight: 2, status: 'queued',
+      target: 'Natural 6th visible as modal extension ghost over minor chords in Play Mode',
+      current: 'PENTA_PATHWAYS_EXT has the data; Play Mode rendering does not surface it',
+      gap: 'Dorian departure note exists in engine but is invisible at playing speed',
+      action: 'Priority 2 in Layer 9 build sequence',
+      intersections: [
+        { agent: 'hendrix', align: 'close', note: 'Most identifiable non-pentatonic note in catalog — filter 5 (Dorian extension)' },
+        { agent: 'evh',     align: 'close', note: 'Dorian F# over Am defines "Unchained" character — filter 1 (intervallic expansion)' },
+        { agent: 'srv',     align: 'partial', note: 'Valid extension but pentatonic default must stay visible — filter 4 (zoom-out preserved)' },
+        { agent: 'uiux',    align: 'caution', note: 'Adds a 6th visual layer to Play Mode — filter 4 (cognitive load)' },
+        { agent: 'architect', align: 'neutral', note: 'Rendering change only, data exists — filter 3 (change cost)' },
+      ],
+    },
+    { id: 'note-classify-decoder', weight: 0, status: 'queued',
+      target: 'Decoder fretboard shows chord tone / passing / approach classification when chord selected',
+      current: 'Decoder heat map shows interval/frequency only — no note function classification',
+      gap: 'Classification engine exists (getOverlayContext) but is not wired to Decoder renderer',
+      action: 'Priority 4 in Layer 9 build sequence (after tech debt)',
+      intersections: [
+        { agent: 'uiux',    align: 'close', note: 'Highest consistency win — reuses Scales Overlay visual vocabulary — filter 3 (consistency)' },
+        { agent: 'architect', align: 'close', note: '~40-60 lines, isolated to heatMapSVG — filter 5 (blast radius)' },
+        { agent: 'srv',     align: 'close', note: 'Closes the loop between analysis and navigation — filter 2 (chord-tone targeting)' },
+        { agent: 'guitar-sys', align: 'close', note: 'Engine exists, needs wiring — filter 2 (completeness)' },
+      ],
+    },
+    { id: 'arpeggio-view', weight: 0, status: 'queued',
+      target: 'Chord tones rendered as sequential paths (not just dots) — dual mode: within-position (SRV/Hendrix) + cross-position (EVH)',
+      current: 'Chord Tones view shows dots without sequential connection or traversal paths',
+      gap: 'User sees WHERE chord tones are but not HOW to move through them',
+      action: 'Priority 5 in Layer 9 build sequence. HUD philosophy: surfaces in existing views, not new tab.',
+      intersections: [
+        { agent: 'hendrix', align: 'close', note: '"Little Wing" cascading embellishments ARE sequential arpeggio paths — filter 3 (chord tones in penta)' },
+        { agent: 'evh',     align: 'close', note: 'Must show wide-interval connections (tapping zones) — filter 1 (intervallic expansion)' },
+        { agent: 'srv',     align: 'close', note: '"Lenny" = Emaj9 arpeggios across neck — filter 2 (chord-tone targeting)' },
+        { agent: 'uiux',    align: 'caution', note: 'Connecting lines must not compete with dot hierarchy — filter 2 (visual hierarchy)' },
+        { agent: 'architect', align: 'neutral', note: '~80-120 lines, needs WHERE decision (Scales mode vs Play Mode context) — filter 3 (change cost)' },
+        { agent: 'tone-eng', align: 'neutral', note: 'Arpeggios through clean vs gain sound different — future Layer 11 annotation — filter 3 (gain staging)' },
+      ],
+    },
+    { id: 'triad-chaining', weight: 0, status: 'queued',
+      target: 'Triads chain through progressions with minimal hand movement — inversions selected for voice-leading proximity',
+      current: 'Triads subview shows 3 inversions for ONE chord — no progression-aware chaining',
+      gap: 'No voice-leading optimization across chord changes — the Brewster navigation principle without the navigation',
+      action: 'Priority 6 in Layer 9 build sequence. Depends on arpeggio view.',
+      intersections: [
+        { agent: 'hendrix', align: 'close', note: '"Wind Cries Mary" IS triad chaining — filter 1 (rhythm/lead integration)' },
+        { agent: 'srv',     align: 'close', note: '"Lenny" chord-melody uses chained upper-string triads — filter 2 (chord-tone targeting)' },
+        { agent: 'evh',     align: 'partial', note: 'Less central to EVH vocabulary than arpeggios — filter 5 (rhythm guitar intelligence)' },
+        { agent: 'architect', align: 'caution', note: '~150+ lines, needs new chaining algorithm, moderate coupling — filter 3 (change cost)' },
+        { agent: 'tone-eng', align: 'neutral', note: 'Tight triads need mid-forward amp (Marshall/5150) not scooped (Recto) — filter 3 (gain staging)' },
+      ],
+    },
+    { id: 'song-route', weight: 0, status: 'queued',
+      target: 'Per-song navigation route stored in preset — CAGED zones, targets, approach strategy per section',
+      current: 'Forward Map computes per-chord hints but no persistent route, no section-level aggregation',
+      gap: 'Route is computed but not storable. /distill pipeline has no receiving surface in TONE.',
+      action: 'Priority 7 (last). Depends on items 4-6. Touches PRESETS data model — irreversible.',
+      intersections: [
+        { agent: 'architect', align: 'caution', note: 'PRESETS schema change, save system impact, ~200+ lines — filter 5 (blast radius)' },
+        { agent: 'tone-eng', align: 'close', note: 'Creates receiving surface for /distill output AND future gear annotations — filter 2 (gear mapping)' },
+        { agent: 'uiux',    align: 'close', note: 'New study-speed surface from Library — intentionally dense, not glanceable — filter 4 (cognitive load)' },
+        { agent: 'hendrix', align: 'close', note: 'Route through "Little Wing" IS the technique bridge in action — filter 4 (physical instrument)' },
+        { agent: 'srv',     align: 'partial', note: 'Important but depends on other components — defer — filter 4 (zoom-out preserved)' },
+      ],
+    },
+    { id: 'penta-switch', weight: 2, status: 'gap',
+      target: 'Major pentatonic tones visible over dominant 7th chords alongside minor pentatonic',
+      current: 'Single pentatonic set per key — major penta tones over I7 invisible',
+      gap: 'SRV/Albert King major pentatonic vocabulary over dominant vamps not surfaced',
+      action: 'W2 priority — not yet scheduled in build sequence',
+      intersections: [
+        { agent: 'srv',     align: 'close', note: 'Core vocabulary — major penta sweetness over I7 — filter 1 (pentatonic as complete system)' },
+        { agent: 'hendrix', align: 'close', note: 'Freely mixed major/minor penta over E7 vamps — filter 2 (blues foundation)' },
+        { agent: 'guitar-sys', align: 'caution', note: 'Engine-level change: one-penta-per-key model needs rethinking — filter 2 (completeness)' },
+        { agent: 'architect', align: 'caution', note: 'Cross-cutting — affects Play Mode, Scales overlay, insight cards — filter 3 (change cost)' },
+      ],
+    },
+    // ── Resolved loops (closed) ──
+    { id: '7sharp9', weight: 3, status: 'done',
+      target: '7#9 chord type in engine — E7#9 parses and analyzes correctly',
+      current: 'Resolved 3.8: CHORD_FORMULAS, QUALITY_SUFFIXES, PLAY_CHORD_INTERVALS, Chords dropdown, SUFFIX_DISPLAY',
+      gap: 'Closed',
+      action: 'Complete',
+      intersections: [
+        { agent: 'hendrix', align: 'close', note: 'The Hendrix chord — "Purple Haze," "Foxy Lady" — filter 2 (blues foundation)' },
+        { agent: 'guitar-sys', align: 'close', note: 'Formula [0,4,7,10,3] verified correct — filter 1 (theory correctness)' },
+      ],
+    },
+    { id: 'penta-pathways-ext', weight: 3, status: 'done',
+      target: 'Pentatonic expansion pathways for Dorian (natural 6th) and Blues (♭5)',
+      current: 'Resolved 3.8: PENTA_PATHWAYS_EXT, findAllPentaPathways(), insight cards surface all expansions',
+      gap: 'Closed',
+      action: 'Complete',
+      intersections: [
+        { agent: 'hendrix', align: 'close', note: 'Dorian 6th is the Hendrix note — filter 5 (Dorian extension)' },
+        { agent: 'srv',     align: 'close', note: 'Blues b5 is fundamental vocabulary — filter 1 (pentatonic as complete system)' },
+        { agent: 'guitar-sys', align: 'close', note: 'Set differences verified: {2,9} and {6} correct — filter 1 (theory correctness)' },
+      ],
+    },
   ],
 
   features: [
@@ -6501,6 +6562,54 @@ const AGENT_DASHBOARD = {
 };
 
 function renderDashboard() {
+  // ── Active Control Loops with Intersection Maps ──
+  const loEl = document.getElementById('dash-loops');
+  if (loEl) {
+    const alignColor = { close: 'var(--c-IV)', partial: 'var(--amber)', caution: 'var(--c-I)', neutral: 'var(--text-dim)' };
+    const alignIcon = { close: '●', partial: '◐', caution: '▲', neutral: '○' };
+    const statusClass = { done: 'dash-status-done', gap: 'dash-status-gap', queued: 'dash-status-gap', 'in_progress': 'dash-status-gap' };
+
+    // Active loops first, then resolved
+    const active = AGENT_DASHBOARD.loops.filter(l => l.status !== 'done');
+    const resolved = AGENT_DASHBOARD.loops.filter(l => l.status === 'done');
+
+    function renderLoop(l) {
+      const sc = statusClass[l.status] || 'dash-status-future';
+      const wClass = l.weight >= 3 ? 'dash-w3' : l.weight >= 2 ? 'dash-w2' : 'dash-w1';
+      const isResolved = l.status === 'done';
+
+      const intersectionHtml = l.intersections.map(ix => {
+        const col = alignColor[ix.align];
+        const icon = alignIcon[ix.align];
+        return `<div style="display:flex;align-items:flex-start;gap:0.5rem;padding:0.25rem 0;font-size:0.65rem;line-height:1.4">
+          <span style="color:${col};flex-shrink:0;width:12px;text-align:center">${icon}</span>
+          <span class="dash-agent-tag dash-tag-${ix.agent}" style="flex-shrink:0">${ix.agent}</span>
+          <span style="color:var(--text-dim)">${ix.note}</span>
+        </div>`;
+      }).join('');
+
+      return `<div class="dash-item" style="flex-direction:column;align-items:stretch;padding:0.75rem 0;${isResolved ? 'opacity:0.5;' : ''}">
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+          <span class="dash-weight ${wClass}">W${l.weight}</span>
+          <span class="dash-status ${sc}">${l.status}</span>
+          <strong style="color:var(--text-hi);flex:1">${l.target}</strong>
+        </div>
+        ${!isResolved ? `<div style="display:grid;grid-template-columns:auto 1fr;gap:0.15rem 0.6rem;margin:0.3rem 0 0.3rem 2.8rem;font-size:0.65rem">
+          <span style="color:var(--amber)">current:</span><span style="color:var(--text-dim)">${l.current}</span>
+          <span style="color:var(--c-I)">gap:</span><span style="color:var(--text)">${l.gap}</span>
+          <span style="color:var(--c-IV)">action:</span><span style="color:var(--text-dim)">${l.action}</span>
+        </div>` : ''}
+        <div style="margin:0.3rem 0 0 2.8rem;border-left:2px solid var(--border);padding-left:0.6rem">
+          ${intersectionHtml}
+        </div>
+      </div>`;
+    }
+
+    loEl.innerHTML = active.map(renderLoop).join('')
+      + (resolved.length ? '<div style="margin-top:0.8rem;padding-top:0.5rem;border-top:1px solid var(--border);font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase">// resolved</div>' : '')
+      + resolved.map(renderLoop).join('');
+  }
+
   // ── Alignment scores ──
   const scEl = document.getElementById('dash-scores');
   if (scEl) {
@@ -6520,43 +6629,6 @@ function renderDashboard() {
         </span>
       </div>`;
     }).join('');
-  }
-
-  // ── Priority actions ──
-  const prEl = document.getElementById('dash-priorities');
-  if (prEl) {
-    prEl.innerHTML = AGENT_DASHBOARD.priorities.map(p => {
-      const wClass = p.weight === 3 ? 'dash-w3' : p.weight === 2 ? 'dash-w2' : 'dash-w1';
-      const tags = p.agents.map(a => `<span class="dash-agent-tag dash-tag-${a}">${a}</span>`).join('');
-      return `<div class="dash-item">
-        <span class="dash-weight ${wClass}">W${p.weight}</span>
-        <span style="flex:1">
-          <span class="dash-status dash-status-${p.status}">${p.status}</span>
-          <strong style="color:var(--text-hi)">${p.action}</strong> ${tags}
-          <div style="color:var(--text-dim);margin-top:0.2rem;font-size:0.65rem">${p.detail}</div>
-        </span>
-      </div>`;
-    }).join('');
-  }
-
-  // ── Consensus ──
-  const coEl = document.getElementById('dash-consensus');
-  if (coEl) {
-    coEl.innerHTML = AGENT_DASHBOARD.consensus.map(c =>
-      `<div class="dash-consensus">${c}</div>`
-    ).join('');
-  }
-
-  // ── Conflicts ──
-  const cfEl = document.getElementById('dash-conflicts');
-  if (cfEl) {
-    cfEl.innerHTML = AGENT_DASHBOARD.conflicts.map(c =>
-      `<div class="dash-conflict">
-        <strong>${c.topic}</strong><br>
-        <span style="color:var(--text-dim)">${c.positions}</span><br>
-        <span style="color:var(--c-IV)">Resolution: ${c.resolution}</span>
-      </div>`
-    ).join('');
   }
 
   // ── Feature status ──

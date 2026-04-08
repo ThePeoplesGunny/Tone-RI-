@@ -2586,7 +2586,7 @@
   <button class="io-close" onclick="closeInfoOverlay('workflow-overlay')">✕ close</button>
   <div style="max-width:960px;margin:0 auto">
     <h1>TONE</h1>
-    <div class="io-sub">// app workflow — beta 4.0</div>
+    <div class="io-sub">// app workflow — beta 4.1</div>
   </div>
 
   <div class="io-mission">
@@ -2941,64 +2941,111 @@ function intervalBetween(root, note) {
   return intervalInfo(semi);
 }
 
-// ── Chord formulas (semitone arrays) ─────────────────
-const CHORD_FORMULAS = {
-  major:    { intervals: [0,4,7],      name: 'Major',            formula: 'I  III  V'       },
-  minor:    { intervals: [0,3,7],      name: 'Minor',            formula: 'I  ♭III  V'      },
-  dom7:     { intervals: [0,4,7,10],   name: 'Dominant 7',       formula: 'I  III  V  ♭VII' },
-  maj7:     { intervals: [0,4,7,11],   name: 'Major 7',          formula: 'I  III  V  VII'  },
-  min7:     { intervals: [0,3,7,10],   name: 'Minor 7',          formula: 'I  ♭III  V  ♭VII'},
-  sus2:     { intervals: [0,2,7],      name: 'Sus2',             formula: 'I  II  V'        },
-  sus4:     { intervals: [0,5,7],      name: 'Sus4',             formula: 'I  IV  V'        },
-  dim:      { intervals: [0,3,6],      name: 'Diminished',       formula: 'I  ♭III  ♭V'    },
-  aug:      { intervals: [0,4,8],      name: 'Augmented',        formula: 'I  III  ♭VI'     },
-  add9:     { intervals: [0,4,7,14],   name: 'Add9',             formula: 'I  III  V  II'   },
-  min7b5:   { intervals: [0,3,6,10],   name: 'Minor 7♭5',        formula: 'I  ♭III  ♭V  ♭VII'},
-  dim7:     { intervals: [0,3,6,9],    name: 'Diminished 7',     formula: 'I  ♭III  ♭V  VI' },
-  '6':      { intervals: [0,4,7,9],    name: 'Major 6',          formula: 'I  III  V  VI'   },
-  min6:     { intervals: [0,3,7,9],    name: 'Minor 6',          formula: 'I  ♭III  V  VI'  },
-  '9':      { intervals: [0,4,7,10,14],name: 'Dominant 9',       formula: 'I  III  V  ♭VII  II'},
-  maj9:     { intervals: [0,4,7,11,14],name: 'Major 9',          formula: 'I  III  V  VII  II'},
-  '7#9':    { intervals: [0,4,7,10,3], name: 'Dominant 7♯9',     formula: 'I  III  V  ♭VII  ♯IX'},
-  min9:     { intervals: [0,3,7,10,14],name: 'Minor 9',          formula: 'I  ♭III  V  ♭VII  II'},
-  '13':     { intervals: [0,4,7,10,14,21],name: 'Dominant 13',   formula: 'I  III  V  ♭VII  II  VI'},
-  maj13:    { intervals: [0,4,7,11,14,21],name: 'Major 13',      formula: 'I  III  V  VII  II  VI'},
-  '7sus4':  { intervals: [0,5,7,10],  name: 'Dominant 7sus4',    formula: 'I  IV  V  ♭VII' },
-  aug7:     { intervals: [0,4,8,10],  name: 'Augmented 7',       formula: 'I  III  ♯V  ♭VII'},
+// ── Chord Registry (single source of truth) ──────────
+// Each entry: intervals, name, formula, suffix (display), parseSuffixes (for chord parser)
+const CHORD_REGISTRY = {
+  major:    { intervals: [0,4,7],        name: 'Major',          formula: 'I  III  V',                    suffix: '',      parseSuffixes: ['maj',''] },
+  minor:    { intervals: [0,3,7],        name: 'Minor',          formula: 'I  ♭III  V',                   suffix: 'm',     parseSuffixes: ['m'] },
+  dom7:     { intervals: [0,4,7,10],     name: 'Dominant 7',     formula: 'I  III  V  ♭VII',              suffix: '7',     parseSuffixes: ['7'] },
+  maj7:     { intervals: [0,4,7,11],     name: 'Major 7',        formula: 'I  III  V  VII',               suffix: 'maj7',  parseSuffixes: ['maj7'] },
+  min7:     { intervals: [0,3,7,10],     name: 'Minor 7',        formula: 'I  ♭III  V  ♭VII',             suffix: 'm7',    parseSuffixes: ['m7'] },
+  sus2:     { intervals: [0,2,7],        name: 'Sus2',           formula: 'I  II  V',                     suffix: 'sus2',  parseSuffixes: ['sus2'] },
+  sus4:     { intervals: [0,5,7],        name: 'Sus4',           formula: 'I  IV  V',                     suffix: 'sus4',  parseSuffixes: ['sus4'] },
+  dim:      { intervals: [0,3,6],        name: 'Diminished',     formula: 'I  ♭III  ♭V',                  suffix: 'dim',   parseSuffixes: ['dim'] },
+  aug:      { intervals: [0,4,8],        name: 'Augmented',      formula: 'I  III  ♭VI',                  suffix: 'aug',   parseSuffixes: ['aug'] },
+  add9:     { intervals: [0,4,7,14],     name: 'Add9',           formula: 'I  III  V  II',                suffix: 'add9',  parseSuffixes: ['add9'] },
+  min7b5:   { intervals: [0,3,6,10],     name: 'Minor 7♭5',      formula: 'I  ♭III  ♭V  ♭VII',            suffix: 'm7b5',  parseSuffixes: ['m7b5'] },
+  dim7:     { intervals: [0,3,6,9],      name: 'Diminished 7',   formula: 'I  ♭III  ♭V  VI',              suffix: 'dim7',  parseSuffixes: ['dim7'] },
+  '6':      { intervals: [0,4,7,9],      name: 'Major 6',        formula: 'I  III  V  VI',                suffix: '6',     parseSuffixes: ['6'] },
+  min6:     { intervals: [0,3,7,9],      name: 'Minor 6',        formula: 'I  ♭III  V  VI',               suffix: 'm6',    parseSuffixes: ['m6'] },
+  '9':      { intervals: [0,4,7,10,14],  name: 'Dominant 9',     formula: 'I  III  V  ♭VII  II',          suffix: '9',     parseSuffixes: ['9'] },
+  maj9:     { intervals: [0,4,7,11,14],  name: 'Major 9',        formula: 'I  III  V  VII  II',           suffix: 'maj9',  parseSuffixes: ['maj9'] },
+  '7#9':    { intervals: [0,4,7,10,3],   name: 'Dominant 7♯9',   formula: 'I  III  V  ♭VII  ♯IX',         suffix: '7♯9',   parseSuffixes: ['7#9'] },
+  min9:     { intervals: [0,3,7,10,14],  name: 'Minor 9',        formula: 'I  ♭III  V  ♭VII  II',         suffix: 'm9',    parseSuffixes: ['m9'] },
+  '13':     { intervals: [0,4,7,10,14,21],name:'Dominant 13',    formula: 'I  III  V  ♭VII  II  VI',      suffix: '13',    parseSuffixes: ['13'] },
+  maj13:    { intervals: [0,4,7,11,14,21],name:'Major 13',       formula: 'I  III  V  VII  II  VI',       suffix: 'maj13', parseSuffixes: ['maj13'] },
+  '7sus4':  { intervals: [0,5,7,10],     name: 'Dominant 7sus4', formula: 'I  IV  V  ♭VII',               suffix: '7sus4', parseSuffixes: ['7sus4'] },
+  aug7:     { intervals: [0,4,8,10],     name: 'Augmented 7',    formula: 'I  III  ♯V  ♭VII',             suffix: 'aug7',  parseSuffixes: ['aug7'] },
 };
 
-// ── Chord quality display suffixes (single source of truth) ──
-const SUFFIX_DISPLAY = {
-  major:'',minor:'m',dom7:'7',maj7:'maj7',min7:'m7',sus2:'sus2',sus4:'sus4',
-  dim:'dim',aug:'aug',add9:'add9',min7b5:'m7b5',dim7:'dim7','6':'6',min6:'m6','9':'9',maj9:'maj9','7#9':'7♯9',
-  min9:'m9','13':'13',maj13:'maj13','7sus4':'7sus4',aug7:'aug7'
+// ── Computed views from CHORD_REGISTRY ───────────────
+const CHORD_FORMULAS = Object.fromEntries(
+  Object.entries(CHORD_REGISTRY).map(([k, v]) => [k, { intervals: v.intervals, name: v.name, formula: v.formula }])
+);
+
+const SUFFIX_DISPLAY = Object.fromEntries(
+  Object.entries(CHORD_REGISTRY).map(([k, v]) => [k, v.suffix])
+);
+
+const PLAY_CHORD_INTERVALS = (() => {
+  const map = {};
+  for (const [, v] of Object.entries(CHORD_REGISTRY)) {
+    const collapsed = [...new Set(v.intervals.map(i => ((i % 12) + 12) % 12))].sort((a, b) => a - b);
+    if (!(v.suffix in map)) map[v.suffix] = collapsed;
+    for (const s of v.parseSuffixes) {
+      if (!(s in map)) map[s] = collapsed;
+    }
+  }
+  map['5'] = [0, 7];
+  map['add11'] = [0, 4, 5, 7];
+  map['min'] = map['m'];
+  map['min7'] = map['m7'];
+  map['M7'] = map['maj7'];
+  return map;
+})();
+
+// ── Scale seeds + mode derivation ────────────────────
+const SCALE_SEEDS = {
+  major:           { intervals: [0,2,4,5,7,9,11],             name: 'Major (Ionian)',  mode: 'Ionian' },
+  harmonic_minor:  { intervals: [0,2,3,5,7,8,11],             name: 'Harmonic Minor',  mode: null },
+  melodic_minor:   { intervals: [0,2,3,5,7,9,11],             name: 'Melodic Minor',   mode: null },
+  pentatonic_major:{ intervals: [0,2,4,7,9],                  name: 'Pentatonic Major', mode: null },
+  pentatonic_minor:{ intervals: [0,3,5,7,10],                 name: 'Pentatonic Minor', mode: null },
+  blues:           { intervals: [0,3,5,6,7,10],               name: 'Blues',            mode: null },
+  whole_tone:      { intervals: [0,2,4,6,8,10],               name: 'Whole Tone',       mode: null },
+  diminished:      { intervals: [0,1,3,4,6,7,9,10],           name: 'Diminished (HW)', mode: null },
+  augmented:       { intervals: [0,3,4,7,8,11],               name: 'Augmented',        mode: null },
+  chromatic:       { intervals: [0,1,2,3,4,5,6,7,8,9,10,11], name: 'Chromatic',        mode: null },
 };
 
-// ── Scale formulas (semitone arrays from root) ───────
-const SCALE_FORMULAS = {
-  major:           { intervals: [0,2,4,5,7,9,11],       name: 'Major (Ionian)',        mode: 'Ionian'      },
-  natural_minor:   { intervals: [0,2,3,5,7,8,10],       name: 'Natural Minor',         mode: 'Aeolian'     },
-  harmonic_minor:  { intervals: [0,2,3,5,7,8,11],       name: 'Harmonic Minor',        mode: null          },
-  melodic_minor:   { intervals: [0,2,3,5,7,9,11],       name: 'Melodic Minor',         mode: null          },
-  pentatonic_major:{ intervals: [0,2,4,7,9],            name: 'Pentatonic Major',      mode: null          },
-  pentatonic_minor:{ intervals: [0,3,5,7,10],           name: 'Pentatonic Minor',      mode: null          },
-  blues:           { intervals: [0,3,5,6,7,10],         name: 'Blues',                 mode: null          },
-  dorian:          { intervals: [0,2,3,5,7,9,10],       name: 'Dorian',                mode: 'Mode II'     },
-  phrygian:        { intervals: [0,1,3,5,7,8,10],       name: 'Phrygian',              mode: 'Mode III'    },
-  lydian:          { intervals: [0,2,4,6,7,9,11],       name: 'Lydian',                mode: 'Mode IV'     },
-  mixolydian:      { intervals: [0,2,4,5,7,9,10],       name: 'Mixolydian',            mode: 'Mode V'      },
-  locrian:         { intervals: [0,1,3,5,6,8,10],       name: 'Locrian',               mode: 'Mode VII'    },
-  whole_tone:      { intervals: [0,2,4,6,8,10],         name: 'Whole Tone',            mode: null          },
-  diminished:      { intervals: [0,1,3,4,6,7,9,10],     name: 'Diminished (HW)',       mode: null          },
-  augmented:       { intervals: [0,3,4,7,8,11],         name: 'Augmented',             mode: null          },
-  chromatic:       { intervals: [0,1,2,3,4,5,6,7,8,9,10,11], name: 'Chromatic',        mode: null          },
-};
+function rotateScale(intervals, degree) {
+  const root = intervals[degree];
+  return intervals.map(i => (i - root + 12) % 12).sort((a, b) => a - b);
+}
 
-// Pentatonic ↔ 7-note expansion pathways
+const MODE_DEFS = [
+  // [key,            parent,  degree, name,             mode label]
+  ['natural_minor',  'major', 5,      'Natural Minor',  'Aeolian'],
+  ['dorian',         'major', 1,      'Dorian',         'Mode II'],
+  ['phrygian',       'major', 2,      'Phrygian',       'Mode III'],
+  ['lydian',         'major', 3,      'Lydian',         'Mode IV'],
+  ['mixolydian',     'major', 4,      'Mixolydian',     'Mode V'],
+  ['locrian',        'major', 6,      'Locrian',        'Mode VII'],
+];
+
+// Build SCALE_FORMULAS from seeds + derived modes
+const SCALE_FORMULAS = {};
+for (const [k, v] of Object.entries(SCALE_SEEDS)) {
+  SCALE_FORMULAS[k] = { intervals: v.intervals, name: v.name, mode: v.mode };
+}
+for (const [key, parent, degree, name, modeLabel] of MODE_DEFS) {
+  SCALE_FORMULAS[key] = {
+    intervals: rotateScale(SCALE_SEEDS[parent].intervals, degree),
+    name, mode: modeLabel,
+  };
+}
+
+// ── Pentatonic ↔ parent expansion pathways (addedIntervals computed via set difference) ──
+function scaleSetDifference(parentKey, pentaKey) {
+  const parent = new Set(SCALE_FORMULAS[parentKey].intervals);
+  const penta = new Set(SCALE_FORMULAS[pentaKey].intervals);
+  return [...parent].filter(i => !penta.has(i)).sort((a, b) => a - b);
+}
+
 const PENTA_PATHWAYS = {
   pentatonic_major: {
     parent: 'major',
-    addedIntervals: [5, 11],
+    addedIntervals: scaleSetDifference('major', 'pentatonic_major'),
     headline: 'your pentatonic + 2 notes = Major scale',
     noteDescs: {
       5:  'the 4th — motion, departure, subdominant pull',
@@ -3008,7 +3055,7 @@ const PENTA_PATHWAYS = {
   },
   pentatonic_minor: {
     parent: 'natural_minor',
-    addedIntervals: [2, 8],
+    addedIntervals: scaleSetDifference('natural_minor', 'pentatonic_minor'),
     headline: 'your pentatonic + 2 notes = Natural Minor',
     noteDescs: {
       2:  'the 2nd — color, movement, melodic range',
@@ -3019,13 +3066,11 @@ const PENTA_PATHWAYS = {
 };
 
 // ── Extended pentatonic pathways (same pentatonic, different parent) ──
-// These provide alternative expansion maps when the harmonic context
-// suggests a mode other than the default natural minor/major parent.
 const PENTA_PATHWAYS_EXT = {
   pentatonic_minor__dorian: {
     pentaKey: 'pentatonic_minor',
     parent: 'dorian',
-    addedIntervals: [2, 9],
+    addedIntervals: scaleSetDifference('dorian', 'pentatonic_minor'),
     headline: 'your pentatonic + 2 notes = Dorian mode',
     noteDescs: {
       2:  'the 2nd — melodic range, smooth stepwise motion into the ♭3',
@@ -3036,7 +3081,7 @@ const PENTA_PATHWAYS_EXT = {
   pentatonic_major__mixolydian: {
     pentaKey: 'pentatonic_major',
     parent: 'mixolydian',
-    addedIntervals: [5, 10],
+    addedIntervals: scaleSetDifference('mixolydian', 'pentatonic_major'),
     headline: 'your pentatonic + 2 notes = Mixolydian mode',
     noteDescs: {
       5:  'the 4th — suspension, departure, subdominant pull. The note that makes a dominant chord want to resolve.',
@@ -3047,7 +3092,7 @@ const PENTA_PATHWAYS_EXT = {
   pentatonic_minor__blues: {
     pentaKey: 'pentatonic_minor',
     parent: 'blues',
-    addedIntervals: [6],
+    addedIntervals: scaleSetDifference('blues', 'pentatonic_minor'),
     headline: 'your pentatonic + 1 note = Blues scale',
     noteDescs: {
       6:  'the ♭5 (blue note) — tension, grit, the note that bends between the 4th and 5th. Rest on it for dissonance, pass through it for flavor.',
@@ -4484,56 +4529,97 @@ const FLAT_TO_SHARP = {
   'Bb':'A#','Eb':'D#','Ab':'G#','Db':'C#','Gb':'F#','Cb':'B','Fb':'E'
 };
 
-// ── Quality suffix table (longest first) ────────────
-const QUALITY_SUFFIXES = [
-  { suffix:'maj13', key:'maj13'  },
-  { suffix:'maj9',  key:'maj9'   },
-  { suffix:'maj7',  key:'maj7'   },
-  { suffix:'m7b5',  key:'min7b5' },
-  { suffix:'dim7',  key:'dim7'   },
-  { suffix:'aug7',  key:'aug7'   },
-  { suffix:'7sus4', key:'7sus4'  },
-  { suffix:'7#9',   key:'7#9'    },
-  { suffix:'add9',  key:'add9'   },
-  { suffix:'sus4',  key:'sus4'   },
-  { suffix:'sus2',  key:'sus2'   },
-  { suffix:'m9',    key:'min9'   },
-  { suffix:'m7',    key:'min7'   },
-  { suffix:'m6',    key:'min6'   },
-  { suffix:'dim',   key:'dim'    },
-  { suffix:'aug',   key:'aug'    },
-  { suffix:'maj',   key:'major'  },
-  { suffix:'m',     key:'minor'  },
-  { suffix:'13',    key:'13'     },
-  { suffix:'7',     key:'dom7'   },
-  { suffix:'9',     key:'9'      },
-  { suffix:'6',     key:'6'      },
-  { suffix:'',      key:'major'  },
-];
+// ── Quality suffix table (computed from CHORD_REGISTRY, longest first) ──
+const QUALITY_SUFFIXES = (() => {
+  const pairs = [];
+  for (const [key, v] of Object.entries(CHORD_REGISTRY)) {
+    for (const s of v.parseSuffixes) pairs.push({ suffix: s, key });
+  }
+  // Sort longest-first; empty string (major fallback) naturally lands last
+  pairs.sort((a, b) => b.suffix.length - a.suffix.length);
+  return pairs;
+})();
 
-// ── Diatonic degree tables ───────────────────────────
-const MAJOR_DEGREES = [
-  { numeral:'I',    quality:'major', func:'tonic',       semitones:0  },
-  { numeral:'ii',   quality:'minor', func:'subdominant', semitones:2  },
-  { numeral:'iii',  quality:'minor', func:'tonic',       semitones:4  },
-  { numeral:'IV',   quality:'major', func:'subdominant', semitones:5  },
-  { numeral:'V',    quality:'major', func:'dominant',    semitones:7  },
-  { numeral:'V⁷',   quality:'dom7',  func:'dominant',    semitones:7  },
-  { numeral:'vi',   quality:'minor', func:'tonic',       semitones:9  },
-  { numeral:'vii°', quality:'dim',   func:'dominant',    semitones:11 },
-];
+// ── Scale harmonization engine ───────────────────────
+// Stack thirds on each degree of a 7-note scale to determine triad quality
+function harmonizeScale(scaleKey) {
+  const intervals = SCALE_FORMULAS[scaleKey].intervals;
+  if (intervals.length !== 7) return []; // only 7-note scales harmonize
+  return intervals.map((root, i) => {
+    const third = (intervals[(i + 2) % 7] - root + 12) % 12;
+    const fifth = (intervals[(i + 4) % 7] - root + 12) % 12;
+    let quality;
+    if (third === 4 && fifth === 7) quality = 'major';
+    else if (third === 3 && fifth === 7) quality = 'minor';
+    else if (third === 3 && fifth === 6) quality = 'dim';
+    else if (third === 4 && fifth === 8) quality = 'aug';
+    else quality = 'unknown';
+    return { semitones: root, quality, degree: i };
+  });
+}
 
-const MINOR_DEGREES = [
-  { numeral:'i',    quality:'minor', func:'tonic',       semitones:0  },
-  { numeral:'ii°',  quality:'dim',   func:'subdominant', semitones:2  },
-  { numeral:'III',  quality:'major', func:'mediant',     semitones:3  },
-  { numeral:'iv',   quality:'minor', func:'subdominant', semitones:5  },
-  { numeral:'v',    quality:'minor', func:'dominant',    semitones:7  },
-  { numeral:'V',    quality:'major', func:'dominant',    semitones:7  },
-  { numeral:'V⁷',   quality:'dom7',  func:'dominant',    semitones:7  },
-  { numeral:'VI',   quality:'major', func:'subdominant', semitones:8  },
-  { numeral:'VII',  quality:'major', func:'subtonic',    semitones:10 },
-];
+// Build degree tables from harmonization + editorial conventions
+const MAJOR_FUNCS = ['tonic','subdominant','tonic','subdominant','dominant','tonic','dominant'];
+const MINOR_FUNCS = ['tonic','subdominant','mediant','subdominant','dominant','subdominant','subtonic'];
+const NUMERAL_BASES = ['I','II','III','IV','V','VI','VII'];
+
+function buildDegreeTable(scaleKey, funcs) {
+  const harmonized = harmonizeScale(scaleKey);
+  const degrees = harmonized.map((h, i) => {
+    const base = NUMERAL_BASES[i];
+    const isMaj = h.quality === 'major';
+    const isDim = h.quality === 'dim';
+    const numeral = (isMaj ? base : base.toLowerCase()) + (isDim ? '°' : '');
+    return { numeral, quality: h.quality, func: funcs[i], semitones: h.semitones };
+  });
+  return degrees;
+}
+
+const MAJOR_DEGREES = (() => {
+  const d = buildDegreeTable('major', MAJOR_FUNCS);
+  // Editorial: V⁷ (dominant 7th) is diatonic in practice
+  d.push({ numeral:'V⁷', quality:'dom7', func:'dominant', semitones:7 });
+  return d;
+})();
+
+const MINOR_DEGREES = (() => {
+  const d = buildDegreeTable('natural_minor', MINOR_FUNCS);
+  // Editorial: harmonic minor V (major) and V⁷ are standard in minor keys
+  // Insert after v (degree 4) to maintain original ordering
+  const vIdx = d.findIndex(e => e.semitones === 7);
+  d.splice(vIdx + 1, 0,
+    { numeral:'V', quality:'major', func:'dominant', semitones:7 },
+    { numeral:'V⁷', quality:'dom7', func:'dominant', semitones:7 },
+  );
+  return d;
+})();
+
+// ── Chord identification (reverse lookup: notes → chord) ──
+function identifyChord(noteNames) {
+  const indices = noteNames.map(n => {
+    const norm = NOTE_ALT[n] || n;
+    return NOTES.indexOf(norm);
+  }).filter(i => i >= 0);
+  if (indices.length < 2) return [];
+  const unique = [...new Set(indices)];
+  const results = [];
+  // Try each note as potential root
+  for (const rootIdx of unique) {
+    const intervals = unique.map(i => (i - rootIdx + 12) % 12).sort((a, b) => a - b);
+    const intKey = JSON.stringify(intervals);
+    // Match against CHORD_REGISTRY (mod-12 collapsed)
+    for (const [qualityKey, def] of Object.entries(CHORD_REGISTRY)) {
+      const regIntervals = [...new Set(def.intervals.map(i => ((i % 12) + 12) % 12))].sort((a, b) => a - b);
+      if (JSON.stringify(regIntervals) === intKey) {
+        const root = NOTES[rootIdx];
+        const inversion = unique.indexOf(rootIdx) === 0 ? 'root' :
+          'inversion ' + unique.indexOf(rootIdx);
+        results.push({ root, qualityKey, name: root + def.suffix, inversion });
+      }
+    }
+  }
+  return results;
+}
 
 // ── Chord parser ─────────────────────────────────────
 function parseChordToken(token) {
@@ -4568,20 +4654,18 @@ function parseProgression(input) {
   return { chords, errors };
 }
 
-// ── Diatonic chord builder ───────────────────────────
+// ── Diatonic chord builder (uses harmonizeScale) ────
 function getDiatonicChords(keyRoot, mode) {
-  const scaleIntervals = mode === 'major'
-    ? SCALE_FORMULAS.major.intervals
-    : SCALE_FORMULAS.natural_minor.intervals;
-  const majorQ  = ['major','minor','minor','major','major','minor','dim'];
-  const minorQ  = ['minor','dim','major','minor','minor','major','major'];
-  const majorN  = ['I','ii','iii','IV','V','vi','vii°'];
-  const minorN  = ['i','ii°','III','iv','v','VI','VII'];
-  const quals   = mode === 'major' ? majorQ : minorQ;
-  const nums    = mode === 'major' ? majorN : minorN;
-  return scaleIntervals.map((semi, i) => ({
-    root: noteAt(keyRoot, semi), quality: quals[i], degree: i, numeral: nums[i],
-  }));
+  const scaleKey = mode === 'major' ? 'major' : 'natural_minor';
+  const funcs = mode === 'major' ? MAJOR_FUNCS : MINOR_FUNCS;
+  const harmonized = harmonizeScale(scaleKey);
+  return harmonized.map((h, i) => {
+    const base = NUMERAL_BASES[i];
+    const isMaj = h.quality === 'major';
+    const isDim = h.quality === 'dim';
+    const numeral = (isMaj ? base : base.toLowerCase()) + (isDim ? '°' : '');
+    return { root: noteAt(keyRoot, h.semitones), quality: h.quality, degree: i, numeral };
+  });
 }
 
 // ── Key detection ────────────────────────────────────
@@ -4614,6 +4698,45 @@ function detectKey(parsedChords) {
   return bestKey;
 }
 
+// ── Modulation detection ────────────────────────────
+// Scans a chord progression for key center shifts using a sliding window.
+// Returns array of { index, fromKey, toKey } where modulation is detected.
+function detectModulations(parsedChords, windowSize) {
+  if (!windowSize) windowSize = 4;
+  if (parsedChords.length < windowSize * 2) return [];
+  const modulations = [];
+  const initialKey = detectKey(parsedChords.slice(0, windowSize));
+  if (!initialKey) return [];
+  let currentKey = initialKey;
+  for (let i = windowSize; i <= parsedChords.length - windowSize; i++) {
+    const window = parsedChords.slice(i, i + windowSize);
+    const windowKey = detectKey(window);
+    if (!windowKey) continue;
+    // Check if window key differs from current
+    if (windowKey.root !== currentKey.root || windowKey.mode !== currentKey.mode) {
+      // Confirm: does the new key score significantly better than the old one on this window?
+      const diatonicNew = getDiatonicChords(windowKey.root, windowKey.mode);
+      const dsetNew = new Set(diatonicNew.map(d => d.root + '|' + d.quality));
+      const diatonicOld = getDiatonicChords(currentKey.root, currentKey.mode);
+      const dsetOld = new Set(diatonicOld.map(d => d.root + '|' + d.quality));
+      let scoreNew = 0, scoreOld = 0;
+      for (const c of window) {
+        if (dsetNew.has(c.root + '|' + c.qualityKey)) scoreNew++;
+        if (dsetOld.has(c.root + '|' + c.qualityKey)) scoreOld++;
+      }
+      if (scoreNew > scoreOld + 1) {
+        modulations.push({
+          index: i,
+          fromKey: { root: currentKey.root, mode: currentKey.mode },
+          toKey: { root: windowKey.root, mode: windowKey.mode },
+        });
+        currentKey = windowKey;
+      }
+    }
+  }
+  return modulations;
+}
+
 // ── Chord analysis ───────────────────────────────────
 function funcColor(fn) {
   const map = {
@@ -4624,9 +4747,7 @@ function funcColor(fn) {
 }
 
 function computeNumeral(semi, quality, keyMode) {
-  const majorSemis = [0,2,4,5,7,9,11];
-  const minorSemis = [0,2,3,5,7,8,10];
-  const scaleSemis = !isModeMinor(keyMode) ? majorSemis : minorSemis;
+  const scaleSemis = !isModeMinor(keyMode) ? SCALE_FORMULAS.major.intervals : SCALE_FORMULAS.natural_minor.intervals;
   const bases = ['I','II','III','IV','V','VI','VII'];
   let degIdx = scaleSemis.indexOf(semi), acc = '';
   if (degIdx < 0) {
@@ -4655,23 +4776,30 @@ function computeNumeral(semi, quality, keyMode) {
   return n;
 }
 
+// Modal borrowing detection: computed from parallel scale harmonization + label map
+const MODAL_BORROW_LABELS = (() => {
+  const labels = { major: {}, minor: {} };
+  // Labels encode human editorial judgment about borrowing source
+  // Major key borrows from:
+  labels.major['1:major']  = 'Phrygian (♭II)';
+  labels.major['3:major']  = 'Parallel minor (♭III)';
+  labels.major['5:minor']  = 'Parallel minor (iv)';
+  labels.major['8:major']  = 'Parallel minor (♭VI)';
+  labels.major['10:major'] = 'Mixolydian / Aeolian (♭VII)';
+  labels.major['10:dom7']  = 'Mixolydian (♭VII⁷)';
+  labels.major['0:minor']  = 'Parallel minor (i)';
+  labels.major['2:dim']    = 'Parallel minor (ii°)';
+  labels.major['7:minor']  = 'Parallel minor (v)';
+  // Minor key borrows from:
+  labels.minor['2:major']  = 'Dorian (II)';
+  labels.minor['5:major']  = 'Melodic Minor / Lydian (IV)';
+  labels.minor['0:major']  = 'Parallel major (I)';
+  return labels;
+})();
+
 function checkModalBorrowing(semi, quality, keyMode) {
-  if (!isModeMinor(keyMode)) {
-    if (semi===1  && quality==='major') return 'Phrygian (♭II)';
-    if (semi===3  && quality==='major') return 'Parallel minor (♭III)';
-    if (semi===5  && quality==='minor') return 'Parallel minor (iv)';
-    if (semi===8  && quality==='major') return 'Parallel minor (♭VI)';
-    if (semi===10 && quality==='major') return 'Mixolydian / Aeolian (♭VII)';
-    if (semi===10 && quality==='dom7')  return 'Mixolydian (♭VII⁷)';
-    if (semi===0  && quality==='minor') return 'Parallel minor (i)';
-    if (semi===2  && quality==='dim')   return 'Parallel minor (ii°)';
-    if (semi===7  && quality==='minor') return 'Parallel minor (v)';
-  } else {
-    if (semi===2  && quality==='major') return 'Dorian (II)';
-    if (semi===5  && quality==='major') return 'Melodic Minor / Lydian (IV)';
-    if (semi===0  && quality==='major') return 'Parallel major (I)';
-  }
-  return null;
+  const family = isModeMinor(keyMode) ? 'minor' : 'major';
+  return MODAL_BORROW_LABELS[family][semi + ':' + quality] || null;
 }
 
 function analyzeChord(chord, keyRoot, keyMode) {
@@ -4970,11 +5098,12 @@ function switchHeatMode(mode) {
 // ═══════════════════════════════════════════════════════
 /*@@PRESETS_START@@*/
 const PRESETS = [
-  { id:'amsterdam',    title:'Amsterdam',        artist:'Van Halen',  key:'A',  mode:'major', chords:'A D E',       notes:'' },
-  { id:'top-of-world', title:'Top of the World', artist:'Van Halen',  key:'E',  mode:'major', chords:'E A B C#m D', notes:'' },
-  { id:'5150',         title:'5150',             artist:'Van Halen',  key:'A',  mode:'major', chords:'A G D B',     notes:'' },
-  { id:'poundcake',    title:'Poundcake',        artist:'Van Halen',  key:'E',  mode:'major', chords:'E A B D',     notes:'' },
-  { id:'rock-minor',   title:'Rock Minor',       artist:'',           key:'A',  mode:'minor', chords:'Am G D F',    notes:'' },
+  { id:'amsterdam',    title:'Amsterdam',        artist:'Van Halen',        key:'A',  mode:'major', chords:'A D E',                    notes:'' },
+  { id:'top-of-world', title:'Top of the World', artist:'Van Halen',        key:'E',  mode:'major', chords:'E A B C#m D',              notes:'' },
+  { id:'5150',         title:'5150',             artist:'Van Halen',        key:'A',  mode:'major', chords:'A G D B',                  notes:'' },
+  { id:'poundcake',    title:'Poundcake',        artist:'Van Halen',        key:'E',  mode:'major', chords:'E A B D',                  notes:'' },
+  { id:'rock-minor',   title:'Rock Minor',       artist:'',                 key:'A',  mode:'minor', chords:'Am G D F',                 notes:'' },
+  { id:'would',        title:'Would?',           artist:'Alice In Chains',  key:'F',  mode:'minor', chords:'Fm Gb Bbm Db Db7#9 G Eb',  notes:'Eb tuning (½ down). Test case for 4.1 song-route mapping — see WOULD.md.' },
 ];
 /*@@PRESETS_END@@*/
 
@@ -5023,9 +5152,9 @@ function onPresetChange() {
 // FORWARD MAPPING — Navigation Map (Beta 2.7)
 // ═══════════════════════════════════════════════════════
 
-// Pentatonic intervals (needed by forward map and Play Mode)
-const PENTA_MAJOR_INTERVALS = [0, 2, 4, 7, 9];
-const PENTA_MINOR_INTERVALS  = [0, 3, 5, 7, 10];
+// Pentatonic intervals (derived from SCALE_FORMULAS)
+const PENTA_MAJOR_INTERVALS = SCALE_FORMULAS.pentatonic_major.intervals;
+const PENTA_MINOR_INTERVALS = SCALE_FORMULAS.pentatonic_minor.intervals;
 
 // Mode family — maps any mode value to its major/minor family for engine decisions
 // DEF-17 fix: Library and Decoder now support all 7 modes
@@ -5981,34 +6110,6 @@ renderColorLegends();
 // ══════════════════════════════════════════════════════════════════
 // PLAY MODE
 // ══════════════════════════════════════════════════════════════════
-
-// PENTA_MAJOR_INTERVALS and PENTA_MINOR_INTERVALS defined above (Forward Mapping section)
-
-// Chord quality → semitone intervals
-const PLAY_CHORD_INTERVALS = {
-  '':      [0, 4, 7],
-  'm':     [0, 3, 7],
-  'min':   [0, 3, 7],
-  '7':     [0, 4, 7, 10],
-  'maj7':  [0, 4, 7, 11],
-  'M7':    [0, 4, 7, 11],
-  'm7':    [0, 3, 7, 10],
-  'min7':  [0, 3, 7, 10],
-  'dim':   [0, 3, 6],
-  'dim7':  [0, 3, 6, 9],
-  'aug':   [0, 4, 8],
-  'sus2':  [0, 2, 7],
-  'sus4':  [0, 5, 7],
-  '5':     [0, 7],
-  'add9':  [0, 2, 4, 7],
-  'add11': [0, 4, 5, 7],
-  '7#9':   [0, 3, 4, 7, 10],
-  'm9':    [0, 2, 3, 7, 10],
-  '13':    [0, 2, 4, 7, 9, 10],
-  'maj13': [0, 2, 4, 7, 9, 11],
-  '7sus4': [0, 5, 7, 10],
-  'aug7':  [0, 4, 8, 10],
-};
 
 let playState = { preset: null, activeChord: null, activeChordBtn: null };
 

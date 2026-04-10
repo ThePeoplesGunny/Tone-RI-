@@ -661,6 +661,14 @@
     flex-wrap: wrap;
     margin-bottom: 1.25rem;
   }
+  .fwd-section-header {
+    width: 100%; font-family: var(--mono); font-size: 0.6rem;
+    color: var(--text-dim); padding: 0.2rem 0 0.1rem;
+    border-bottom: 1px solid var(--border); margin-bottom: -0.4rem;
+  }
+  .fwd-section-name { color: var(--text); font-weight: 700; }
+  .fwd-section-zoom-in { color: var(--amber); }
+  .fwd-section-zoom-safe { color: var(--c-IV); }
   .fwd-card {
     background: var(--bg2);
     border: 1px solid var(--border);
@@ -1202,6 +1210,16 @@
     flex-shrink: 0;
     background: var(--bg2);
   }
+  .play-section-group {
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .play-section-divider {
+    font-family: var(--mono); font-size: 0.55rem;
+    color: var(--text-dim); white-space: nowrap;
+    border-right: 1px solid var(--border);
+    padding-right: 0.5rem;
+    line-height: 1.2;
+  }
   .play-chord-btn {
     font-family: var(--sans); font-weight: 700; font-size: 1.5rem;
     padding: 0.55rem 1.1rem;
@@ -1216,6 +1234,32 @@
     border-color: var(--amber); color: var(--amber);
     background: var(--bg);
   }
+  /* Route brief — pre-flight study panel */
+  .play-route-brief {
+    font-family: var(--mono); font-size: 0.65rem;
+    padding: 0.6rem 1.25rem;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .play-route-brief-title {
+    color: var(--amber); font-weight: 700; font-size: 0.7rem;
+    margin-bottom: 0.4rem;
+  }
+  .play-route-table {
+    width: 100%; border-collapse: collapse;
+  }
+  .play-route-table th {
+    text-align: left; color: var(--text-dim); font-weight: 400;
+    padding: 0.15rem 0.6rem 0.15rem 0; border-bottom: 1px solid var(--border);
+    font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .play-route-table td {
+    padding: 0.25rem 0.6rem 0.25rem 0; color: var(--text);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .play-route-zoom-in { color: var(--amber); font-weight: 700; }
+  .play-route-zoom-safe { color: var(--c-IV); }
+  .play-route-notes { color: var(--text-dim); font-style: italic; }
   .play-nav-prompt {
     font-family: var(--mono); font-size: 0.72rem;
     color: var(--text); padding: 0.45rem 1.25rem;
@@ -2586,7 +2630,7 @@
   <button class="io-close" onclick="closeInfoOverlay('workflow-overlay')">✕ close</button>
   <div style="max-width:960px;margin:0 auto">
     <h1>TONE</h1>
-    <div class="io-sub">// app workflow — beta 4.1</div>
+    <div class="io-sub">// app workflow — beta 4.2</div>
   </div>
 
   <div class="io-mission">
@@ -5095,6 +5139,8 @@ function switchHeatMode(mode) {
 // PRESET DATA  (id, title, artist, key, mode, chords)
 // Additional fields for future data entry UI:
 //   genre, year, tempo, capo, notes, tags
+// Optional: sections[] — per-section navigation route (song-route mapping)
+//   { name, chordIdx[], zone, zoneFret, target, approach, zoom, notes }
 // ═══════════════════════════════════════════════════════
 /*@@PRESETS_START@@*/
 const PRESETS = [
@@ -5103,7 +5149,14 @@ const PRESETS = [
   { id:'5150',         title:'5150',             artist:'Van Halen',        key:'A',  mode:'major', chords:'A G D B',                  notes:'' },
   { id:'poundcake',    title:'Poundcake',        artist:'Van Halen',        key:'E',  mode:'major', chords:'E A B D',                  notes:'' },
   { id:'rock-minor',   title:'Rock Minor',       artist:'',                 key:'A',  mode:'minor', chords:'Am G D F',                 notes:'' },
-  { id:'would',        title:'Would?',           artist:'Alice In Chains',  key:'F',  mode:'minor', chords:'Fm Gb Bbm Db Db7#9 G Eb',  notes:'Eb tuning (½ down). Test case for 4.1 song-route mapping — see WOULD.md.' },
+  { id:'would',        title:'Would?',           artist:'Alice In Chains',  key:'F',  mode:'minor', chords:'Fm Gb Bbm Db Db7#9 G Eb',  notes:'Eb tuning (½ down). Song-route test case.',
+    sections: [
+      { name:'Verse',       chordIdx:[0,1],   zone:'E shape',   zoneFret:1,  target:'Ab', approach:'chromatic-below', zoom:'safe',    notes:'i → bII chromatic riff. Pentatonic sits.' },
+      { name:'Pre-Chorus',  chordIdx:[2,3],   zone:'A/G shape', zoneFret:6,  target:'Db', approach:'pentatonic',      zoom:'safe',    notes:'iv → bVI. Shift up the neck.' },
+      { name:'Chorus',      chordIdx:[4,5],   zone:'D/C shape', zoneFret:3,  target:'E',  approach:'chromatic-below', zoom:'zoom-in', notes:'bVI7#9 → bII. Outside key — target chord tones.' },
+      { name:'Turnaround',  chordIdx:[6],     zone:'E shape',   zoneFret:1,  target:'Eb', approach:'pentatonic',      zoom:'safe',    notes:'bVII resolves home. Pentatonic reset.' }
+    ]
+  },
 ];
 /*@@PRESETS_END@@*/
 
@@ -5256,11 +5309,18 @@ function getNearestCAGED(chordRoot, landmarks) {
   return best;
 }
 
-function buildForwardMap(chords, keyRoot, keyMode) {
+function buildForwardMap(chords, keyRoot, keyMode, sections) {
   const landmarks = getPentaLandmarks(keyRoot, keyMode);
   const pentaIntervals = isModeMinor(keyMode) ? PENTA_MINOR_INTERVALS : PENTA_MAJOR_INTERVALS;
   const pentaNotesSet = new Set(pentaIntervals.map(i => noteAt(keyRoot, i)));
 
+  // Build index → section map for section headers
+  const sectionAtIdx = {};
+  if (sections && sections.length) {
+    for (const s of sections) {
+      if (s.chordIdx && s.chordIdx.length) sectionAtIdx[s.chordIdx[0]] = s;
+    }
+  }
 
   // Header: pentatonic landmarks
   let html = '<div class="fwd-map-header">';
@@ -5270,7 +5330,14 @@ function buildForwardMap(chords, keyRoot, keyMode) {
 
   // Cards row
   html += '<div class="fwd-row">';
-  for (const chord of chords) {
+  for (let ci = 0; ci < chords.length; ci++) {
+    const chord = chords[ci];
+    // Section header before first chord of each section
+    if (sectionAtIdx[ci]) {
+      const s = sectionAtIdx[ci];
+      const zoomClass = s.zoom === 'zoom-in' ? 'fwd-section-zoom-in' : 'fwd-section-zoom-safe';
+      html += `<div class="fwd-section-header"><span class="fwd-section-name">${s.name}</span> <span class="${zoomClass}">${s.zone}</span></div>`;
+    }
     const analysis = analyzeChord(chord, keyRoot, keyMode);
     const suffix = SUFFIX_DISPLAY[chord.qualityKey] ?? chord.qualityKey;
     const zoom = getZoomLevel(analysis);
@@ -5303,6 +5370,88 @@ function buildForwardMap(chords, keyRoot, keyMode) {
   return html;
 }
 
+// ── Auto-compute song route from Forward Map logic ──
+function computeDefaultRoute(preset) {
+  const { chords: parsed } = parseProgression(preset.chords);
+  if (!parsed.length) return [];
+
+  const keyRoot = preset.key;
+  const keyMode = preset.mode;
+  const landmarks = getPentaLandmarks(keyRoot, keyMode);
+  const pentaIntervals = isModeMinor(keyMode) ? PENTA_MINOR_INTERVALS : PENTA_MAJOR_INTERVALS;
+  const pentaNotesSet = new Set(pentaIntervals.map(i => noteAt(keyRoot, i)));
+
+  // Compute per-chord route data
+  const perChord = parsed.map((chord, idx) => {
+    const analysis = analyzeChord(chord, keyRoot, keyMode);
+    const zoom = getZoomLevel(analysis);
+    const caged = getNearestCAGED(chord.root, landmarks);
+    const formula = CHORD_FORMULAS[chord.qualityKey];
+    const intervals = formula ? formula.intervals : [0];
+    const target = getTargetNote(chord.root, intervals, pentaNotesSet);
+    return { idx, zoom, zone: caged.name, zoneFret: caged.fret, target: target.note, conflict: target.conflict };
+  });
+
+  // Group consecutive chords sharing the same CAGED zone
+  const sections = [];
+  let current = null;
+  for (const c of perChord) {
+    if (!current || c.zone !== current.zone) {
+      if (current) sections.push(current);
+      current = {
+        name: 'Section ' + (sections.length + 1),
+        chordIdx: [c.idx],
+        zone: c.zone,
+        zoneFret: c.zoneFret,
+        target: c.target,
+        approach: c.conflict ? 'chromatic-below' : 'pentatonic',
+        zoom: c.zoom,
+        notes: ''
+      };
+    } else {
+      current.chordIdx.push(c.idx);
+      // If any chord in section is zoom-in, section is zoom-in
+      if (c.zoom === 'zoom-in') current.zoom = 'zoom-in';
+      if (c.conflict) current.approach = 'chromatic-below';
+    }
+  }
+  if (current) sections.push(current);
+  return sections;
+}
+
+// ── Song route brief — pre-flight study panel ───────
+function renderSongRoute(preset) {
+  const sections = (preset.sections && preset.sections.length)
+    ? preset.sections
+    : computeDefaultRoute(preset);
+  if (!sections.length) return '';
+
+  const { chords: parsed } = parseProgression(preset.chords);
+  const chordNames = parsed.map(c => {
+    const suffix = SUFFIX_DISPLAY[c.qualityKey] ?? c.qualityKey;
+    return c.root + suffix;
+  });
+
+  let html = '<div class="play-route-brief-title">ROUTE BRIEF</div>';
+  html += '<table class="play-route-table">';
+  html += '<tr><th>Section</th><th>Chords</th><th>Zone</th><th>Target</th><th>Zoom</th><th>Notes</th></tr>';
+  for (const s of sections) {
+    const chordList = s.chordIdx.map(i => chordNames[i] || '?').join(', ');
+    const zoomClass = s.zoom === 'zoom-in' ? 'play-route-zoom-in' : 'play-route-zoom-safe';
+    const zoomLabel = s.zoom === 'zoom-in' ? '⚡ zoom in' : '✓ safe';
+    html += '<tr>';
+    html += `<td><strong>${s.name}</strong></td>`;
+    html += `<td>${chordList}</td>`;
+    html += `<td>${s.zone} · fret ${s.zoneFret}</td>`;
+    html += `<td>${s.target}</td>`;
+    html += `<td class="${zoomClass}">${zoomLabel}</td>`;
+    html += `<td class="play-route-notes">${s.notes || ''}</td>`;
+    html += '</tr>';
+  }
+  html += '</table>';
+  return html;
+}
+
 // ── Main decoder render ──────────────────────────────
 function renderDecoder() {
   const keyVal    = document.getElementById('decoder-key').value;
@@ -5314,7 +5463,7 @@ function renderDecoder() {
   const hide = (id) => { const el=document.getElementById(id); if(el) el.style.display='none'; };
   const show = (id) => { const el=document.getElementById(id); if(el) el.style.display='block'; };
 
-  let keyRoot, keyMode, chords, confidence, sourceLabel, progSectionLabel;
+  let keyRoot, keyMode, chords, confidence, sourceLabel, progSectionLabel, activePreset;
   const errorDiv = document.getElementById('decoder-parse-error');
   if (errorDiv) errorDiv.style.display = 'none';
 
@@ -5355,6 +5504,7 @@ function renderDecoder() {
     }
     const preset = PRESETS.find(p => p.id === id);
     if (!preset) return;
+    activePreset = preset;
     keyRoot    = preset.key;
     keyMode    = preset.mode;
     const { chords: parsed } = parseProgression(preset.chords);
@@ -5431,7 +5581,11 @@ function renderDecoder() {
 
   // ── Forward mapping panel ──
   show('decoder-fwd-label');
-  document.getElementById('decoder-forward-map').innerHTML = buildForwardMap(chords, keyRoot, keyMode);
+  // Pass sections for preset mode (section-aware Forward Map)
+  const fwdSections = activePreset
+    ? ((activePreset.sections && activePreset.sections.length) ? activePreset.sections : computeDefaultRoute(activePreset))
+    : null;
+  document.getElementById('decoder-forward-map').innerHTML = buildForwardMap(chords, keyRoot, keyMode, fwdSections);
 
   // ── Heat map / Classify mode ──
   const heatData = buildHeatMap(chords, keyRoot);
@@ -5855,6 +6009,8 @@ function addPresetFromForm() {
     const idx = PRESETS.findIndex(p => p.id === _editingId);
     if (idx < 0) return;
     const preset = { ...PRESETS[idx], title, artist, key, mode, chords, genre, year, tempo, capo, notes, tags };
+    // Staleness guard: if chords changed, route sections are invalid
+    if (chords !== PRESETS[idx].chords) preset.sections = undefined;
     preset.fp = null; // force fingerprint recompute
     ensurePresetFingerprint(preset);
     PRESETS[idx] = preset;
@@ -6125,9 +6281,36 @@ function enterPlayMode(presetId) {
 
   const chords = (preset.chords || '').split(/\s+/).filter(Boolean);
   const strip  = document.getElementById('play-chord-strip');
-  strip.innerHTML = chords.map(c =>
-    `<button class="play-chord-btn" onclick="selectPlayChord('${c}', this)">${c}</button>`
-  ).join('');
+  const sections = (preset.sections && preset.sections.length)
+    ? preset.sections
+    : computeDefaultRoute(preset);
+
+  if (sections.length) {
+    // Section-aware chord strip with dividers
+    let stripHtml = '';
+    for (const s of sections) {
+      stripHtml += `<div class="play-section-group">`;
+      stripHtml += `<div class="play-section-divider">${s.name} · ${s.zone} fret ${s.zoneFret}</div>`;
+      stripHtml += s.chordIdx.map(i => {
+        const c = chords[i] || '?';
+        return `<button class="play-chord-btn" onclick="selectPlayChord('${c}', this)">${c}</button>`;
+      }).join('');
+      stripHtml += `</div>`;
+    }
+    strip.innerHTML = stripHtml;
+  } else {
+    strip.innerHTML = chords.map(c =>
+      `<button class="play-chord-btn" onclick="selectPlayChord('${c}', this)">${c}</button>`
+    ).join('');
+  }
+
+  // Route brief — pre-flight study panel
+  const briefEl = document.getElementById('play-route-brief');
+  if (briefEl) {
+    const briefHtml = renderSongRoute(preset);
+    briefEl.innerHTML = briefHtml;
+    briefEl.style.display = briefHtml ? 'block' : 'none';
+  }
 
   document.getElementById('play-overlay').style.display = 'flex';
 
@@ -6915,6 +7098,7 @@ function renderTriadChain() {
       <div class="play-song-meta" id="play-song-meta">E Major</div>
     </div>
   </div>
+  <div id="play-route-brief" class="play-route-brief" style="display:none"></div>
   <div class="play-chord-strip" id="play-chord-strip"><button class="play-chord-btn" onclick="selectPlayChord(&#39;E&#39;, this)">E</button><button class="play-chord-btn active" onclick="selectPlayChord(&#39;A&#39;, this)">A</button><button class="play-chord-btn" onclick="selectPlayChord(&#39;B&#39;, this)">B</button><button class="play-chord-btn" onclick="selectPlayChord(&#39;C#m&#39;, this)">C#m</button><button class="play-chord-btn" onclick="selectPlayChord(&#39;D&#39;, this)">D</button></div>
   <div class="play-nav-prompt" id="play-nav-prompt"><span class="play-nav-safe">✓</span> <span class="play-nav-role">anchor: </span><span class="play-nav-target">C#</span> <span class="play-nav-role">· major 3rd</span> <span class="play-nav-safe">· color note · in your pentatonic</span></div>
   <div class="play-fretboard-wrap" id="play-fretboard-wrap"><div class="fretboard-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 772 256" preserveAspectRatio="xMidYMid meet" style="font-family:&#39;Space Mono&#39;,monospace; display:block"><circle cx="191" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="307" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="423" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="539" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="713" cy="94.4" r="4" fill="#2a2a2f"></circle><circle cx="713" cy="147.6" r="4" fill="#2a2a2f"></circle><text x="46" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">0</text><text x="104" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">1</text><text x="162" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">2</text><text x="220" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">3</text><text x="278" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">4</text><text x="336" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">5</text><text x="394" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">6</text><text x="452" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">7</text><text x="510" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">8</text><text x="568" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">9</text><text x="626" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">10</text><text x="684" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">11</text><text x="742" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">12</text><rect x="43" y="22" width="5" height="198" fill="#c8c8cc" rx="1"></rect><line x1="46" y1="216" x2="742" y2="216" stroke="#2a2a2f" stroke-width="1"></line><text x="32" y="220" font-size="11" fill="#6a6a78" text-anchor="middle">E</text><line x1="46" y1="178" x2="742" y2="178" stroke="#2a2a2f" stroke-width="1.35"></line><text x="32" y="182" font-size="11" fill="#6a6a78" text-anchor="middle">A</text><line x1="46" y1="140" x2="742" y2="140" stroke="#2a2a2f" stroke-width="1.7"></line><text x="32" y="144" font-size="11" fill="#6a6a78" text-anchor="middle">D</text><line x1="46" y1="102" x2="742" y2="102" stroke="#2a2a2f" stroke-width="2.05"></line><text x="32" y="106" font-size="11" fill="#6a6a78" text-anchor="middle">G</text><line x1="46" y1="64" x2="742" y2="64" stroke="#2a2a2f" stroke-width="2.4"></line><text x="32" y="68" font-size="11" fill="#6a6a78" text-anchor="middle">B</text><line x1="46" y1="26" x2="742" y2="26" stroke="#2a2a2f" stroke-width="2.75"></line><text x="32" y="30" font-size="11" fill="#6a6a78" text-anchor="middle">E</text><line x1="46" y1="22" x2="46" y2="220" stroke="#c8c8cc" stroke-width="1.5"></line><line x1="104" y1="22" x2="104" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="162" y1="22" x2="162" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="220" y1="22" x2="220" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="278" y1="22" x2="278" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="336" y1="22" x2="336" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="394" y1="22" x2="394" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="452" y1="22" x2="452" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="510" y1="22" x2="510" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="568" y1="22" x2="568" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="626" y1="22" x2="626" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="684" y1="22" x2="684" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="742" y1="22" x2="742" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><circle cx="162" cy="216" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="216" r="7" fill="#888" opacity="0.18"></circle><circle cx="452" cy="216" r="7" fill="#888" opacity="0.18"></circle><circle cx="162" cy="178" r="7" fill="#888" opacity="0.18"></circle><circle cx="568" cy="178" r="7" fill="#888" opacity="0.18"></circle><circle cx="684" cy="178" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="140" r="7" fill="#888" opacity="0.18"></circle><circle cx="394" cy="140" r="7" fill="#888" opacity="0.18"></circle><circle cx="568" cy="140" r="7" fill="#888" opacity="0.18"></circle><circle cx="104" cy="102" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="102" r="7" fill="#888" opacity="0.18"></circle><circle cx="684" cy="102" r="7" fill="#888" opacity="0.18"></circle><circle cx="46" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="452" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="568" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="742" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="162" cy="26" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="26" r="7" fill="#888" opacity="0.18"></circle><circle cx="452" cy="26" r="7" fill="#888" opacity="0.18"></circle><circle cx="46" cy="216" r="12" fill="#4a6080" opacity="0.7"></circle><text x="46" y="219" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="336" cy="216" r="12" fill="#4a6080" opacity="0.7"></circle><text x="336" y="219" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="742" cy="216" r="12" fill="#4a6080" opacity="0.7"></circle><text x="742" y="219" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="46" cy="178" r="12" fill="#4a6080" opacity="0.7"></circle><text x="46" y="181" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="452" cy="178" r="12" fill="#4a6080" opacity="0.7"></circle><text x="452" y="181" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="742" cy="178" r="12" fill="#4a6080" opacity="0.7"></circle><text x="742" y="181" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="162" cy="140" r="12" fill="#4a6080" opacity="0.7"></circle><text x="162" y="143" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="452" cy="140" r="12" fill="#4a6080" opacity="0.7"></circle><text x="452" y="143" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="162" cy="102" r="12" fill="#4a6080" opacity="0.7"></circle><text x="162" y="105" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="568" cy="102" r="12" fill="#4a6080" opacity="0.7"></circle><text x="568" y="105" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="336" cy="64" r="12" fill="#4a6080" opacity="0.7"></circle><text x="336" y="67" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="626" cy="64" r="12" fill="#4a6080" opacity="0.7"></circle><text x="626" y="67" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="46" cy="26" r="12" fill="#4a6080" opacity="0.7"></circle><text x="46" y="29" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="336" cy="26" r="12" fill="#4a6080" opacity="0.7"></circle><text x="336" y="29" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="742" cy="26" r="12" fill="#4a6080" opacity="0.7"></circle><text x="742" y="29" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="568" cy="216" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="568" cy="216" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="568" y="220" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="278" cy="178" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="278" cy="178" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="278" y="182" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="684" cy="140" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="684" cy="140" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="684" y="144" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="394" cy="102" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="394" cy="102" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="394" y="106" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="162" cy="64" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="162" cy="64" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="162" y="68" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="568" cy="26" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="568" cy="26" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="568" y="30" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text></svg></div></div>

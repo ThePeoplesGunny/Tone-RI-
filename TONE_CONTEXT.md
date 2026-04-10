@@ -324,7 +324,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 
 ---
 
-## Current Feature State — Beta 4.1 (current baseline)
+## Current Feature State — Beta 4.2 (current baseline)
 
 ### How Features Map to the Structural Skills + New Layers
 
@@ -333,7 +333,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 | Number System | Decoder (analysis, function, tendency, forward map) | **Strong** — most mature layer |
 | Landmark Pentatonic | Play Mode (target note, forward vision, approach notes) + Forward Map (landmark positions) | **Strong** |
 | CAGED | Chords tab: Voicings (CAGED zone voicing map) + Triads (ACE zone model) + Forward Map (nearest shape hint) + Play Mode CAGED overlay | **Strong** |
-| Technique Bridge | Scales tab: Brewster overlay + universal interval colors + Play Mode: CAGED overlay, forward vision, approach notes, root dot shapes + arpeggio view (dual-mode) + triad chaining | **Strong** — algorithmic core (4.1) |
+| Technique Bridge | Scales tab: Brewster overlay + universal interval colors + Play Mode: CAGED overlay, forward vision, approach notes, root dot shapes + arpeggio view (dual-mode) + triad chaining + song-route mapping (per-section navigation) | **Strong** — algorithmic core (4.1) + song-route (4.2) |
 | Protocol Translator | *Not yet built* — Decoder identifies non-diatonic chords, but doesn't frame departures relative to user's SRV protocol | **Gap** |
 | Presentation Layer | Gear inventory (gear.txt) + Tone Engineer agent + /tone-match skill — no in-app UI features yet | **Partial** — pipeline exists, in-app rendering TBD |
 
@@ -464,7 +464,7 @@ LAYER 6 — Physical validation     Pillar 3 — COMPLETE (Beta 2.9)
 LAYER 7 — Cross-tab continuity    COMPLETE (Beta 3.0-3.2)
 LAYER 8 — Theory activation       COMPLETE (Beta 3.3-3.4)
 ─────────────────────────────────────────────────────────────────────
-LAYER 9 — Technique bridge        COMPLETE (Beta 4.1) — engine 100%, algorithmic core (lookup tables → computed). New: identifyChord(), detectModulations(), harmonizeScale(). Deferred to 4.x: song-route (PRESETS schema), penta-switch (engine architecture).
+LAYER 9 — Technique bridge        COMPLETE (Beta 4.2) — engine 100%, algorithmic core (4.1), song-route mapping (4.2). Remaining deferred: penta-switch (engine architecture).
 LAYER 10 — Protocol translator    Harmonic protocol identification, SRV-delta framing
 LAYER 11 — Presentation layer     Gear/signal chain context (scope TBD)
 ```

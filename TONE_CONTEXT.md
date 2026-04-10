@@ -482,7 +482,7 @@ Before writing any code for a new feature or layer, scan the open DEF list. Clas
 - ~~DEF-10~~: resolved in 2.9
 - ~~DEF-14~~: resolved in 3.3
 - ~~DEF-11~~: resolved in 3.6 (heat map mode toggle)
-- DEF-17: Library mode field major/minor only — architectural fix needed
+- ~~DEF-17~~: resolved in 4.0 (all 7 modes supported via isModeMinor())
 - ~~DEF-19~~: resolved in 3.6 (Eb + D standard tunings added)
 - ~~DEF-20~~: resolved in 3.6 (root dot = rounded square across all renderers)
 

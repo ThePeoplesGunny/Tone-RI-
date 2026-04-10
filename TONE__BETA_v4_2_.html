@@ -732,6 +732,13 @@
     color: var(--c-b7);
     margin-top: 0.1rem;
   }
+  .fwd-majpenta-hint {
+    font-family: var(--mono);
+    font-size: 0.52rem;
+    color: var(--c-III);
+    opacity: 0.7;
+    margin-top: 0.1rem;
+  }
 
   #decoder-input { min-width: 260px; }
 
@@ -1283,6 +1290,9 @@
   }
   .play-nav-next-note {
     color: var(--amber); opacity: 0.7;
+  }
+  .play-nav-majpenta {
+    color: var(--c-III); opacity: 0.7; margin-left: 0.3rem;
   }
   .play-fretboard-wrap {
     flex: 1; overflow: auto; padding: 1.25rem 1.25rem 0.5rem;
@@ -5128,6 +5138,36 @@ function renderDorianGhost(keyRoot, chordToneIntervals, chordToneSet, pentaNotes
   return svg;
 }
 
+// Dominant quality: major 3rd (4) + minor 7th (10) — triggers major penta overlay
+function isDominantQuality(intervals) {
+  return intervals.includes(4) && intervals.includes(10);
+}
+
+// Major penta ghost — SRV/Albert King sweet tones over dominant chords
+// Shows chord-root major pentatonic notes not already in key pentatonic or chord tones
+function renderMajorPentaGhost(chordRoot, chordToneIntervals, chordToneSet, pentaNotesSet, tuning, numFrets, nStr, top, left, FS, SS) {
+  if (!isDominantQuality(chordToneIntervals)) return '';
+  const majorPentaNotes = PENTA_MAJOR_INTERVALS.map(i => noteAt(chordRoot, i));
+  // Only show notes that aren't already visible (not in key penta, not chord tones)
+  const ghostNotes = new Set(majorPentaNotes.filter(n => !pentaNotesSet.has(n) && !chordToneSet.has(n)));
+  if (!ghostNotes.size) return '';
+  let svg = '';
+  for (let s = 0; s < nStr; s++) {
+    for (let f = 0; f <= numFrets; f++) {
+      const note = noteFromStringFret(tuning[s], f);
+      if (!ghostNotes.has(note)) continue;
+      const x = f === 0 ? left : left + (f - 0.5) * FS;
+      const y = top + (nStr - 1 - s) * SS;
+      const semi = (noteIndex(note) - noteIndex(chordRoot) + 12) % 12;
+      const iv = intervalInfo(semi);
+      svg += `<circle cx="${x}" cy="${y}" r="8" fill="${iv.color}" opacity="0.25"/>`;
+      svg += `<circle cx="${x}" cy="${y}" r="8" fill="none" stroke="${iv.color}" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.5"/>`;
+      svg += `<text x="${x}" y="${y + 3}" font-size="7" fill="${iv.color}" text-anchor="middle" font-weight="700" opacity="0.55">${note}</text>`;
+    }
+  }
+  return svg;
+}
+
 // ── Heat mode state ──────────────────────────────────
 let currentHeatMode = 'both';
 function switchHeatMode(mode) {
@@ -5363,6 +5403,16 @@ function buildForwardMap(chords, keyRoot, keyMode, sections) {
     const caged = getNearestCAGED(chord.root, landmarks);
     const cagedOpacity = zoom === 'zoom-in' ? '1' : '0.5';
     html += `<div class="fwd-caged-hint" style="opacity:${cagedOpacity}">→ ${caged.name} fret ${caged.fret} (near ${caged.nearLandmark})</div>`;
+
+    // Major penta sweet tones — shown on dominant chord cards
+    if (isDominantQuality(chordToneIntervals)) {
+      const majorPentaNotes = PENTA_MAJOR_INTERVALS.map(i => noteAt(chord.root, i));
+      const chordToneSet = new Set(chordToneIntervals.map(i => noteAt(chord.root, i % 12)));
+      const sweet = majorPentaNotes.filter(n => !pentaNotesSet.has(n) && !chordToneSet.has(n));
+      if (sweet.length) {
+        html += `<div class="fwd-majpenta-hint">♦ major penta: ${sweet.join(', ')}</div>`;
+      }
+    }
 
     html += `</div>`;
   }
@@ -6477,10 +6527,17 @@ function renderPlayFretboard(chordName) {
   const prompt = document.getElementById('play-nav-prompt');
   if (prompt) {
     const posInfo = cagedZone ? ` <span class="play-nav-caged" style="opacity:${cagedZone.isConflict ? '1' : '0.6'}">· ${cagedZone.label} fret ${cagedZone.fret}</span>` : '';
+    // Major penta hint for dominant chords
+    let majPentaCue = '';
+    if (isDominantQuality(chordToneIntervals)) {
+      const mpNotes = PENTA_MAJOR_INTERVALS.map(i => noteAt(chordRoot, i));
+      const sweet = mpNotes.filter(n => !pentaNotesSet.has(n) && !chordToneSet.has(n));
+      if (sweet.length) majPentaCue = ` <span class="play-nav-majpenta">♦ major penta: ${sweet.join(', ')}</span>`;
+    }
     if (target.conflict) {
-      prompt.innerHTML = `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span>${posInfo}${nextCue}`;
+      prompt.innerHTML = `navigate to: <span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span>${posInfo}${majPentaCue}${nextCue}`;
     } else {
-      prompt.innerHTML = `<span class="play-nav-safe">&#10003;</span> <span class="play-nav-role">anchor: </span><span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-safe">· ${target.label}</span>${posInfo}${nextCue}`;
+      prompt.innerHTML = `<span class="play-nav-safe">&#10003;</span> <span class="play-nav-role">anchor: </span><span class="play-nav-target">${target.note}</span> <span class="play-nav-role">· ${target.role}</span> <span class="play-nav-safe">· ${target.label}</span>${posInfo}${majPentaCue}${nextCue}`;
     }
   }
 
@@ -6502,6 +6559,8 @@ function renderPlayFretboard(chordName) {
   if (legendApproach) legendApproach.style.display = approachNoteSet.size > 0 ? 'flex' : 'none';
   const legendDorian = document.getElementById('play-legend-dorian');
   if (legendDorian) legendDorian.style.display = chordToneIntervals.includes(3) ? 'flex' : 'none';
+  const legendMajPenta = document.getElementById('play-legend-majpenta');
+  if (legendMajPenta) legendMajPenta.style.display = isDominantQuality(chordToneIntervals) ? 'flex' : 'none';
 }
 
 function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, chordRoot, targetNote, tuning, numFrets, cagedZone, nextTargetNote, approachNoteSet, chordToneIntervals, keyRoot }) {
@@ -6600,6 +6659,9 @@ function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, chordRoot, targetN
 
   // Pass 1.25 — Dorian ghost (natural 6th over minor chords — modal extension)
   svg += renderDorianGhost(keyRoot, chordToneIntervals, chordToneSet, pentaNotesSet, tuning, numFrets, nStr, top, left, FS, SS);
+
+  // Pass 1.3 — Major penta ghost (sweet tones over dominant chords)
+  svg += renderMajorPentaGhost(chordRoot, chordToneIntervals, chordToneSet, pentaNotesSet, tuning, numFrets, nStr, top, left, FS, SS);
 
   // Pass 1.5 — approach notes (scale tones one semitone from next target)
   if (approachNoteSet && approachNoteSet.size > 0) {
@@ -7130,6 +7192,10 @@ function renderTriadChain() {
     <div class="play-legend-item" id="play-legend-dorian" style="display:none">
       <svg width="18" height="18"><circle cx="9" cy="9" r="7" fill="var(--c-VI)" opacity="0.3"/><circle cx="9" cy="9" r="7" fill="none" stroke="var(--c-VI)" stroke-width="1.5" opacity="0.5"/></svg>
       dorian 6th
+    </div>
+    <div class="play-legend-item" id="play-legend-majpenta" style="display:none">
+      <svg width="18" height="18"><circle cx="9" cy="9" r="7" fill="var(--c-III)" opacity="0.25"/><circle cx="9" cy="9" r="7" fill="none" stroke="var(--c-III)" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.5"/></svg>
+      major penta (sweet)
     </div>
   </div>
 </div>

@@ -3385,6 +3385,18 @@ function assessPlayability(voicingData) {
   return { playable: true, flags, score };
 }
 
+// ── Shared DOM helpers ───────────────────────────────
+function hideEl(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
+function showEl(id) { const el = document.getElementById(id); if (el) el.style.display = 'block'; }
+
+// ── Shared SVG constants ─────────────────────────────
+const SVG_FRET_SPACING = 58;
+const SVG_STRING_SPACING = 38;
+const SVG_LEFT = 46;
+const SVG_TOP = 26;
+const SVG_FRET_MARKERS = [3, 5, 7, 9, 12, 15, 17, 19];
+const SVG_DOUBLE_MARKERS = [12, 24];
+
 // ── SVG Chord Diagram ────────────────────────────────
 
 // ── SVG Fretboard for Scales ─────────────────────────
@@ -3393,10 +3405,10 @@ function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, ov
   const scaleSet = new Set(scaleIntervals.map(i => noteAt(root, i % 12)));
 
   const numStrings = tuningNotes.length;
-  const stringSpacing = 38;
-  const fretSpacing = 58;
-  const left = 46;
-  const top = 26;
+  const stringSpacing = SVG_STRING_SPACING;
+  const fretSpacing = SVG_FRET_SPACING;
+  const left = SVG_LEFT;
+  const top = SVG_TOP;
   const dotR = 15;
   const W = left + numFrets * fretSpacing + 30;
   const H = top + (numStrings - 1) * stringSpacing + 40;
@@ -3405,7 +3417,19 @@ function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, ov
 
   // CAGED zone outline for overlay modes
   if (overlayMode !== 'standard' && ovCtx) {
-    const zones = computeCAGEDZones(ovCtx.chordRoot, numFrets);
+    const _rE = ((noteIndex(ovCtx.chordRoot) - noteIndex('E')) % 12 + 12) % 12;
+    const _rA = ((noteIndex(ovCtx.chordRoot) - noteIndex('A')) % 12 + 12) % 12;
+    const _rD = ((noteIndex(ovCtx.chordRoot) - noteIndex('D')) % 12 + 12) % 12;
+    const _zRaw = [];
+    for (let oct = 0; oct < 2; oct++) {
+      const off = oct * 12;
+      _zRaw.push({ label: 'E',   start: _rE + off, end: _rE + off + 3 });
+      _zRaw.push({ label: 'A/G', start: _rA + off, end: _rA + off + 3 });
+      _zRaw.push({ label: 'D/C', start: _rD + off, end: _rD + off + 2 });
+    }
+    const zones = _zRaw.filter(z => z.start <= numFrets && z.end >= 0)
+      .map(z => ({ ...z, start: Math.max(0, z.start), end: Math.min(numFrets, z.end) }))
+      .sort((a, b) => a.start - b.start);
     // Find nearest zone to chord root position on low E
     const chordRootFret = ((noteIndex(ovCtx.chordRoot) - noteIndex(tuningNotes[0])) % 12 + 12) % 12 || 12;
     let best = zones[0], bestDist = 99;
@@ -3424,14 +3448,12 @@ function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, ov
     }
   }
 
-  // Fret markers (3, 5, 7, 9, 12, 15)
-  const markers = [3, 5, 7, 9, 12, 15, 17, 19];
-  const doubleMarkers = [12, 24];
+  // Fret markers
   for (let f = 0; f <= numFrets; f++) {
-    if (markers.includes(f)) {
+    if (SVG_FRET_MARKERS.includes(f)) {
       const x = left + f * fretSpacing - fretSpacing / 2;
       const yMid = top + (numStrings - 1) * stringSpacing / 2;
-      if (doubleMarkers.includes(f)) {
+      if (SVG_DOUBLE_MARKERS.includes(f)) {
         svg += `<circle cx="${x}" cy="${yMid - stringSpacing * 0.7}" r="4" fill="#2a2a2f"/>`;
         svg += `<circle cx="${x}" cy="${yMid + stringSpacing * 0.7}" r="4" fill="#2a2a2f"/>`;
       } else {
@@ -3692,24 +3714,6 @@ function getCAGEDShapesForRoot(root, tuningNotes, numFrets) {
   return results.sort((a, b) => a.minFret - b.minFret);
 }
 
-// Legacy wrapper for any code that still calls computeCAGEDZones
-function computeCAGEDZones(root, numFrets) {
-  const rE = ((noteIndex(root) - noteIndex('E')) % 12 + 12) % 12; // root fret on low E
-  const rA = ((noteIndex(root) - noteIndex('A')) % 12 + 12) % 12; // root fret on A
-  const rD = ((noteIndex(root) - noteIndex('D')) % 12 + 12) % 12; // root fret on D
-
-  const zones = [];
-  for (let oct = 0; oct < 2; oct++) {
-    const off = oct * 12;
-    zones.push({ label: 'E',   start: rE + off,     end: rE + off + 3 });
-    zones.push({ label: 'A/G', start: rA + off,     end: rA + off + 3 });
-    zones.push({ label: 'D/C', start: rD + off,     end: rD + off + 2 });
-  }
-  return zones.filter(z => z.start <= numFrets && z.end >= 0)
-              .map(z => ({ ...z, start: Math.max(0, z.start), end: Math.min(numFrets, z.end) }))
-              .sort((a, b) => a.start - b.start);
-}
-
 // ── Compute best playable voicing per CAGED zone ────
 // Returns { voicingMap: {"s,f": true}, openZone: "E"|null }
 function computeCAGEDVoicingMap(root, quality, tuningNotes, numFrets) {
@@ -3768,10 +3772,10 @@ function chordFretboardSVG(root, chordIntervals, tuningNotes, numFrets, labelMod
   const chordSet = new Set(chordIntervals.map(i => noteAt(root, i % 12)));
 
   const numStrings = tuningNotes.length;
-  const stringSpacing = 38;
-  const fretSpacing = 58;
-  const left = 46;
-  const top = 26;
+  const stringSpacing = SVG_STRING_SPACING;
+  const fretSpacing = SVG_FRET_SPACING;
+  const left = SVG_LEFT;
+  const top = SVG_TOP;
   const dotR = 15;
   const W = left + numFrets * fretSpacing + 30;
   const H = top + (numStrings - 1) * stringSpacing + 40;
@@ -3779,13 +3783,13 @@ function chordFretboardSVG(root, chordIntervals, tuningNotes, numFrets, labelMod
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace; display:block">`;
 
   // Fret markers
-  const markers = [3, 5, 7, 9, 12, 15, 17, 19];
-  const doubleMarkers = [12, 24];
+
+
   for (let f = 0; f <= numFrets; f++) {
-    if (markers.includes(f)) {
+    if (SVG_FRET_MARKERS.includes(f)) {
       const x = left + f * fretSpacing - fretSpacing / 2;
       const yMid = top + (numStrings - 1) * stringSpacing / 2;
-      if (doubleMarkers.includes(f)) {
+      if (SVG_DOUBLE_MARKERS.includes(f)) {
         svg += `<circle cx="${x}" cy="${yMid - stringSpacing * 0.7}" r="4" fill="#2a2a2f"/>`;
         svg += `<circle cx="${x}" cy="${yMid + stringSpacing * 0.7}" r="4" fill="#2a2a2f"/>`;
       } else {
@@ -4893,21 +4897,21 @@ function buildHeatMap(parsedChords, keyRoot) {
 // ── Heat map SVG ─────────────────────────────────────
 function heatMapSVG(heatData, keyRoot, tuningNotes, numFrets, mode) {
   const numStrings = tuningNotes.length;
-  const fretSpacing = 58, stringSpacing = 30;
-  const left = 46, top = 20, dotR = 12;
+  const fretSpacing = SVG_FRET_SPACING, stringSpacing = 30; // compact spacing for heat map
+  const left = SVG_LEFT, top = 20, dotR = 12;
   const W = left + numFrets * fretSpacing + 30;
   const H = top + (numStrings-1) * stringSpacing + 40;
 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace; display:block">`;
 
   // Fret markers
-  const markers = [3,5,7,9,12,15,17,19];
-  const doubleMarkers = [12,24];
+
+
   for (let f=0; f<=numFrets; f++) {
-    if (markers.includes(f)) {
+    if (SVG_FRET_MARKERS.includes(f)) {
       const x = left + f*fretSpacing - fretSpacing/2;
       const yMid = top + (numStrings-1)*stringSpacing/2;
-      if (doubleMarkers.includes(f)) {
+      if (SVG_DOUBLE_MARKERS.includes(f)) {
         svg += `<circle cx="${x}" cy="${yMid - stringSpacing*0.7}" r="4" fill="#2a2a2f"/>`;
         svg += `<circle cx="${x}" cy="${yMid + stringSpacing*0.7}" r="4" fill="#2a2a2f"/>`;
       } else {
@@ -4989,21 +4993,21 @@ function renderDecoderClassify(keyRoot, keyMode, tuningNotes, numFrets) {
   const pentaNotes = new Set(SCALE_FORMULAS[pentaKey].intervals.map(i => noteAt(keyRoot, i)));
 
   const numStrings = tuningNotes.length;
-  const fretSpacing = 58, stringSpacing = 30;
-  const left = 46, top = 20, dotR = 12;
+  const fretSpacing = SVG_FRET_SPACING, stringSpacing = 30; // compact spacing for classify
+  const left = SVG_LEFT, top = 20, dotR = 12;
   const W = left + numFrets * fretSpacing + 30;
   const H = top + (numStrings - 1) * stringSpacing + 40;
 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace; display:block">`;
 
   // Fret markers
-  const markers = [3,5,7,9,12,15,17,19];
-  const doubleMarkers = [12,24];
+
+
   for (let f = 0; f <= numFrets; f++) {
-    if (markers.includes(f)) {
+    if (SVG_FRET_MARKERS.includes(f)) {
       const x = left + f * fretSpacing - fretSpacing / 2;
       const yMid = top + (numStrings - 1) * stringSpacing / 2;
-      if (doubleMarkers.includes(f)) {
+      if (SVG_DOUBLE_MARKERS.includes(f)) {
         svg += `<circle cx="${x}" cy="${yMid - stringSpacing*0.7}" r="4" fill="#2a2a2f"/>`;
         svg += `<circle cx="${x}" cy="${yMid + stringSpacing*0.7}" r="4" fill="#2a2a2f"/>`;
       } else {
@@ -5470,9 +5474,6 @@ function renderDecoder() {
   const numFrets  = getGlobalFrets();
   const tuningNotes = tuningStr.split(' ');
 
-  const hide = (id) => { const el=document.getElementById(id); if(el) el.style.display='none'; };
-  const show = (id) => { const el=document.getElementById(id); if(el) el.style.display='block'; };
-
   let keyRoot, keyMode, chords, confidence, sourceLabel, progSectionLabel, activePreset;
   const errorDiv = document.getElementById('decoder-parse-error');
   if (errorDiv) errorDiv.style.display = 'none';
@@ -5486,7 +5487,7 @@ function renderDecoder() {
       if (errors.length) errorDiv.textContent = '// unrecognized: ' + errors.join(', ') + '  →  valid: Am  G  F#m7  Bsus4';
     }
     if (!parsed.length) {
-      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label'].forEach(hide);
+      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label'].forEach(hideEl);
       document.getElementById('decoder-forward-map').innerHTML = '';
       document.getElementById('decoder-heatmap').innerHTML = '';
       document.getElementById('decoder-info-bar').innerHTML = '';
@@ -5506,7 +5507,7 @@ function renderDecoder() {
   } else if (keyVal === 'PRESET') {
     const id = document.getElementById('decoder-preset-select').value;
     if (!id) {
-      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label'].forEach(hide);
+      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label'].forEach(hideEl);
       document.getElementById('decoder-forward-map').innerHTML = '';
       document.getElementById('decoder-heatmap').innerHTML = '';
       document.getElementById('decoder-info-bar').innerHTML = '';
@@ -5548,7 +5549,7 @@ function renderDecoder() {
   // Layer 7: write active context for cross-tab propagation
   _activeContext = { keyRoot: keyRoot, keyMode: keyMode, source: sourceLabel || 'manual', activeChordQuality: null, activeChordRoot: null, chords: chords };
 
-  show('decoder-key-bar');
+  showEl('decoder-key-bar');
   document.getElementById('decoder-key-bar').innerHTML = `
     <div class="info-bar" style="margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border);margin-top:0">
       <div class="info-block">
@@ -5584,13 +5585,13 @@ function renderDecoder() {
   }
   progHtml += '</div>';
 
-  show('decoder-prog-label');
+  showEl('decoder-prog-label');
   document.getElementById('decoder-prog-label').textContent = progSectionLabel;
-  show('decoder-progression');
+  showEl('decoder-progression');
   document.getElementById('decoder-progression').innerHTML = progHtml;
 
   // ── Forward mapping panel ──
-  show('decoder-fwd-label');
+  showEl('decoder-fwd-label');
   // Pass sections for preset mode (section-aware Forward Map)
   const fwdSections = activePreset
     ? ((activePreset.sections && activePreset.sections.length) ? activePreset.sections : computeDefaultRoute(activePreset))
@@ -5599,7 +5600,7 @@ function renderDecoder() {
 
   // ── Heat map / Classify mode ──
   const heatData = buildHeatMap(chords, keyRoot);
-  show('decoder-heatmap-label');
+  showEl('decoder-heatmap-label');
 
   // Enable/disable classify button based on active chord selection
   const classifyBtn = document.getElementById('heat-classify-btn');
@@ -6525,17 +6526,17 @@ function renderPlayFretboard(chordName) {
 
 function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, chordRoot, targetNote, tuning, numFrets, cagedZone, nextTargetNote, approachNoteSet, chordToneIntervals, keyRoot }) {
   const nStr = tuning.length;
-  const SS   = 38;
-  const FS   = 58;
-  const left = 46;
-  const top  = 26;
+  const SS   = SVG_STRING_SPACING;
+  const FS   = SVG_FRET_SPACING;
+  const left = SVG_LEFT;
+  const top  = SVG_TOP;
   const W    = left + numFrets * FS + 30;
   const H    = top  + (nStr - 1) * SS + 40;
 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace; display:block">`;
 
   // Fret markers
-  [3,5,7,9,12].forEach(f => {
+  SVG_FRET_MARKERS.filter(f => f <= numFrets).forEach(f => {
     if (f > numFrets) return;
     const x    = left + f * FS - FS / 2;
     const yMid = top + (nStr - 1) * SS / 2;
@@ -6833,7 +6834,7 @@ function triadFullNeckSVG(voicings, tuning, chordTones) {
   svg += `<rect x="${zoneX}" y="${melTop}" width="${zoneW}" height="${melBot - melTop}" rx="4" fill="#85B7EB" fill-opacity="0.05"/>`;
 
   // Fret markers
-  [3,5,7,9,12].forEach(f => {
+  SVG_FRET_MARKERS.filter(f => f <= numFrets).forEach(f => {
     if (f > numFrets) return;
     const x = left + f * FS - FS / 2;
     const yMid = top + (nStr - 1) * SS / 2;

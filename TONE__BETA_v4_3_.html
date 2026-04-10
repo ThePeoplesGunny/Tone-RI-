@@ -6636,11 +6636,13 @@ function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, chordRoot, targetN
         if (note === targetNote) continue; // don't double-render if same note
         const x = f === 0 ? left : left + (f - 0.5) * FS;
         const y = top + (nStr - 1 - s) * SS;
-        // Diamond shape
+        // Diamond shape — slow opacity pulse ("I'm coming next")
         const r = 8;
-        svg += `<polygon points="${x},${y-r} ${x+r},${y} ${x},${y+r} ${x-r},${y}" fill="var(--amber)" opacity="0.25"/>`;
+        svg += `<polygon points="${x},${y-r} ${x+r},${y} ${x},${y+r} ${x-r},${y}" fill="var(--amber)" opacity="0.15">`;
+        svg += `<animate attributeName="opacity" values="0.15;0.35;0.15" dur="2s" repeatCount="indefinite"/></polygon>`;
         const fs = note.length > 2 ? '7' : '8';
-        svg += `<text x="${x}" y="${y + 3}" font-size="${fs}" fill="var(--amber)" text-anchor="middle" font-weight="700" opacity="0.35">${note}</text>`;
+        svg += `<text x="${x}" y="${y + 3}" font-size="${fs}" fill="var(--amber)" text-anchor="middle" font-weight="700" opacity="0.25">`;
+        svg += `<animate attributeName="opacity" values="0.25;0.45;0.25" dur="2s" repeatCount="indefinite"/>${note}</text>`;
       }
     }
   }
@@ -6673,11 +6675,14 @@ function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, chordRoot, targetN
         if (note === targetNote) continue;
         const x = f === 0 ? left : left + (f - 0.5) * FS;
         const y = top + (nStr - 1 - s) * SS;
-        // Small upward triangle
+        // Small upward triangle — gentle upward drift ("pulling toward next target")
         const r = 6;
+        svg += `<g>`;
+        svg += `<animateTransform attributeName="transform" type="translate" values="0,0;0,-2;0,0" dur="1.5s" repeatCount="indefinite"/>`;
         svg += `<polygon points="${x},${y-r} ${x+r},${y+r*0.6} ${x-r},${y+r*0.6}" fill="var(--c-b7)" opacity="0.45"/>`;
         const fs = note.length > 2 ? '7' : '8';
         svg += `<text x="${x}" y="${y + r + 10}" font-size="${fs}" fill="var(--c-b7)" text-anchor="middle" opacity="0.5">${note}</text>`;
+        svg += `</g>`;
       }
     }
   }
@@ -7181,13 +7186,13 @@ function renderTriadChain() {
       <svg width="18" height="18"><rect x="1" y="1" width="16" height="16" rx="3" fill="#888" fill-opacity="0.08" stroke="#888" stroke-width="1" stroke-opacity="0.5"/></svg>
       CAGED zone
     </div>
-    <div class="play-legend-item" id="play-legend-next" style="display:none">
-      <svg width="18" height="18"><polygon points="9,2 16,9 9,16 2,9" fill="var(--amber)" opacity="0.3"/></svg>
-      next target
-    </div>
     <div class="play-legend-item" id="play-legend-approach" style="display:none">
       <svg width="18" height="18"><polygon points="9,3 15,15 3,15" fill="var(--c-b7)" opacity="0.5"/></svg>
       approach note
+    </div>
+    <div class="play-legend-item" id="play-legend-next" style="display:none">
+      <svg width="18" height="18"><polygon points="9,2 16,9 9,16 2,9" fill="var(--amber)" opacity="0.3"/></svg>
+      next target
     </div>
     <div class="play-legend-item" id="play-legend-dorian" style="display:none">
       <svg width="18" height="18"><circle cx="9" cy="9" r="7" fill="var(--c-VI)" opacity="0.3"/><circle cx="9" cy="9" r="7" fill="none" stroke="var(--c-VI)" stroke-width="1.5" opacity="0.5"/></svg>

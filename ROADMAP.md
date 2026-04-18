@@ -6,7 +6,7 @@
 
 ## Next Target
 
-Penta-switch complete (Beta 4.3). All evaluation gaps closed. Zero open defects. Next: pipeline testing on real TiddlyWiki content. Section editor UI (manual route authoring) deferred — auto-compute covers common case.
+Current: Beta 4.3.1 — `|| 12` fret-0 patch on top of 4.3. Zero open defects. Next: pipeline testing on real TiddlyWiki content. Section editor UI (manual route authoring) deferred — auto-compute covers common case.
 
 ---
 
@@ -63,3 +63,4 @@ No open defects. Resolution history in version log.
 | 4.1  | 9 (algorithmic)   | Engine refactored from lookup tables to algorithmic core. CHORD_REGISTRY: single source of truth for all chord data (4 redundant structures → 1 + computed views). SCALE_SEEDS + rotateScale(): 10 seed scales, 6 modes derived by rotation. scaleSetDifference(): pentatonic pathway intervals computed, not hand-typed. harmonizeScale(): stacks thirds on any 7-note scale, derives diatonic degree tables. Modal borrowing detection uses label map. New capabilities: identifyChord(notes) reverse lookup, detectModulations() key center tracking, harmonizeScale() public API. Zero regression — snapshot verified. |
 | 4.2  | 9 (song-route)    | Song-route mapping: per-section navigation routes stored in PRESETS. Schema: additive `sections` array alongside flat `chords` (backward-compatible). computeDefaultRoute() auto-computes sections from Forward Map logic. renderSongRoute() Route Brief panel in Play Mode (pre-flight study). Section-aware chord strip with dividers. Section-grouped Forward Map in Decoder. Staleness guard nulls sections on chord edit. Would? (Alice In Chains) hand-authored as test case. Navigation KPI 8/8 (100%). |
 | 4.3  | 9 (penta-switch)  | Major pentatonic ghost overlay on dominant chords. isDominantQuality() triggers on chords with major 3rd + minor 7th. renderMajorPentaGhost() shows chord-root major penta tones not already visible (key penta and chord tones excluded). Dashed-stroke ghost dots in Play Mode (Pass 1.3), Forward Map "♦ major penta" annotation, nav prompt hint. Additive visual layer — no engine model change. All evaluation gaps closed. |
+| 4.3.1 | 9 (patch) | Fix `\|\| 12` fret-0 collapse in CAGED anchoring. Five sites removed substitution that forced fret 0 → fret 12 when a chord root (or key landmark) matched an open-string note. Affects minor-key Shape 1/4 landmarks and E-shape/A-shape chord positions when the root matches a tuning open string (E chord in standard, A chord in standard, etc.). CAGED zones and landmark positions now anchor correctly in open position. |

@@ -4,7 +4,7 @@ Pre-repo workspace artifacts moved here 2026-04-18 during workspace cleanup.
 
 ## Contents
 
-**Archived HTML versions** — predecessors of current `TONE__BETA_v4_3_.html`:
+**Archived HTML versions** — predecessors of the current HTML in the repo root:
 - `TONE__BETA_v3_3_.html` — not in git history; only copy exists here
 - `TONE__BETA_v3_4_.html` — also preserved in git history
 - `TONE__BETA_v3_5_.html` — also preserved in git history

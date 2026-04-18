@@ -288,7 +288,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 
 ---
 
-## Current Feature State — Beta 4.3 (current baseline)
+## Current Feature State — Beta 4.3.1 (current baseline)
 
 ### How Features Map to the Structural Skills + New Layers
 

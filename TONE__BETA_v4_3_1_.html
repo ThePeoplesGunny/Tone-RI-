@@ -2592,7 +2592,7 @@
   <button class="io-close" onclick="closeInfoOverlay('workflow-overlay')">✕ close</button>
   <div style="max-width:960px;margin:0 auto">
     <h1>TONE</h1>
-    <div class="io-sub">// app workflow — beta 4.3</div>
+    <div class="io-sub">// app workflow — beta 4.3.1</div>
   </div>
 
   <div class="io-mission">
@@ -3423,7 +3423,7 @@ function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, ov
       .map(z => ({ ...z, start: Math.max(0, z.start), end: Math.min(numFrets, z.end) }))
       .sort((a, b) => a.start - b.start);
     // Find nearest zone to chord root position on low E
-    const chordRootFret = ((noteIndex(ovCtx.chordRoot) - noteIndex(tuningNotes[0])) % 12 + 12) % 12 || 12;
+    const chordRootFret = ((noteIndex(ovCtx.chordRoot) - noteIndex(tuningNotes[0])) % 12 + 12) % 12;
     let best = zones[0], bestDist = 99;
     for (const z of zones) {
       const mid = (z.start + z.end) / 2;
@@ -5276,15 +5276,15 @@ function getPentaLandmarks(keyRoot, keyMode) {
   const s4Fret = isModeMinor(keyMode) ? aStringFret : ((aStringFret - 3 + 12) % 12);
 
   return {
-    shape1: s1Fret || 12,  // 0 → 12 to avoid open-string ambiguity
-    shape4: s4Fret || 12,
+    shape1: s1Fret,
+    shape4: s4Fret,
   };
 }
 
 function getNearestCAGED(chordRoot, landmarks) {
   // Find the chord root on E string and A string
-  const ePos = (noteIndex(chordRoot) - noteIndex('E') + 12) % 12 || 12;
-  const aPos = (noteIndex(chordRoot) - noteIndex('A') + 12) % 12 || 12;
+  const ePos = (noteIndex(chordRoot) - noteIndex('E') + 12) % 12;
+  const aPos = (noteIndex(chordRoot) - noteIndex('A') + 12) % 12;
 
   // Three practical CAGED pairs and their fret positions
   const shapes = [

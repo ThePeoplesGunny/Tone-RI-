@@ -116,7 +116,7 @@ You analyze and advise on:
 
 ### Influence Lineage
 - **Influences IN**: Albert King (#1 — bends, behind-the-beat, positional playing), Jimi Hendrix (chord approach, aggression, Strat tone), Lonnie Mack (rockabilly-blues, tremolo bar, speed), Albert Collins (Texas aggression, attack), Buddy Guy (raw power, volume), B.B. King (vibrato, vocal phrasing, major pentatonic), Freddie King (Texas instrumental tradition), Kenny Burrell (jazz chord-melody, "Chitlins con Carne"), Wes Montgomery (chord-melody, octaves), Lightnin' Hopkins (thumb-bass independence)
-- **Influences OUT**: John Mayer (most commercially successful carrier — Strat tone, blues vocab, jazz evolution), Kenny Wayne Shepherd (direct inheritor), Gary Clark Jr. (Austin lineage + genre-blending), Philip Sayce (closest pure tonal inheritor), **Mike McCready / Pearl Jam** (CRITICAL for TONE's Protocol Translator — McCready explicitly cites SRV as primary influence. "Alive" solo = SRV pentatonic in grunge context. "Yellow Ledbetter" = SRV-style blues solo over Hendrix chord progression. Proves SRV vocabulary translates across genre contexts.)
+- **Influences OUT**: John Mayer (most commercially successful carrier — Strat tone, blues vocab, jazz evolution), Kenny Wayne Shepherd (direct inheritor), Gary Clark Jr. (Austin lineage + genre-blending), Philip Sayce (closest pure tonal inheritor), **Mike McCready / Pearl Jam** (McCready explicitly cites SRV as primary influence. "Alive" solo = SRV pentatonic in grunge context. "Yellow Ledbetter" = SRV-style blues solo over Hendrix chord progression. Proves SRV vocabulary translates across genre contexts.)
 
 ## How to Evaluate
 

@@ -147,11 +147,7 @@ The song is fixed. The route through it is fixed. Song by song, route by route, 
 
 ---
 
-## The Three New Layers — March 2026 Expansion
-
-These layers extend the spiral into territory the theory engine alone cannot reach.
-
-### TECHNIQUE BRIDGE (chord-scale overlay + melodic navigation)
+## Technique Bridge — March 2026 Expansion
 
 The engine already knows chord tones in every CAGED zone and scale positions across the neck. What's missing is presenting this data as **melodic navigation patterns** — the view that shows how to *move through* a chord, not just grab it.
 
@@ -170,20 +166,6 @@ Arpeggios are not a separate data type. They are chord tones rendered for sequen
 Approach notes are the missing element. TONE currently shows the target but not the path that leads to it. Voice leading — smooth movement from one chord's notes to the next — is what makes transitions musical rather than mechanical.
 
 **The fretboard standard:** Every fretboard in TONE that serves a playing or navigation function must include: (1) CAGED base map — the zone(s) relevant to current context, always on; (2) note classification — chord tones, passing tones, and approach notes visually distinguished; (3) target note — amber prominence; (4) pentatonic landmarks — Shape 1 and Shape 4 as reference. Reference fretboards (Chords tab, Scales tab) may show the complete system. Playing fretboards (Play Mode) must filter to what matters now.
-
-### PROTOCOL TRANSLATOR (harmonic language identification)
-
-Different artists run different harmonic protocols on the same finite instrument. McCready (Pearl Jam) = SRV protocol — pentatonic/blues foundation, feel-driven, vocal phrasing. Cantrell (Alice in Chains) = EVH protocol — modal, chromatic, structured. The user's hand speaks SRV fluently.
-
-TONE's job: when a song's harmonic language departs from the user's native protocol, identify the departure and provide the specific translation — not a new system, just the delta. "Your pentatonic works over these chords. Over *this* chord, here's what changes."
-
-The influence tree (Hendrix → SRV → McCready / Hendrix → EVH → Cantrell) is context, not content. TONE doesn't store music history — it identifies protocol forks so the player knows which translation to apply.
-
-### PRESENTATION LAYER (gear and signal chain context)
-
-The theory is the transport layer (universal). The fretboard is the physical layer (finite HMI). The gear is the presentation layer — how the signal actually sounds when it reaches the listener.
-
-Scope is TBD. The gear inventory exists (gear.txt). The connection to songs/artists exists conceptually. The concrete features have not been designed.
 
 ---
 
@@ -288,27 +270,9 @@ The failure is specific: SRV forgives pentatonic default because 1-4-5 blues gra
 
 **The specific mechanical problem:** Minor pentatonic gives you the minor 3rd (♭3). Every major chord wants the major 3rd (3). One semitone flat, structurally, every chord change. The ear hears "almost" — not "wrong," not "right." This is not a knowledge gap. It is a navigation gap.
 
-**The fix is not more scales.** It is: when the chord changes, command transfers. Find the target note for the new commander.
-
-**The protocol dimension:** The problem compounds when songs run a different harmonic protocol than the user's SRV-trained default. McCready (Pearl Jam) and Shepherd (Kenny Wayne Shepherd) speak the same blues dialect — Yellow Ledbetter and While We Cry are SRV-compatible. Cantrell (Alice in Chains), Tremonti (Alter Bridge), and EVH run a different protocol. The hand needs a translator, not a replacement language.
+**The fix is not more scales.** It is: when the chord changes, the tonic center has moved. Target a chord tone of the new chord, not the old one.
 
 **The stagnation cycle:** Pick up guitar → attempt song beyond pentatonic comfort zone → pentatonic default fails → feel like a beginner → lose inspiration → put guitar down → stagnate. This is not laziness — it is a rational response to a negative feedback loop caused by the missing information layer between raw data (tab numbers) and knowledge (embodied fretboard navigation).
-
----
-
-## The C2 Navigation Frame (mental model, not UI vocabulary)
-
-This frame maps cleanly to harmonic navigation and is useful to hold while playing:
-
-- **Note attributes:** Every note has a fixed identity (frequency, interval name) AND a contextual role (current chord function). G# is always G#. What changes is who it's reporting to.
-- **OPCON (I chord):** Full authority. Resolution is reporting to OPCON.
-- **TACON (V chord):** Temporary authority. Directs motion toward I. Cannot authorize you to stay.
-- **Direct Support (IV chord):** Supports harmonic motion. Prepares the dominant.
-- **Augmentation (borrowed chords):** Forces from outside the normal chain. ♭VII, ♭VI. Powerful, temporary.
-- **Three body problem (tritone):** Competing gravitational centers. Maximum instability. Resolution = one commander assumes authority.
-- **Stale orders:** Your current problem. The chord changed, command transferred, your hand is still reporting to the old commander (low E root).
-
-This vocabulary stays in the player's head — TONE's UI uses tendency/gravity/target language.
 
 ---
 
@@ -334,7 +298,6 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 | Landmark Pentatonic | Play Mode (target note, forward vision, approach notes) + Forward Map (landmark positions) | **Strong** |
 | CAGED | Chords tab: Voicings (CAGED zone voicing map) + Triads (ACE zone model) + Forward Map (nearest shape hint) + Play Mode CAGED overlay | **Strong** |
 | Technique Bridge | Scales tab: Brewster overlay + universal interval colors + Play Mode: CAGED overlay, forward vision, approach notes, root dot shapes + arpeggio view (dual-mode) + triad chaining + song-route mapping (per-section navigation) | **Strong** — algorithmic core (4.1) + song-route (4.2) |
-| Protocol Translator | *Not yet built* — Decoder identifies non-diatonic chords, but doesn't frame departures relative to user's SRV protocol | **Gap** |
 | Presentation Layer | Gear inventory (gear.txt) + Tone Engineer agent + /tone-match skill — no in-app UI features yet | **Partial** — pipeline exists, in-app rendering TBD |
 
 **The spiral is connected through Layer 7 + Layer 8.** `_activeContext` propagates Decoder key/mode/chord to Chords, Scales, and Theory tabs.
@@ -465,8 +428,6 @@ LAYER 7 — Cross-tab continuity    COMPLETE (Beta 3.0-3.2)
 LAYER 8 — Theory activation       COMPLETE (Beta 3.3-3.4)
 ─────────────────────────────────────────────────────────────────────
 LAYER 9 — Technique bridge        COMPLETE (Beta 4.3) — engine 100%, algorithmic core (4.1), song-route mapping (4.2), penta-switch (4.3). Zero gaps.
-LAYER 10 — Protocol translator    Harmonic protocol identification, SRV-delta framing
-LAYER 11 — Presentation layer     Gear/signal chain context (scope TBD)
 ```
 
 Play Mode and Triads tab serve the navigation chain directly but are not layer-gated — they are UI modes that surface existing math. They can evolve across multiple betas without blocking layer progression.
@@ -498,12 +459,10 @@ Before writing any code for a new feature or layer, scan the open DEF list. Clas
 | Artist A-Z → title sort in Library | Natural browsing for 500+ song catalog. |
 | Tendency labels not identity labels | Minor ≠ sad. Tendency + context = meaning. |
 | No AI sound analysis | Contentious, pay-for-service, error-prone. Deferred. |
-| Android deferred | HTML feature-complete first. |
 | Play Mode target = major 3rd for major chords | The note minor pentatonic always misses. |
 | Play Mode fretboard: 3-level hierarchy | Target must dominate. Everything else is context. |
 | Triads: note names not interval symbols | Mid-play you navigate to a note, not a concept. |
 | Theory: one interval vocabulary | W/H step patterns removed. Colored interval symbols throughout. |
-| C2 frame as mental model only | OPCON/TACON language stays in the player's head — not in the UI. |
 | Three CAGED shape pairs, not five | A/G, E, D/C — the practical shapes pros actually use. |
 | Two landmark pentatonic shapes, not five boxes | Shape 1 (root on E) and Shape 4 (root on A) + diagonal extensions. |
 | Curate and connect, not invent | Universal principles applied with fidelity. No branding, no gatekeeping. |

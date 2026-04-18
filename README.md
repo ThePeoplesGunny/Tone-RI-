@@ -6,7 +6,7 @@
 
 - `TONE__BETA_v4_3_.html` — **Beta 4.3** (current)
 - `dashboard-data.js` — Project dashboard data (KPIs, alignment dimensions, control loops)
-- `gear.txt` — Gear inventory (Layer 11 seed data)
+- `gear.txt` — Gear inventory
 
 ## Documentation
 

@@ -56,7 +56,7 @@ const AGENT_DASHBOARD = {
       drivers: ['PENTA_PATHWAYS_EXT data exists for Dorian + Blues + Mixolydian', 'Insight cards describe extensions in pentatonic view', 'Dorian ghost visible in Play Mode over minor chords (3.9)', 'Chromatic approach notes include half-step below (3.9)', 'Major penta ghost overlay on dominant chords (4.3)'],
       limiters: [],
       linkedLoops: ['penta-switch'],
-      projected: 'At ceiling for Layer 9. Further gains require Layer 10 (Protocol Translator).',
+      projected: 'At ceiling for Layer 9.',
     },
     { label: 'Forward vision / voice leading',
       target: 10, scores: { hendrix: 10, evh: 9, srv: 10 },
@@ -78,22 +78,14 @@ const AGENT_DASHBOARD = {
       target: 8, scores: { hendrix: 6, evh: 5, srv: 7 },
       targetDef: 'Chromatic passing tones, approach notes, and non-diatonic connections are visible as navigation options',
       drivers: ['7#9 chord type added (contains b3 + 3 tension)', 'Blues scale b5 pathway added', 'Chromatic approach notes — half-step below always included (3.9)'],
-      limiters: ['No chromatic enclosure visualization', 'EVH-specific chromatic passing patterns not surfaced — Layer 10 scope'],
+      limiters: ['No chromatic enclosure visualization'],
       linkedLoops: [],
-      projected: 'Further gains require Layer 10 (Protocol Translator).',
-    },
-    { label: 'Protocol translator readiness',
-      target: 4, scores: { hendrix: 2, evh: 2, srv: 2 },
-      targetDef: 'TONE can identify which harmonic protocol a song uses and frame departures relative to the user\'s native protocol',
-      drivers: ['Chord function analysis identifies non-diatonic chords', 'Tendency labels provide directional context'],
-      limiters: ['No protocol identification (blues OS vs modal OS)', 'No user-protocol baseline defined', 'This is Layer 10+ scope — not expected to score high yet'],
-      linkedLoops: [],
-      projected: 'Target is 4 for now — acknowledging the gap exists. Scores will improve when Layer 10 work begins.',
+      projected: 'Stable. Known limiter: chromatic enclosure visualization — not currently scheduled.',
     },
   ],
 
   // ── Active Control Loops ──
-  // Each loop is a Performance Control cycle: target → current → gap → intersections → action → conditions
+  // Each loop: target → current → gap → intersections → action → conditions
   // Intersections show where agent domains converge/conflict on this specific decision
   loops: [
     { id: 'chromatic-approach', weight: 2, status: 'done',
@@ -146,7 +138,7 @@ const AGENT_DASHBOARD = {
         { agent: 'srv',     align: 'close', note: '"Lenny" = Emaj9 arpeggios across neck — filter 2 (chord-tone targeting)' },
         { agent: 'uiux',    align: 'caution', note: 'Connecting lines must not compete with dot hierarchy — filter 2 (visual hierarchy)' },
         { agent: 'architect', align: 'neutral', note: '~80-120 lines, needs WHERE decision (Scales mode vs Play Mode context) — filter 3 (change cost)' },
-        { agent: 'tone-eng', align: 'neutral', note: 'Arpeggios through clean vs gain sound different — future Layer 11 annotation — filter 3 (gain staging)' },
+        { agent: 'tone-eng', align: 'neutral', note: 'Arpeggios through clean vs gain sound different — filter 3 (gain staging)' },
       ],
     },
     { id: 'triad-chaining', weight: 0, status: 'done',
@@ -226,8 +218,6 @@ const AGENT_DASHBOARD = {
     { name: 'Note classification (Decoder)', layer: 'L9',     status: 'done' },
     { name: '7#9 chord type',              layer: 'Engine',  status: 'done' },
     { name: 'Dorian + Blues pentatonic pathways', layer: 'Engine', status: 'done' },
-    { name: 'Protocol Translator',          layer: 'L10',     status: 'future' },
-    { name: 'Presentation Layer (gear)',    layer: 'L11',     status: 'future' },
   ],
 
   // ── Operational Agent System ──
@@ -247,21 +237,6 @@ const AGENT_DASHBOARD = {
     { skill: '/tone-match',  purpose: 'Reference tone → signal chain recipe mapped to user\'s gear with specific settings', status: 'ready' },
     { skill: '/distill',     purpose: 'Master orchestrator: runs both skills, routes through agent quality gates, produces TONE-ready package', status: 'ready' },
   ],
-
-  future: [
-    { item: 'Tapping interval mapping', agent: 'evh', layer: 'L9+',
-      detail: 'Given left-hand position at fret N, show intervals available via tap at N+12, N+7, N+5' },
-    { item: 'Rhythm guitar dynamics / muting spectrum', agent: 'evh', layer: 'L11',
-      detail: 'Palm-mute-to-open transitions as compositional element. Voicing-to-voicing movement.' },
-    { item: 'Dynamics / phrasing encoding', agent: 'srv', layer: 'Out of scope',
-      detail: 'Acknowledged gap: "which note" is solvable, "how to play it" requires the guitar in hand.' },
-    { item: 'Position-specific vocabulary awareness', agent: 'hendrix', layer: 'L10',
-      detail: 'Frets 0-4 = chord-melody zone. Frets 12-15 = lead zone. Different vocabularies by register.' },
-    { item: 'Protocol Translator', agent: 'all', layer: 'L10',
-      detail: 'Identify whether a song runs blues OS (SRV/McCready) or modal OS (EVH/Cantrell). Frame departures relative to user\'s native protocol.' },
-    { item: 'Double-stop (3rds/6ths) navigation', agent: 'hendrix', layer: 'L9+',
-      detail: 'Two-note simultaneous concept requires different rendering paradigm than single-note targeting.' },
-  ]
 };
 
 function computeKPIs() {
@@ -519,20 +494,4 @@ function renderDashboard() {
     }).join('');
   }
 
-  // ── Future layer items ──
-  const fuEl = document.getElementById('dash-future');
-  if (fuEl) {
-    fuEl.innerHTML = AGENT_DASHBOARD.future.map(f => {
-      const tag = f.agent === 'all'
-        ? '<span class="dash-agent-tag dash-tag-hendrix">H</span><span class="dash-agent-tag dash-tag-evh">E</span><span class="dash-agent-tag dash-tag-srv">S</span>'
-        : `<span class="dash-agent-tag dash-tag-${f.agent}">${f.agent}</span>`;
-      return `<div class="dash-item">
-        <span style="color:var(--text-dim);font-size:0.62rem;width:50px;flex-shrink:0">${f.layer}</span>
-        <span style="flex:1">
-          <strong style="color:var(--text-hi)">${f.item}</strong> ${tag}
-          <div style="color:var(--text-dim);margin-top:0.2rem;font-size:0.65rem">${f.detail}</div>
-        </span>
-      </div>`;
-    }).join('');
-  }
 }

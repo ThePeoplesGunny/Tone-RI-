@@ -6,39 +6,19 @@
 
 ## Next Target
 
-Penta-switch complete (Beta 4.3). All evaluation gaps closed. Zero open defects. Next: Layer 10 (Protocol Translator) or pipeline testing on real TiddlyWiki content. Section editor UI (manual route authoring) deferred — auto-compute covers common case.
+Penta-switch complete (Beta 4.3). All evaluation gaps closed. Zero open defects. Next: pipeline testing on real TiddlyWiki content. Section editor UI (manual route authoring) deferred — auto-compute covers common case.
 
 ---
 
 ## Open Technical Debt
 
-*Deferred deficiencies. None are currently blocking. Reviewed before each new layer build.*
-
-| DEF | Location | Severity | Issue | Status |
-|-----|----------|----------|-------|--------|
-| DEF-17 | Library mode field | LOW | Mode dropdown major/minor only — modal songs cannot be accurately recorded | **Closed (4.0)** — all 7 modes supported |
-
-*All other DEFs resolved. See version log for resolution history.*
+No open defects. Resolution history in version log.
 
 ---
 
 ## Future Considerations (Not Scheduled)
 
 **Play Mode — position density / heatmap view:** 5-fret window showing chord tone density rather than full 12-fret board. Reduces visual search area.
-
-**Play Mode — double stop suggestions:** Given active chord, surface 3–4 specific double stops on adjacent strings that include a chord tone.
-
-**Triads — drill mode:** Flashcard loop. Show a chord + string set, ask user to identify which inversion. The internalization mechanism.
-
-**Pre-session briefing card:** One screen, one song, the single thing you need to know. Highest-value/lowest-effort move for actual playing improvement.
-
-**Harmonic decision moment detector:** Decoder mode that identifies which chord in a progression is the pentatonic danger point and surfaces the correct scalar response.
-
-**Library data verification:** Cross-reference user-entered progressions against established sources.
-
-**Android packaging:** Capacitor wrapper. Only begins after feature-complete or explicitly scheduled.
-
-**Marines' Hymn arrangement:** Personal arrangement goal. Tab exists but needs proper harmonic analysis and rendition development through TONE's engine.
 
 ---
 

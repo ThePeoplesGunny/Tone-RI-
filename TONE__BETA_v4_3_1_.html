@@ -1240,6 +1240,37 @@
   .play-route-zoom-in { color: var(--amber); font-weight: 700; }
   .play-route-zoom-safe { color: var(--c-IV); }
   .play-route-notes { color: var(--text-dim); font-style: italic; }
+  /* Tone HUD — section-tagged tone recipe */
+  .play-tone-hud {
+    font-family: var(--mono); font-size: 0.65rem;
+    padding: 0.6rem 1.25rem;
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .play-tone-title {
+    color: var(--amber); font-weight: 700; font-size: 0.7rem;
+    margin-bottom: 0.2rem;
+  }
+  .play-tone-source {
+    color: var(--text-dim); font-style: italic;
+    margin-bottom: 0.3rem;
+  }
+  .play-tone-table {
+    width: 100%; border-collapse: collapse;
+  }
+  .play-tone-table th {
+    text-align: left; color: var(--text-dim); font-weight: 400;
+    padding: 0.15rem 0.6rem 0.15rem 0; border-bottom: 1px solid var(--border);
+    font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .play-tone-table td {
+    padding: 0.2rem 0.6rem 0.2rem 0; color: var(--text);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .play-tone-notes {
+    color: var(--text-dim); font-style: italic;
+    margin-top: 0.4rem;
+  }
   .play-nav-prompt {
     font-family: var(--mono); font-size: 0.72rem;
     color: var(--text); padding: 0.45rem 1.25rem;
@@ -5115,8 +5146,36 @@ const PRESETS = [
       { name:'Turnaround',  chordIdx:[6],     zone:'E shape',   zoneFret:1,  target:'Eb', approach:'pentatonic',      zoom:'safe',    notes:'bVII resolves home. Pentatonic reset.' }
     ]
   },
+  { id:'be-here-now',  title:'Be Here Now',      artist:'Oasis',            key:'B',  mode:'minor', chords:'B5 C#5 A5 E5 G5 A#5',          notes:'Standard tuning, ♩=112. Title track from 1997 album. Power chords throughout. Lead solo in B minor pentatonic shape 1 at fret 7.',
+    sections: [
+      { name:'Intro',       chordIdx:[0],         zone:'E shape', zoneFret:7, target:'B', approach:'pentatonic',      zoom:'safe',    notes:'Sustained B5 establishes the tonic. Held ~7 bars before the C#5-A5 hint introduces the verse motion.', tone:'be-here-now-rhythm' },
+      { name:'Verse',       chordIdx:[1,2,0],     zone:'A shape', zoneFret:5, target:'B', approach:'pentatonic',      zoom:'safe',    notes:'C#5 (fret 9) → A5 (fret 5) → B5 (fret 7) cyclic riff. All diatonic in B minor.',                tone:'be-here-now-rhythm' },
+      { name:'Chorus',      chordIdx:[3,4,2],     zone:'E shape', zoneFret:3, target:'G', approach:'pentatonic',      zoom:'safe',    notes:'iv → ♭VI → ♭VII. E5 (fret 7) → G5 (fret 3) → A5 (fret 5). All diatonic in B minor.',           tone:'be-here-now-rhythm' },
+      { name:'Turnaround',  chordIdx:[2,5,0],     zone:'A shape', zoneFret:5, target:'B', approach:'chromatic-below', zoom:'zoom-in', notes:'♭VII → chromatic A#5 → i. Walk-up resolves to verse return.',                                tone:'be-here-now-rhythm' },
+      { name:'Solo',        chordIdx:[2,5,0,3],   zone:'E shape', zoneFret:7, target:'B', approach:'pentatonic',      zoom:'safe',    notes:'B minor pentatonic shape 1 at fret 7. Lead bends 4th (E) up a whole step. ♭6 (G) used as melodic tension.', tone:'be-here-now-rhythm' },
+      { name:'Outro',       chordIdx:[2,3,0],     zone:'A shape', zoneFret:5, target:'B', approach:'pentatonic',      zoom:'safe',    notes:'♭VII → iv → i with 6th voicings (A6/E6/B6) for color. Resolves home.',                          tone:'be-here-now-rhythm' }
+    ]
+  },
 ];
 /*@@PRESETS_END@@*/
+
+// ── Tone recipes — abstract stage targets + concrete pedal realization ──
+const TONE_RECIPES = {
+  'be-here-now-rhythm': {
+    name: 'Oasis "Be Here Now" Rhythm',
+    source: 'humbucker bridge (PRS Tremonti / Les Paul)',
+    stages: [
+      { fn:'compression',     target:'3-4dB GR, fast attack',                    pedal:'Boss CS-3',           settings:'Sustain 11, Attack min, Lvl unity' },
+      { fn:'front-end-boost', target:'TS-style mid-hump, low drive, high level', pedal:'Maxon OD808',         settings:'Drive 8, Tone 12, Level 2' },
+      { fn:'drive',           target:'JTM45/Plexi crunch, ~70% gain',            pedal:'Wampler Plexi-Drive', settings:'Gain 2, Tone 2-3, Bass OFF' },
+      { fn:'pitch-variance',  target:'±7c detune, ~30% wet',                     pedal:'Boss PS-6 Detune',    settings:'±7c, dry 70 / wet 30' },
+      { fn:'time-variance',   target:'30-50ms slap, single repeat, ~30% wet',    pedal:'TC Flashback',        settings:'2290, 35ms, FB 0, Mix 28' },
+      { fn:'modulation-seam', target:'slow chorus, low depth',                   pedal:'MXR Analog Chorus',   settings:'Rate 9, Depth 8, Lvl low' },
+      { fn:'space',           target:'plate reverb, 1.4s, ~12% wet',             pedal:'TC Hall of Fame 2',   settings:'Plate, 1.4s, Mix 12' }
+    ],
+    notes: 'Track rhythm 2-4x doubled hard L/R for the wall-of-guitars sound. Single-pass sounds thinner than the album by design — track-count problem, not a tone problem.'
+  }
+};
 
 // Populate preset dropdown on load
 function buildPresetDropdown() {
@@ -5385,6 +5444,43 @@ function computeDefaultRoute(preset) {
   }
   if (current) sections.push(current);
   return sections;
+}
+
+// ── Tone HUD — section-tagged tone recipe surface ───
+function renderToneHUD(section) {
+  if (!section || !section.tone) return '';
+  const recipe = TONE_RECIPES[section.tone];
+  if (!recipe) return '';
+  let html = `<div class="play-tone-title">TONE — ${recipe.name}</div>`;
+  if (recipe.source) html += `<div class="play-tone-source">${recipe.source}</div>`;
+  html += '<table class="play-tone-table">';
+  html += '<tr><th>Stage</th><th>Pedal</th><th>Settings</th></tr>';
+  for (const s of recipe.stages) {
+    html += `<tr><td>${s.fn}</td><td>${s.pedal}</td><td>${s.settings}</td></tr>`;
+  }
+  html += '</table>';
+  if (recipe.notes) html += `<div class="play-tone-notes">${recipe.notes}</div>`;
+  return html;
+}
+
+function updateToneHUD(sectionIdx) {
+  const hudEl = document.getElementById('play-tone-hud');
+  if (!hudEl) return;
+  if (!playState.preset || sectionIdx < 0) {
+    hudEl.style.display = 'none';
+    return;
+  }
+  const sections = (playState.preset.sections && playState.preset.sections.length)
+    ? playState.preset.sections
+    : computeDefaultRoute(playState.preset);
+  const section = sections[sectionIdx];
+  if (!section) {
+    hudEl.style.display = 'none';
+    return;
+  }
+  const html = renderToneHUD(section);
+  hudEl.innerHTML = html;
+  hudEl.style.display = html ? 'block' : 'none';
 }
 
 // ── Song route brief — pre-flight study panel ───────
@@ -6253,15 +6349,15 @@ function enterPlayMode(presetId) {
   if (sections.length) {
     // Section-aware chord strip with dividers
     let stripHtml = '';
-    for (const s of sections) {
+    sections.forEach((s, sectionIdx) => {
       stripHtml += `<div class="play-section-group">`;
       stripHtml += `<div class="play-section-divider">${s.name} · ${s.zone} fret ${s.zoneFret}</div>`;
       stripHtml += s.chordIdx.map(i => {
         const c = chords[i] || '?';
-        return `<button class="play-chord-btn" onclick="selectPlayChord('${c}', this)">${c}</button>`;
+        return `<button class="play-chord-btn" data-section-idx="${sectionIdx}" onclick="selectPlayChord('${c}', this)">${c}</button>`;
       }).join('');
       stripHtml += `</div>`;
-    }
+    });
     strip.innerHTML = stripHtml;
   } else {
     strip.innerHTML = chords.map(c =>
@@ -6302,6 +6398,8 @@ function selectPlayChord(chordName, btn) {
   playState.activeChord = chordName;
   playState.activeChordBtn = btn;
   renderPlayFretboard(chordName);
+  const sectionIdx = btn && btn.dataset.sectionIdx != null ? parseInt(btn.dataset.sectionIdx, 10) : -1;
+  updateToneHUD(isNaN(sectionIdx) ? -1 : sectionIdx);
 }
 
 function parsePlayChord(chordName) {
@@ -7082,6 +7180,7 @@ function renderTriadChain() {
   </div>
   <div id="play-route-brief" class="play-route-brief" style="display:none"></div>
   <div class="play-chord-strip" id="play-chord-strip"><button class="play-chord-btn" onclick="selectPlayChord(&#39;E&#39;, this)">E</button><button class="play-chord-btn active" onclick="selectPlayChord(&#39;A&#39;, this)">A</button><button class="play-chord-btn" onclick="selectPlayChord(&#39;B&#39;, this)">B</button><button class="play-chord-btn" onclick="selectPlayChord(&#39;C#m&#39;, this)">C#m</button><button class="play-chord-btn" onclick="selectPlayChord(&#39;D&#39;, this)">D</button></div>
+  <div id="play-tone-hud" class="play-tone-hud" style="display:none"></div>
   <div class="play-nav-prompt" id="play-nav-prompt"><span class="play-nav-safe">✓</span> <span class="play-nav-role">anchor: </span><span class="play-nav-target">C#</span> <span class="play-nav-role">· major 3rd</span> <span class="play-nav-safe">· color note · in your pentatonic</span></div>
   <div class="play-fretboard-wrap" id="play-fretboard-wrap"><div class="fretboard-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 772 256" preserveAspectRatio="xMidYMid meet" style="font-family:&#39;Space Mono&#39;,monospace; display:block"><circle cx="191" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="307" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="423" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="539" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="713" cy="94.4" r="4" fill="#2a2a2f"></circle><circle cx="713" cy="147.6" r="4" fill="#2a2a2f"></circle><text x="46" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">0</text><text x="104" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">1</text><text x="162" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">2</text><text x="220" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">3</text><text x="278" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">4</text><text x="336" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">5</text><text x="394" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">6</text><text x="452" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">7</text><text x="510" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">8</text><text x="568" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">9</text><text x="626" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">10</text><text x="684" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">11</text><text x="742" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">12</text><rect x="43" y="22" width="5" height="198" fill="#c8c8cc" rx="1"></rect><line x1="46" y1="216" x2="742" y2="216" stroke="#2a2a2f" stroke-width="1"></line><text x="32" y="220" font-size="11" fill="#6a6a78" text-anchor="middle">E</text><line x1="46" y1="178" x2="742" y2="178" stroke="#2a2a2f" stroke-width="1.35"></line><text x="32" y="182" font-size="11" fill="#6a6a78" text-anchor="middle">A</text><line x1="46" y1="140" x2="742" y2="140" stroke="#2a2a2f" stroke-width="1.7"></line><text x="32" y="144" font-size="11" fill="#6a6a78" text-anchor="middle">D</text><line x1="46" y1="102" x2="742" y2="102" stroke="#2a2a2f" stroke-width="2.05"></line><text x="32" y="106" font-size="11" fill="#6a6a78" text-anchor="middle">G</text><line x1="46" y1="64" x2="742" y2="64" stroke="#2a2a2f" stroke-width="2.4"></line><text x="32" y="68" font-size="11" fill="#6a6a78" text-anchor="middle">B</text><line x1="46" y1="26" x2="742" y2="26" stroke="#2a2a2f" stroke-width="2.75"></line><text x="32" y="30" font-size="11" fill="#6a6a78" text-anchor="middle">E</text><line x1="46" y1="22" x2="46" y2="220" stroke="#c8c8cc" stroke-width="1.5"></line><line x1="104" y1="22" x2="104" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="162" y1="22" x2="162" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="220" y1="22" x2="220" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="278" y1="22" x2="278" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="336" y1="22" x2="336" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="394" y1="22" x2="394" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="452" y1="22" x2="452" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="510" y1="22" x2="510" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="568" y1="22" x2="568" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="626" y1="22" x2="626" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="684" y1="22" x2="684" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="742" y1="22" x2="742" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><circle cx="162" cy="216" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="216" r="7" fill="#888" opacity="0.18"></circle><circle cx="452" cy="216" r="7" fill="#888" opacity="0.18"></circle><circle cx="162" cy="178" r="7" fill="#888" opacity="0.18"></circle><circle cx="568" cy="178" r="7" fill="#888" opacity="0.18"></circle><circle cx="684" cy="178" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="140" r="7" fill="#888" opacity="0.18"></circle><circle cx="394" cy="140" r="7" fill="#888" opacity="0.18"></circle><circle cx="568" cy="140" r="7" fill="#888" opacity="0.18"></circle><circle cx="104" cy="102" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="102" r="7" fill="#888" opacity="0.18"></circle><circle cx="684" cy="102" r="7" fill="#888" opacity="0.18"></circle><circle cx="46" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="452" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="568" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="742" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="162" cy="26" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="26" r="7" fill="#888" opacity="0.18"></circle><circle cx="452" cy="26" r="7" fill="#888" opacity="0.18"></circle><circle cx="46" cy="216" r="12" fill="#4a6080" opacity="0.7"></circle><text x="46" y="219" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="336" cy="216" r="12" fill="#4a6080" opacity="0.7"></circle><text x="336" y="219" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="742" cy="216" r="12" fill="#4a6080" opacity="0.7"></circle><text x="742" y="219" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="46" cy="178" r="12" fill="#4a6080" opacity="0.7"></circle><text x="46" y="181" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="452" cy="178" r="12" fill="#4a6080" opacity="0.7"></circle><text x="452" y="181" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="742" cy="178" r="12" fill="#4a6080" opacity="0.7"></circle><text x="742" y="181" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="162" cy="140" r="12" fill="#4a6080" opacity="0.7"></circle><text x="162" y="143" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="452" cy="140" r="12" fill="#4a6080" opacity="0.7"></circle><text x="452" y="143" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="162" cy="102" r="12" fill="#4a6080" opacity="0.7"></circle><text x="162" y="105" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="568" cy="102" r="12" fill="#4a6080" opacity="0.7"></circle><text x="568" y="105" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="336" cy="64" r="12" fill="#4a6080" opacity="0.7"></circle><text x="336" y="67" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="626" cy="64" r="12" fill="#4a6080" opacity="0.7"></circle><text x="626" y="67" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="46" cy="26" r="12" fill="#4a6080" opacity="0.7"></circle><text x="46" y="29" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="336" cy="26" r="12" fill="#4a6080" opacity="0.7"></circle><text x="336" y="29" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="742" cy="26" r="12" fill="#4a6080" opacity="0.7"></circle><text x="742" y="29" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="568" cy="216" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="568" cy="216" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="568" y="220" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="278" cy="178" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="278" cy="178" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="278" y="182" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="684" cy="140" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="684" cy="140" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="684" y="144" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="394" cy="102" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="394" cy="102" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="394" y="106" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="162" cy="64" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="162" cy="64" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="162" y="68" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="568" cy="26" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="568" cy="26" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="568" y="30" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text></svg></div></div>
   <div class="play-legend">

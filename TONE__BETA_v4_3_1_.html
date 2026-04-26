@@ -1240,36 +1240,40 @@
   .play-route-zoom-in { color: var(--amber); font-weight: 700; }
   .play-route-zoom-safe { color: var(--c-IV); }
   .play-route-notes { color: var(--text-dim); font-style: italic; }
-  /* Tone HUD — section-tagged tone recipe */
-  .play-tone-hud {
-    font-family: var(--mono); font-size: 0.65rem;
-    padding: 0.6rem 1.25rem;
-    background: var(--bg2); border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
+  /* Tone Setup — pre-flight recipe view in Decoder */
+  .tone-setup-card {
+    font-family: var(--mono); font-size: 0.7rem;
+    padding: 0.8rem 1rem;
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 4px;
+    margin-bottom: 0.75rem;
   }
-  .play-tone-title {
-    color: var(--amber); font-weight: 700; font-size: 0.7rem;
-    margin-bottom: 0.2rem;
-  }
-  .play-tone-source {
-    color: var(--text-dim); font-style: italic;
+  .tone-setup-title {
+    color: var(--amber); font-weight: 700; font-size: 0.85rem;
     margin-bottom: 0.3rem;
   }
-  .play-tone-table {
-    width: 100%; border-collapse: collapse;
+  .tone-setup-source {
+    color: var(--text-dim); font-size: 0.65rem;
+    margin-bottom: 0.2rem;
   }
-  .play-tone-table th {
+  .tone-setup-sections {
+    color: var(--text-dim); font-size: 0.65rem; font-style: italic;
+    margin-bottom: 0.5rem;
+  }
+  .tone-setup-table {
+    width: 100%; border-collapse: collapse; margin-top: 0.4rem;
+  }
+  .tone-setup-table th {
     text-align: left; color: var(--text-dim); font-weight: 400;
-    padding: 0.15rem 0.6rem 0.15rem 0; border-bottom: 1px solid var(--border);
-    font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 0.2rem 0.8rem 0.2rem 0; border-bottom: 1px solid var(--border);
+    font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em;
   }
-  .play-tone-table td {
-    padding: 0.2rem 0.6rem 0.2rem 0; color: var(--text);
+  .tone-setup-table td {
+    padding: 0.25rem 0.8rem 0.25rem 0; color: var(--text);
     border-bottom: 1px solid rgba(255,255,255,0.04);
   }
-  .play-tone-notes {
-    color: var(--text-dim); font-style: italic;
-    margin-top: 0.4rem;
+  .tone-setup-notes {
+    color: var(--text-dim); font-style: italic; font-size: 0.65rem;
+    margin-top: 0.5rem; line-height: 1.4;
   }
   .play-nav-prompt {
     font-family: var(--mono); font-size: 0.72rem;
@@ -2361,6 +2365,8 @@
       <span class="prog-badge badge-secondary">sec. dom</span>
       <div class="prog-source">sec. dominant → A (IV)</div>
     </div></div></div>
+      <div class="section-label" id="decoder-tone-label" style="display: none;">Tone Setup</div>
+      <div id="decoder-tone-setup" style="display: none;"></div>
       <div class="section-label" id="decoder-fwd-label" style="display: block;">Navigation Map</div>
       <div id="decoder-forward-map"><div class="fwd-map-header"><span class="fwd-landmark"><strong>Shape 1</strong> fret 9 (E string)</span><span class="fwd-landmark"><strong>Shape 4</strong> fret 4 (A string)</span></div><div class="fwd-row"><div class="fwd-card"><div class="fwd-chord-label">E</div><div class="fwd-zoom fwd-zoom-safe">✓ pentatonic safe</div><div class="fwd-tendency">home · resolved · stable</div><div class="fwd-target"><span class="fwd-target-dot" style="background:var(--c-III)">G#</span><span class="fwd-target-text">major 3rd</span></div></div><div class="fwd-card"><div class="fwd-chord-label">A</div><div class="fwd-zoom fwd-zoom-safe">✓ pentatonic safe</div><div class="fwd-tendency">motion · leads to V or back to I</div><div class="fwd-target"><span class="fwd-target-dot" style="background:var(--c-VI)">C#</span><span class="fwd-target-text">major 3rd</span></div></div><div class="fwd-card"><div class="fwd-chord-label">B</div><div class="fwd-zoom fwd-zoom-safe">✓ pentatonic safe</div><div class="fwd-tendency">maximum tension · wants to resolve to I</div><div class="fwd-target"><span class="fwd-target-dot" style="background:var(--c-VII)">D#</span><span class="fwd-target-text">major 3rd · outside pentatonic</span></div></div><div class="fwd-card"><div class="fwd-chord-label">C#m</div><div class="fwd-zoom fwd-zoom-safe">✓ pentatonic safe</div><div class="fwd-tendency">relative minor · darker arrival</div><div class="fwd-target"><span class="fwd-target-dot" style="background:var(--c-VI)">C#</span><span class="fwd-target-text">root</span></div></div><div class="fwd-card"><div class="fwd-chord-label">D</div><div class="fwd-zoom fwd-zoom-zoom-in">⚡ zoom in</div><div class="fwd-tendency">dominant tension · resolves to A</div><div class="fwd-target"><span class="fwd-target-dot" style="background:var(--c-II)">F#</span><span class="fwd-target-text">major 3rd</span></div><div class="fwd-caged-hint">→ E shape fret 10 (near Shape 1)</div></div></div></div>
       <div class="section-label" id="decoder-heatmap-label" style="display: block;">Fretboard Heat Map
@@ -5446,41 +5452,35 @@ function computeDefaultRoute(preset) {
   return sections;
 }
 
-// ── Tone HUD — section-tagged tone recipe surface ───
-function renderToneHUD(section) {
-  if (!section || !section.tone) return '';
-  const recipe = TONE_RECIPES[section.tone];
-  if (!recipe) return '';
-  let html = `<div class="play-tone-title">TONE — ${recipe.name}</div>`;
-  if (recipe.source) html += `<div class="play-tone-source">${recipe.source}</div>`;
-  html += '<table class="play-tone-table">';
-  html += '<tr><th>Stage</th><th>Pedal</th><th>Settings</th></tr>';
-  for (const s of recipe.stages) {
-    html += `<tr><td>${s.fn}</td><td>${s.pedal}</td><td>${s.settings}</td></tr>`;
+// ── Tone Setup — pre-flight recipe view in Decoder ──
+function renderToneSetup(preset) {
+  if (!preset || !preset.sections) return '';
+  // Group section names by recipe ID
+  const recipeUsage = {};
+  for (const s of preset.sections) {
+    if (!s.tone) continue;
+    if (!recipeUsage[s.tone]) recipeUsage[s.tone] = [];
+    recipeUsage[s.tone].push(s.name);
   }
-  html += '</table>';
-  if (recipe.notes) html += `<div class="play-tone-notes">${recipe.notes}</div>`;
+  if (Object.keys(recipeUsage).length === 0) return '';
+  let html = '';
+  for (const [recipeId, sectionNames] of Object.entries(recipeUsage)) {
+    const recipe = TONE_RECIPES[recipeId];
+    if (!recipe) continue;
+    html += '<div class="tone-setup-card">';
+    html += `<div class="tone-setup-title">${recipe.name}</div>`;
+    if (recipe.source) html += `<div class="tone-setup-source">Source: ${recipe.source}</div>`;
+    html += `<div class="tone-setup-sections">Used in: ${sectionNames.join(', ')}</div>`;
+    html += '<table class="tone-setup-table">';
+    html += '<tr><th>Stage</th><th>Pedal</th><th>Settings</th></tr>';
+    for (const s of recipe.stages) {
+      html += `<tr><td>${s.fn}</td><td>${s.pedal}</td><td>${s.settings}</td></tr>`;
+    }
+    html += '</table>';
+    if (recipe.notes) html += `<div class="tone-setup-notes">${recipe.notes}</div>`;
+    html += '</div>';
+  }
   return html;
-}
-
-function updateToneHUD(sectionIdx) {
-  const hudEl = document.getElementById('play-tone-hud');
-  if (!hudEl) return;
-  if (!playState.preset || sectionIdx < 0) {
-    hudEl.style.display = 'none';
-    return;
-  }
-  const sections = (playState.preset.sections && playState.preset.sections.length)
-    ? playState.preset.sections
-    : computeDefaultRoute(playState.preset);
-  const section = sections[sectionIdx];
-  if (!section) {
-    hudEl.style.display = 'none';
-    return;
-  }
-  const html = renderToneHUD(section);
-  hudEl.innerHTML = html;
-  hudEl.style.display = html ? 'block' : 'none';
 }
 
 // ── Song route brief — pre-flight study panel ───────
@@ -5537,7 +5537,7 @@ function renderDecoder() {
       if (errors.length) errorDiv.textContent = '// unrecognized: ' + errors.join(', ') + '  →  valid: Am  G  F#m7  Bsus4';
     }
     if (!parsed.length) {
-      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label'].forEach(hideEl);
+      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label','decoder-tone-label','decoder-tone-setup'].forEach(hideEl);
       document.getElementById('decoder-forward-map').innerHTML = '';
       document.getElementById('decoder-heatmap').innerHTML = '';
       document.getElementById('decoder-info-bar').innerHTML = '';
@@ -5557,7 +5557,7 @@ function renderDecoder() {
   } else if (keyVal === 'PRESET') {
     const id = document.getElementById('decoder-preset-select').value;
     if (!id) {
-      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label'].forEach(hideEl);
+      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label','decoder-tone-label','decoder-tone-setup'].forEach(hideEl);
       document.getElementById('decoder-forward-map').innerHTML = '';
       document.getElementById('decoder-heatmap').innerHTML = '';
       document.getElementById('decoder-info-bar').innerHTML = '';
@@ -5639,6 +5639,20 @@ function renderDecoder() {
   document.getElementById('decoder-prog-label').textContent = progSectionLabel;
   showEl('decoder-progression');
   document.getElementById('decoder-progression').innerHTML = progHtml;
+
+  // ── Tone Setup panel — pre-flight pedal recipe (preset mode only, when sections have tone) ──
+  const toneSetupEl   = document.getElementById('decoder-tone-setup');
+  const toneSetupLbl  = document.getElementById('decoder-tone-label');
+  const toneSetupHtml = activePreset ? renderToneSetup(activePreset) : '';
+  if (toneSetupHtml) {
+    toneSetupEl.innerHTML       = toneSetupHtml;
+    toneSetupEl.style.display   = 'block';
+    toneSetupLbl.style.display  = 'block';
+  } else {
+    toneSetupEl.innerHTML       = '';
+    toneSetupEl.style.display   = 'none';
+    toneSetupLbl.style.display  = 'none';
+  }
 
   // ── Forward mapping panel ──
   showEl('decoder-fwd-label');
@@ -6349,15 +6363,15 @@ function enterPlayMode(presetId) {
   if (sections.length) {
     // Section-aware chord strip with dividers
     let stripHtml = '';
-    sections.forEach((s, sectionIdx) => {
+    for (const s of sections) {
       stripHtml += `<div class="play-section-group">`;
       stripHtml += `<div class="play-section-divider">${s.name} · ${s.zone} fret ${s.zoneFret}</div>`;
       stripHtml += s.chordIdx.map(i => {
         const c = chords[i] || '?';
-        return `<button class="play-chord-btn" data-section-idx="${sectionIdx}" onclick="selectPlayChord('${c}', this)">${c}</button>`;
+        return `<button class="play-chord-btn" onclick="selectPlayChord('${c}', this)">${c}</button>`;
       }).join('');
       stripHtml += `</div>`;
-    });
+    }
     strip.innerHTML = stripHtml;
   } else {
     strip.innerHTML = chords.map(c =>
@@ -6398,8 +6412,6 @@ function selectPlayChord(chordName, btn) {
   playState.activeChord = chordName;
   playState.activeChordBtn = btn;
   renderPlayFretboard(chordName);
-  const sectionIdx = btn && btn.dataset.sectionIdx != null ? parseInt(btn.dataset.sectionIdx, 10) : -1;
-  updateToneHUD(isNaN(sectionIdx) ? -1 : sectionIdx);
 }
 
 function parsePlayChord(chordName) {
@@ -7180,7 +7192,6 @@ function renderTriadChain() {
   </div>
   <div id="play-route-brief" class="play-route-brief" style="display:none"></div>
   <div class="play-chord-strip" id="play-chord-strip"><button class="play-chord-btn" onclick="selectPlayChord(&#39;E&#39;, this)">E</button><button class="play-chord-btn active" onclick="selectPlayChord(&#39;A&#39;, this)">A</button><button class="play-chord-btn" onclick="selectPlayChord(&#39;B&#39;, this)">B</button><button class="play-chord-btn" onclick="selectPlayChord(&#39;C#m&#39;, this)">C#m</button><button class="play-chord-btn" onclick="selectPlayChord(&#39;D&#39;, this)">D</button></div>
-  <div id="play-tone-hud" class="play-tone-hud" style="display:none"></div>
   <div class="play-nav-prompt" id="play-nav-prompt"><span class="play-nav-safe">✓</span> <span class="play-nav-role">anchor: </span><span class="play-nav-target">C#</span> <span class="play-nav-role">· major 3rd</span> <span class="play-nav-safe">· color note · in your pentatonic</span></div>
   <div class="play-fretboard-wrap" id="play-fretboard-wrap"><div class="fretboard-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 772 256" preserveAspectRatio="xMidYMid meet" style="font-family:&#39;Space Mono&#39;,monospace; display:block"><circle cx="191" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="307" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="423" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="539" cy="121" r="4" fill="#2a2a2f"></circle><circle cx="713" cy="94.4" r="4" fill="#2a2a2f"></circle><circle cx="713" cy="147.6" r="4" fill="#2a2a2f"></circle><text x="46" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">0</text><text x="104" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">1</text><text x="162" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">2</text><text x="220" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">3</text><text x="278" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">4</text><text x="336" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">5</text><text x="394" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">6</text><text x="452" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">7</text><text x="510" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">8</text><text x="568" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">9</text><text x="626" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">10</text><text x="684" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">11</text><text x="742" y="250" font-size="11" fill="#3a3a4a" text-anchor="middle">12</text><rect x="43" y="22" width="5" height="198" fill="#c8c8cc" rx="1"></rect><line x1="46" y1="216" x2="742" y2="216" stroke="#2a2a2f" stroke-width="1"></line><text x="32" y="220" font-size="11" fill="#6a6a78" text-anchor="middle">E</text><line x1="46" y1="178" x2="742" y2="178" stroke="#2a2a2f" stroke-width="1.35"></line><text x="32" y="182" font-size="11" fill="#6a6a78" text-anchor="middle">A</text><line x1="46" y1="140" x2="742" y2="140" stroke="#2a2a2f" stroke-width="1.7"></line><text x="32" y="144" font-size="11" fill="#6a6a78" text-anchor="middle">D</text><line x1="46" y1="102" x2="742" y2="102" stroke="#2a2a2f" stroke-width="2.05"></line><text x="32" y="106" font-size="11" fill="#6a6a78" text-anchor="middle">G</text><line x1="46" y1="64" x2="742" y2="64" stroke="#2a2a2f" stroke-width="2.4"></line><text x="32" y="68" font-size="11" fill="#6a6a78" text-anchor="middle">B</text><line x1="46" y1="26" x2="742" y2="26" stroke="#2a2a2f" stroke-width="2.75"></line><text x="32" y="30" font-size="11" fill="#6a6a78" text-anchor="middle">E</text><line x1="46" y1="22" x2="46" y2="220" stroke="#c8c8cc" stroke-width="1.5"></line><line x1="104" y1="22" x2="104" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="162" y1="22" x2="162" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="220" y1="22" x2="220" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="278" y1="22" x2="278" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="336" y1="22" x2="336" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="394" y1="22" x2="394" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="452" y1="22" x2="452" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="510" y1="22" x2="510" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="568" y1="22" x2="568" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="626" y1="22" x2="626" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="684" y1="22" x2="684" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><line x1="742" y1="22" x2="742" y2="220" stroke="#1c1c1f" stroke-width="1.5"></line><circle cx="162" cy="216" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="216" r="7" fill="#888" opacity="0.18"></circle><circle cx="452" cy="216" r="7" fill="#888" opacity="0.18"></circle><circle cx="162" cy="178" r="7" fill="#888" opacity="0.18"></circle><circle cx="568" cy="178" r="7" fill="#888" opacity="0.18"></circle><circle cx="684" cy="178" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="140" r="7" fill="#888" opacity="0.18"></circle><circle cx="394" cy="140" r="7" fill="#888" opacity="0.18"></circle><circle cx="568" cy="140" r="7" fill="#888" opacity="0.18"></circle><circle cx="104" cy="102" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="102" r="7" fill="#888" opacity="0.18"></circle><circle cx="684" cy="102" r="7" fill="#888" opacity="0.18"></circle><circle cx="46" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="452" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="568" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="742" cy="64" r="7" fill="#888" opacity="0.18"></circle><circle cx="162" cy="26" r="7" fill="#888" opacity="0.18"></circle><circle cx="278" cy="26" r="7" fill="#888" opacity="0.18"></circle><circle cx="452" cy="26" r="7" fill="#888" opacity="0.18"></circle><circle cx="46" cy="216" r="12" fill="#4a6080" opacity="0.7"></circle><text x="46" y="219" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="336" cy="216" r="12" fill="#4a6080" opacity="0.7"></circle><text x="336" y="219" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="742" cy="216" r="12" fill="#4a6080" opacity="0.7"></circle><text x="742" y="219" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="46" cy="178" r="12" fill="#4a6080" opacity="0.7"></circle><text x="46" y="181" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="452" cy="178" r="12" fill="#4a6080" opacity="0.7"></circle><text x="452" y="181" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="742" cy="178" r="12" fill="#4a6080" opacity="0.7"></circle><text x="742" y="181" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="162" cy="140" r="12" fill="#4a6080" opacity="0.7"></circle><text x="162" y="143" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="452" cy="140" r="12" fill="#4a6080" opacity="0.7"></circle><text x="452" y="143" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="162" cy="102" r="12" fill="#4a6080" opacity="0.7"></circle><text x="162" y="105" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="568" cy="102" r="12" fill="#4a6080" opacity="0.7"></circle><text x="568" y="105" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="336" cy="64" r="12" fill="#4a6080" opacity="0.7"></circle><text x="336" y="67" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="626" cy="64" r="12" fill="#4a6080" opacity="0.7"></circle><text x="626" y="67" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="46" cy="26" r="12" fill="#4a6080" opacity="0.7"></circle><text x="46" y="29" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="336" cy="26" r="12" fill="#4a6080" opacity="0.7"></circle><text x="336" y="29" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">A</text><circle cx="742" cy="26" r="12" fill="#4a6080" opacity="0.7"></circle><text x="742" y="29" font-size="10" fill="#c8c8cc" text-anchor="middle" font-weight="700">E</text><circle cx="568" cy="216" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="568" cy="216" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="568" y="220" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="278" cy="178" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="278" cy="178" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="278" y="182" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="684" cy="140" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="684" cy="140" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="684" y="144" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="394" cy="102" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="394" cy="102" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="394" y="106" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="162" cy="64" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="162" cy="64" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="162" y="68" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text><circle cx="568" cy="26" r="17" fill="var(--amber)" opacity="0.95"></circle><circle cx="568" cy="26" r="17" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2.5"></circle><text x="568" y="30" font-size="12" fill="#0e0e0f" text-anchor="middle" font-weight="700">C#</text></svg></div></div>
   <div class="play-legend">

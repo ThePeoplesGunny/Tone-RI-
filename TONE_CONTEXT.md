@@ -28,7 +28,7 @@ The failure is not the ear. The failure is the gap between recognition and repro
 
 ### The Milestone Pivot (March 2026)
 
-TONE is evolving from a theory engine into a full replacement for the previous TiddlyWiki-based knowledge management system. But this is NOT a data migration. The TiddlyWiki was a filing cabinet — 686 tiddlers organizing songs, artists, gear, tabs, and references. TONE must not become a filing cabinet.
+TONE is evolving from a theory engine into a full replacement for the previous TiddlyWiki-based guitar reference library. But this is NOT a content migration. The TiddlyWiki was a filing cabinet — 686 tiddlers organizing songs, artists, gear, tabs, and references. TONE must not become a filing cabinet.
 
 **The distillation principle:** Curated content (tabs, transcriptions, instructional material, gear settings) is raw material. TONE's job is to extract the enduring principles from that material and present them in a form that transfers across songs. Tablature is GPS — it gets you to the destination, but you didn't learn the road. TONE builds the internal map so you can navigate any road.
 
@@ -46,35 +46,33 @@ Content earns its place in TONE only if it serves the translation mission. If it
 
 4. **TONE is not a filing cabinet.** Content is not stored for retrieval. Content is distilled into principles that transfer. Once internalized, the reference material can evolve — but the principle persists.
 
-5. **Curated content is raw material.** A 10-year library of accuracy-verified tabs represents ground truth of what artists actually played. TONE extracts the harmonic decisions, navigation patterns, and protocol translations — the ore becomes metal, and you don't put ore in the airplane.
+5. **Curated content is raw material.** A 10-year library of accuracy-verified tabs represents ground truth of what artists actually played. TONE extracts the harmonic decisions and navigation patterns — the ore becomes metal, and you don't put ore in the airplane.
 
 ---
 
-## The Knowledge Hierarchy — What TONE Actually Does
+## The Translation Mission — What TONE Actually Does
 
 ```
-DATA          Raw, context-free symbols.
-              A note is 440Hz. A chord is 1-♭3-5.
-              Scale formulas. Interval names. Fret numbers from a tab.
-              Inert. No relationships. No meaning.
+VOCABULARY    The raw materials — note names, scale shapes, fret
+              numbers, chord formulas. Inert. No relationships.
+              No meaning.
 
-INFORMATION   Data structured by relationships.
+CONTEXT       Vocabulary structured by relationship and function.
               "This ♭VI resolves deceptively because it substitutes
               for the expected IV."
-              Shannon lives here — surprise, entropy, pattern-against-
-              expectation. Data becomes meaningful only with a frame.
+              The frame that makes the vocabulary musical.
 
-KNOWLEDGE     Information internalized through experience until it
-              drives action without conscious retrieval.
-              The guitarist who hears the ♭VI arriving and already
-              knows where their hand goes.
+FLUENCY       Context internalized through reps until the hand
+              knows where to go before conscious thought. The
+              guitarist who hears the ♭VI arriving and is already
+              there.
 ```
 
-**The problem this user faces:** Raw data (tab fret numbers, scale shapes) cannot become knowledge because there is no information layer connecting them. Every new song starts from zero. Memorized patterns don't transfer. The diagnosis is exact: **information without structure.**
+**The problem this user faces:** Raw vocabulary (tab fret numbers, scale shapes) cannot become fluency without context to connect them. Every new song starts from zero. Memorized patterns don't transfer. The diagnosis is exact: **vocabulary without context.**
 
-**TONE operates at the data→information boundary.** It takes inert theory data and structures it through relationships, emotional tendency, harmonic context, and fretboard geography. But the information→knowledge transition only happens through playing — through reps with the guitar in hand.
+**TONE operates at the vocabulary→context boundary.** It takes inert materials and structures them through harmonic function, emotional tendency, and fretboard geography. The context→fluency transition only happens through playing — through reps with the guitar in hand.
 
-**TONE cannot create knowledge directly.** It can compress the information layer so the experience-to-knowledge loop runs faster and — critically — runs CORRECTLY. A wrong calculation practiced a thousand times builds the wrong reflex. TONE ensures the calculation is right.
+**TONE cannot create fluency directly.** It can compress the context layer so the experience-to-fluency loop runs faster and — critically — runs CORRECTLY. A wrong calculation practiced a thousand times builds the wrong reflex. TONE ensures the calculation is right.
 
 ---
 
@@ -143,7 +141,7 @@ A song moves through TONE in stages. Each stage builds the internal map:
 5. **Internalize** — The route becomes muscle memory. TONE is no longer needed for this song.
 6. **Transfer** — Pattern vocabulary built from this song applies to the next one.
 
-The song is fixed. The route through it is fixed. Song by song, route by route, the pattern vocabulary builds until the ear and the hand close the gap without conscious intervention. This is the information→knowledge transition that TONE compresses but cannot replace.
+The song is fixed. The route through it is fixed. Song by song, route by route, the pattern vocabulary builds until the ear and the hand close the gap without conscious intervention. This is the context→fluency transition that TONE compresses but cannot replace.
 
 ---
 
@@ -298,9 +296,9 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 | Landmark Pentatonic | Play Mode (target note, forward vision, approach notes) + Forward Map (landmark positions) | **Strong** |
 | CAGED | Chords tab: Voicings (CAGED zone voicing map) + Triads (ACE zone model) + Forward Map (nearest shape hint) + Play Mode CAGED overlay | **Strong** |
 | Technique Bridge | Scales tab: Brewster overlay + universal interval colors + Play Mode: CAGED overlay, forward vision, approach notes, root dot shapes + arpeggio view (dual-mode) + triad chaining + song-route mapping (per-section navigation) | **Strong** — algorithmic core (4.1) + song-route (4.2) |
-| Presentation Layer | Gear inventory (gear.txt) + Tone Engineer agent + /tone-match skill — no in-app UI features yet | **Partial** — pipeline exists, in-app rendering TBD |
+| Gear & Tone | Gear inventory (gear.txt) + Tone Engineer agent + /tone-match skill — no in-app UI features yet | **Partial** — pipeline exists, in-app rendering TBD |
 
-**The spiral is connected through Layer 7 + Layer 8.** `_activeContext` propagates Decoder key/mode/chord to Chords, Scales, and Theory tabs.
+**Tabs are connected through shared context.** `_activeContext` propagates Decoder key/mode/chord to Chords, Scales, and Theory tabs.
 
 ### Decoder Tab (updated in 3.3)
 - Three input modes: Manual key / AUTO / PRESET
@@ -372,7 +370,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 - **Dead code removed (3.7)**: `NEIGHBOR_TENDENCIES` constant, `findScaleNeighbors()` function, `scale-neighbors` div removed. Redundant Color Key toggle removed (info bar already shows interval context).
 - **GAP (closed):** Neighbor network fretboard visualization — superseded by overlay system which shows note classification directly on the fretboard
 
-### Theory Tab (updated in 3.3 — Layer 8 activation)
+### Theory Tab (updated in 3.3 — wired into shared context)
 - **Context bar**: shows active key/mode when propagated from Decoder
 - **Interval Color Reference**: chromatic row rooted on active key, scale-tone highlighting
 - **Chord Formulas**: highlights active chord quality when selected via Decoder
@@ -508,9 +506,9 @@ Before writing any code for a new feature or layer, scan the open DEF list. Clas
 - Emotional touchstones: Top Gun Anthem (Steve Stevens), Yellow Ledbetter (McCready), While We Cry (Kenny Wayne Shepherd) — lyrical, sustained, vocal-phrasing guitar where the player converses with the harmony
 - Core rig: UAFX pedals into Line 6 PowerCab 212 Plus
 - Thinks systematically — structured analysis, tables, processes
-- Fluent in both guitar and information systems — C2/KMS background informs how he thinks about harmonic navigation
+- Fluent in structured-systems thinking — that background informs how he approaches harmonic navigation
 - The diagnosis is precise: minor pentatonic default, low E root as "resolution," stale orders when command transfers to a new chord
 - The stagnation cycle is real: attempts beyond pentatonic → failure → feels like beginner → puts guitar down → no progress
-- Guitar knowledge hierarchy: has DATA (20 years of scale shapes, fret numbers) and KNOWLEDGE (calibrated ear, muscle memory in pentatonic) but is missing the INFORMATION layer that connects them
+- Has VOCABULARY (20 years of scale shapes, fret numbers) and FLUENCY in the pentatonic core (calibrated ear, muscle memory) — missing the CONTEXT layer that connects vocabulary to broader harmonic territory
 - Personal arrangement goal: Marines' Hymn — wants to give it a proper rendition that respects what the song invokes
 - Retired Marine

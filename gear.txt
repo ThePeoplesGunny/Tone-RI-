@@ -9,26 +9,37 @@ DigiTech Drop Polyphonic Drop-tune Pitch-shift Pedal - Red
 Dunlop MC404 CAE Wah Pedal
 EVH 5150 Iconic Series EL34 160-watt 4 x 12-inch Cabinet - Black/Gold
 EVH 5150 Iconic Series EL34 80-watt Amplifier Head - Black/Gold
+EVH 5150 Overdrive Pedal
 EVH Wolfgang Special Electric Guitar - Pharaoh's Gold SN:WGM232546
 Electro-Harmonix Green Russian Big Muff Pi Fuzz Pedal
 Fender American Ultra Luxe Vintage '60s Stratocaster Electric Guitar - Ice Blue Metallic, Heirloom Lacquer SN:US24017708
 Fender Audio Passport Conference S2 Portable PA System
-Fulltone Custom Shop MDV-3 Mini DejaVibe 3 Vintage Rotary Pedal
+Fender Blues Deluxe 1x12-inch 40-watt Tube Combo Amp - Tweed
+Fender Tone Master Twin Reverb 2 x 12-inch 200-watt Combo Amp
 Fulltone Custom Shop Supa-Wah Multi-wah Pedal - Metallic White
 IK Multimedia TONEX ONE Brown Sound Amplifier/Cab/Effect Modeling Pedal - Limited Edition Red Certified Open Box
 Ibanez TS808 35th Anniversary Overdrive
+King Tone Duellist Dual Overdrive Pedal
 Line 6 Helix Guitar Multi-effects Floor Processor
 Line 6 Powercab 212 Plus Active Guitar Speaker
+MXR Analog Chorus Pedal
+MXR EVH Phase 90 Eddie Van Halen Phase Pedal
 MXR M68 Uni-Vibe Chorus / Vibrato Pedal
+MXR Smartgate Noise Gate Pedal
+Maxon OD808 Reissue Overdrive Pedal
 Mesa/Boogie Dual Rectifier 100-watt Tube Head - Diamond Faceplate
 Mesa/Boogie Rectifier Standard 240-watt 4 x 12-inch Straight Speaker Cabinet - Black
 Nitro Max Mesh Electronic Drum Set and Expansion Pack
 PRS Mark Tremonti Signature Electric Guitar with Tremolo - Charcoal Contour Burst SN:204264
 Radial BigShot ABY A/B-Y True-Bypass Switch Pedal
 Schecter Omen Extreme-4 Bass Guitar - Vintage Sunburst SN:WI21053568
+sE Electronics DM1 Dynamite 1-channel Active Inline Preamp
 Shure SM57 Cardioid Dynamic Instrument Microphone
 Shure SM58 Dynamic Vocal Microphone Bundle with Cable and Stand
+Shure MV88 USB-C Stereo Condenser Microphone
 TC Electronic Flashback Delay and Looper Pedal
+TC Electronic Hall of Fame 2 Reverb Pedal
+TC Electronic PolyTune 3 Polyphonic LED Guitar Tuner Pedal
 TC-Helicon VoiceTone C1 HardTune and Pitch Correction Pedal
 TC-Helicon VoiceTone E1 Vocal Echo and Delay Pedal
 TC-Helicon VoiceTone R1 Vocal Reverb Pedal
@@ -36,7 +47,10 @@ Universal Audio UAFX Anti 1992 High Gain Amp Pedal
 Universal Audio UAFX Lion '68 Super Lead Amp Pedal
 Voodoo Lab Pedal Power MONDO 12-output Isolated Guitar Pedal Power Supply
 Vox V847-A Classic Reissue Wah Pedal
+Vox amPlug 2 Metal Headphone Guitar Amplifier
 Wampler Euphoria Overdrive Pedal
 Wampler Faux Spring Reverb Pedal
 Wampler Plexi-Drive British Overdrive Pedal
 Headrush FRFR-112 2000-watt 1x12-inch Powered Guitar Cabinet
+
+

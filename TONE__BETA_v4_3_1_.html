@@ -4708,45 +4708,6 @@ function detectKey(parsedChords) {
   return bestKey;
 }
 
-// ── Modulation detection ────────────────────────────
-// Scans a chord progression for key center shifts using a sliding window.
-// Returns array of { index, fromKey, toKey } where modulation is detected.
-function detectModulations(parsedChords, windowSize) {
-  if (!windowSize) windowSize = 4;
-  if (parsedChords.length < windowSize * 2) return [];
-  const modulations = [];
-  const initialKey = detectKey(parsedChords.slice(0, windowSize));
-  if (!initialKey) return [];
-  let currentKey = initialKey;
-  for (let i = windowSize; i <= parsedChords.length - windowSize; i++) {
-    const window = parsedChords.slice(i, i + windowSize);
-    const windowKey = detectKey(window);
-    if (!windowKey) continue;
-    // Check if window key differs from current
-    if (windowKey.root !== currentKey.root || windowKey.mode !== currentKey.mode) {
-      // Confirm: does the new key score significantly better than the old one on this window?
-      const diatonicNew = getDiatonicChords(windowKey.root, windowKey.mode);
-      const dsetNew = new Set(diatonicNew.map(d => d.root + '|' + d.quality));
-      const diatonicOld = getDiatonicChords(currentKey.root, currentKey.mode);
-      const dsetOld = new Set(diatonicOld.map(d => d.root + '|' + d.quality));
-      let scoreNew = 0, scoreOld = 0;
-      for (const c of window) {
-        if (dsetNew.has(c.root + '|' + c.qualityKey)) scoreNew++;
-        if (dsetOld.has(c.root + '|' + c.qualityKey)) scoreOld++;
-      }
-      if (scoreNew > scoreOld + 1) {
-        modulations.push({
-          index: i,
-          fromKey: { root: currentKey.root, mode: currentKey.mode },
-          toKey: { root: windowKey.root, mode: windowKey.mode },
-        });
-        currentKey = windowKey;
-      }
-    }
-  }
-  return modulations;
-}
-
 // ── Chord analysis ───────────────────────────────────
 function funcColor(fn) {
   const map = {

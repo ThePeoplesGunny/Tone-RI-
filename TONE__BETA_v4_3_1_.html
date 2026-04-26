@@ -820,6 +820,17 @@
   .lib-song-delete:hover { border-color:var(--c-I); color:var(--c-I); }
   .lib-song-edit { font-family:var(--mono); font-size:0.55rem; padding:0.05rem 0.25rem; border:1px solid var(--border); border-radius:2px; background:transparent; color:var(--text-dim); cursor:pointer; }
   .lib-song-edit:hover { border-color:var(--amber); color:var(--amber); }
+  .lib-song-tone {
+    font-family:var(--mono); font-size:0.65rem; padding:0.05rem 0.3rem;
+    border:1px solid var(--amber-dim); border-radius:2px;
+    background:transparent; color:var(--amber); cursor:pointer;
+  }
+  .lib-song-tone:hover { background:var(--amber-dim); border-color:var(--amber); }
+  .lib-song-tone-panel {
+    padding: 0.75rem 1rem; background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .lib-song-tone-panel:last-child { border-bottom: none; }
   .lib-filter-bar {
     display:flex; gap:0.5rem; margin-bottom:0.5rem; align-items:center;
   }
@@ -2377,8 +2388,6 @@
       <span class="prog-badge badge-secondary">sec. dom</span>
       <div class="prog-source">sec. dominant → A (IV)</div>
     </div></div></div>
-      <div class="section-label" id="decoder-tone-label" style="display: none;">Tone Setup</div>
-      <div id="decoder-tone-setup" style="display: none;"></div>
       <div class="section-label" id="decoder-fwd-label" style="display: block;">Navigation Map</div>
       <div id="decoder-forward-map"><div class="fwd-map-header"><span class="fwd-landmark"><strong>Shape 1</strong> fret 9 (E string)</span><span class="fwd-landmark"><strong>Shape 4</strong> fret 4 (A string)</span></div><div class="fwd-row"><div class="fwd-card"><div class="fwd-chord-label">E</div><div class="fwd-zoom fwd-zoom-safe">✓ pentatonic safe</div><div class="fwd-tendency">home · resolved · stable</div><div class="fwd-target"><span class="fwd-target-dot" style="background:var(--c-III)">G#</span><span class="fwd-target-text">major 3rd</span></div></div><div class="fwd-card"><div class="fwd-chord-label">A</div><div class="fwd-zoom fwd-zoom-safe">✓ pentatonic safe</div><div class="fwd-tendency">motion · leads to V or back to I</div><div class="fwd-target"><span class="fwd-target-dot" style="background:var(--c-VI)">C#</span><span class="fwd-target-text">major 3rd</span></div></div><div class="fwd-card"><div class="fwd-chord-label">B</div><div class="fwd-zoom fwd-zoom-safe">✓ pentatonic safe</div><div class="fwd-tendency">maximum tension · wants to resolve to I</div><div class="fwd-target"><span class="fwd-target-dot" style="background:var(--c-VII)">D#</span><span class="fwd-target-text">major 3rd · outside pentatonic</span></div></div><div class="fwd-card"><div class="fwd-chord-label">C#m</div><div class="fwd-zoom fwd-zoom-safe">✓ pentatonic safe</div><div class="fwd-tendency">relative minor · darker arrival</div><div class="fwd-target"><span class="fwd-target-dot" style="background:var(--c-VI)">C#</span><span class="fwd-target-text">root</span></div></div><div class="fwd-card"><div class="fwd-chord-label">D</div><div class="fwd-zoom fwd-zoom-zoom-in">⚡ zoom in</div><div class="fwd-tendency">dominant tension · resolves to A</div><div class="fwd-target"><span class="fwd-target-dot" style="background:var(--c-II)">F#</span><span class="fwd-target-text">major 3rd</span></div><div class="fwd-caged-hint">→ E shape fret 10 (near Shape 1)</div></div></div></div>
       <div class="section-label" id="decoder-heatmap-label" style="display: block;">Fretboard Heat Map
@@ -5549,7 +5558,7 @@ function renderDecoder() {
       if (errors.length) errorDiv.textContent = '// unrecognized: ' + errors.join(', ') + '  →  valid: Am  G  F#m7  Bsus4';
     }
     if (!parsed.length) {
-      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label','decoder-tone-label','decoder-tone-setup'].forEach(hideEl);
+      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label'].forEach(hideEl);
       document.getElementById('decoder-forward-map').innerHTML = '';
       document.getElementById('decoder-heatmap').innerHTML = '';
       document.getElementById('decoder-info-bar').innerHTML = '';
@@ -5569,7 +5578,7 @@ function renderDecoder() {
   } else if (keyVal === 'PRESET') {
     const id = document.getElementById('decoder-preset-select').value;
     if (!id) {
-      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label','decoder-tone-label','decoder-tone-setup'].forEach(hideEl);
+      ['decoder-key-bar','decoder-prog-label','decoder-progression','decoder-fwd-label','decoder-heatmap-label'].forEach(hideEl);
       document.getElementById('decoder-forward-map').innerHTML = '';
       document.getElementById('decoder-heatmap').innerHTML = '';
       document.getElementById('decoder-info-bar').innerHTML = '';
@@ -5651,20 +5660,6 @@ function renderDecoder() {
   document.getElementById('decoder-prog-label').textContent = progSectionLabel;
   showEl('decoder-progression');
   document.getElementById('decoder-progression').innerHTML = progHtml;
-
-  // ── Tone Setup panel — pre-flight pedal recipe (preset mode only, when sections have tone) ──
-  const toneSetupEl   = document.getElementById('decoder-tone-setup');
-  const toneSetupLbl  = document.getElementById('decoder-tone-label');
-  const toneSetupHtml = activePreset ? renderToneSetup(activePreset) : '';
-  if (toneSetupHtml) {
-    toneSetupEl.innerHTML       = toneSetupHtml;
-    toneSetupEl.style.display   = 'block';
-    toneSetupLbl.style.display  = 'block';
-  } else {
-    toneSetupEl.innerHTML       = '';
-    toneSetupEl.style.display   = 'none';
-    toneSetupLbl.style.display  = 'none';
-  }
 
   // ── Forward mapping panel ──
   showEl('decoder-fwd-label');
@@ -6188,6 +6183,12 @@ function fpChipsHtml(fp, keyRoot, keyMode) {
   }).join('');
 }
 
+function toggleTonePanel(presetId) {
+  const el = document.getElementById('lib-tone-panel-' + presetId);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
 function renderLibrary() {
   const el = document.getElementById('library-db');
   if (!el) return;
@@ -6210,17 +6211,20 @@ function renderLibrary() {
   const rows = sorted.map(p => {
     const keyLabel = p.key + ' ' + (modeLabel(p.mode) || 'Maj');
     const chips    = fpChipsHtml(p.fp, p.key, p.mode);
+    const hasTone  = p.sections && p.sections.some(s => s.tone);
+    const toneBtn  = hasTone ? `<button class="lib-song-tone" onclick="toggleTonePanel('${p.id}')" title="Tone setup">🎛</button>` : '';
+    const tonePanel = hasTone ? `<div class="lib-song-tone-panel" id="lib-tone-panel-${p.id}" style="display:none">${renderToneSetup(p)}</div>` : '';
     return `<div class="lib-song-row">
       <span class="lib-song-title" title="${p.title}">${p.title}</span>
       <span class="lib-song-artist" title="${p.artist||''}">${p.artist || ''}</span>
       <span class="lib-song-key">${keyLabel}</span>
       <span class="lib-song-fp">${chips}</span>
       <span class="lib-song-actions">
-        <button class="lib-play-btn" onclick="enterPlayMode('${p.id}')">▶</button>
+        ${toneBtn}<button class="lib-play-btn" onclick="enterPlayMode('${p.id}')">▶</button>
         <button class="lib-song-edit" onclick="editPreset('${p.id}')">edit</button>
         <button class="lib-song-delete" onclick="confirmDeletePreset('${p.id}', '${p.title.replace(/'/g, "\\'")}')">✕</button>
       </span>
-    </div>`;
+    </div>${tonePanel}`;
   }).join('');
 
   el.innerHTML = `

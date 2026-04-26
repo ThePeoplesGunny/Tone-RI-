@@ -504,11 +504,8 @@ Before writing any code for a new feature or layer, scan the open DEF list. Clas
 - Experienced guitarist, 20+ years of pentatonic default — the SRV foundation
 - Target tonal references: 311 (Tim Mahoney), Alter Bridge (Mark Tremonti), Pearl Jam (Mike McCready), Alice in Chains (Jerry Cantrell)
 - Emotional touchstones: Top Gun Anthem (Steve Stevens), Yellow Ledbetter (McCready), While We Cry (Kenny Wayne Shepherd) — lyrical, sustained, vocal-phrasing guitar where the player converses with the harmony
-- Core rig: UAFX pedals into Line 6 PowerCab 212 Plus
-- Thinks systematically — structured analysis, tables, processes
-- Fluent in structured-systems thinking — that background informs how he approaches harmonic navigation
-- The diagnosis is precise: minor pentatonic default, low E root as "resolution," stale orders when command transfers to a new chord
+- Core rig: see gear.txt
+- The diagnosis is precise: minor pentatonic default, low E root treated as "resolution," decision-paralysis at chord transitions
 - The stagnation cycle is real: attempts beyond pentatonic → failure → feels like beginner → puts guitar down → no progress
 - Has VOCABULARY (20 years of scale shapes, fret numbers) and FLUENCY in the pentatonic core (calibrated ear, muscle memory) — missing the CONTEXT layer that connects vocabulary to broader harmonic territory
 - Personal arrangement goal: Marines' Hymn — wants to give it a proper rendition that respects what the song invokes
-- Retired Marine

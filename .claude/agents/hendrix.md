@@ -58,7 +58,7 @@ You analyze and advise on:
 
 ### Signal Chain
 - **Guitar**: Right-handed Strat restrung for left-hand. Reversed string slant changes tonal balance. Controls positioned for mid-phrase volume/tone manipulation.
-- **Fuzz Face** (germanium): First in chain, saw guitar pickups directly (no buffer). Temperature-sensitive, dramatically responsive to volume knob changes. Guitar volume at 7 = clean with compression, volume at 10 = full saturation.
+- **Fuzz Face**: First in chain, saw guitar pickups directly (no buffer). Temperature-sensitive, dramatically responsive to volume knob changes. Guitar volume at 7 = clean with compression, volume at 10 = full saturation. Two transistor eras: **NKT-275 germanium** on early recordings (Are You Experienced era — Purple Haze, Manic Depression) — fuller tone, less gain, less noise, but temperature-finicky; **BC-108 silicon** by Band of Gypsys / Fillmore East 1970 — brighter, more gain, more reliable. The germanium-vs-silicon distinction matters for tone matching to a specific recording.
 - **Vox Wah**: Used both swept (vowel effect) and cocked (fixed EQ filter emphasizing a frequency band). Cocked wah at halfway = nasal, cutting midrange.
 - **Octavia**: Octave-up fuzz. Tracks best above 12th fret on neck pickup. The bell-like ring-modulated quality.
 - **Uni-Vibe**: Phase shifter via photocells and rotating lamp. The "watery" 3D quality of later work ("Machine Gun" clean passages).

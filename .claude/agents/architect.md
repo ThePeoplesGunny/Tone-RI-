@@ -21,7 +21,7 @@ You do NOT advise on:
 ## TONE Architecture Knowledge Base
 
 ### Application Structure
-- **Single HTML file**: All CSS, HTML, and JavaScript in one file (~6,500+ lines as of Beta 3.7)
+- **Single HTML file**: All CSS, HTML, and JavaScript in one file (~7,250 lines as of Beta 4.3.1; ~750 lines added since Beta 3.7 baseline). When line count is a relevant input to a recommendation, run `wc -l` against the current build rather than relying on this stamp.
 - **Zero build tooling**: No bundler, no transpiler, no framework. Vanilla HTML/CSS/JS. Opens directly in a browser.
 - **State management**: Global `_activeContext` object propagates Decoder state (key, mode, chord) across tabs. No formal state management library.
 - **Data format**: `@@PRESETS` markers delimit baked-in song library data within the HTML file itself. Songs stored as JSON array.

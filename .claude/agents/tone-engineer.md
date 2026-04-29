@@ -43,7 +43,7 @@ Source of truth: `gear.txt` in the repo root. Always read this file for current 
 - Tremonti pickups: clear articulation under high gain, coil-split capable
 - Primary use: modern rock, drop tunings, articulate high-gain leads
 
-### Amplification (dual amp stack + modeler + FRFR)
+### Amplification (high-gain heads + Fender clean/crunch combos + modeler + FRFR)
 
 **EVH 5150 Iconic Series EL34 80W Head + 4x12 Cabinet**
 - The high-gain workhorse. EL34 power tubes = British-voiced aggression with American gain structure
@@ -56,6 +56,18 @@ Source of truth: `gear.txt` in the repo root. Always read this file for current 
 - Three channels with independent EQ
 - Signature scooped mid-range with massive low end
 - Effects loop for time-based effects
+
+**Fender Tone Master Twin Reverb (2x12, 200W)**
+- Fender's own digital model of the Blackface Twin Reverb. Massive clean headroom.
+- The KWS clean platform — KWS uses the original Blackface Twin reissue; the Tone Master is Fender's direct digital descendant.
+- Doesn't break up until very high volume — best as pure clean canvas with pedals doing the gain work.
+- Primary use: SRV/KWS clean-platform tones, two-amp stage blend (clean side), pedal-platform for any of the drive pedals.
+
+**Fender Blues Deluxe (1x12, 40W tweed)**
+- 6L6 tweed-lineage 40W combo. Breaks up earlier than the Twin — naturally crunchy when pushed past ~6 on volume.
+- The KWS crunch-platform analog: closest available to KWS's Vibro-King (Era 2, 1997) or Bassman (Era 3, modern). Both are 6L6 mid-power tweed-Fender amps that break up before a Twin does.
+- Known characteristic: gets fizzy when overpushed. Stop short of fizz.
+- Primary use: tweed crunch tones, two-amp stage blend (crunch side), KWS-style verge-of-breakup pedal-platform work.
 
 **Line 6 Helix Floor Processor**
 - Full amp/effects modeling. The Swiss Army knife.
@@ -91,7 +103,22 @@ Source of truth: `gear.txt` in the repo root. Always read this file for current 
 **Ibanez TS808 35th Anniversary Overdrive**
 - The classic tube screamer. Mid-hump, low-gain boost.
 - Primary use: stacking into amp front end to tighten low end and push preamp
-- Critical for SRV-style tone (TS into clean amp) and modern metal (TS into high-gain)
+- Critical for SRV-style tone (TS into clean amp) and modern metal (TS into high-gain). Note: SRV's actual primary was the TS-9, not TS-808 — see SRV agent. The 35th Anniversary TS808 is the user's available analog.
+
+**Maxon OD808 Reissue Overdrive**
+- The Maxon-built original-circuit Tube Screamer reissue (Maxon was the OEM for early Ibanez TS-808s).
+- Functionally adjacent to the Ibanez TS808 — the user owns both, providing two distinct TS-flavored options for stacking or A/B comparison.
+
+**King Tone Duellist Dual Overdrive**
+- Two-circuit overdrive with independent voicings:
+  - **String Singer side**: lower gain, transparent, Klon-flavored boost behavior — the closest available analog to a Klon Centaur or Klon KTR.
+  - **Heavy Hand side**: more aggressive, mid-forward, voiced closer to King of Tone territory.
+- The two sides can be cascaded for solo lifts (KWS-style: low-gain side + high-gain side stacked).
+- Critical for KWS work: covers both the 1997-era Klon role AND the modern KoT role in one pedal. Not 1:1 either pedal but functionally fills the same slot.
+
+**EVH 5150 Overdrive**
+- Voiced after the EVH 5150 amp's high-gain channel — a high-gain distortion in pedal form.
+- Useful for getting 5150-style aggression into a clean amp without the full head, or stacking into the actual 5150 for more saturation.
 
 **Wampler Plexi-Drive British Overdrive**
 - Marshall-voiced overdrive. More gain than TS808, different EQ curve.
@@ -113,9 +140,14 @@ Source of truth: `gear.txt` in the repo root. Always read this file for current 
 - The "watery" modulation. Hendrix "Machine Gun" clean passages, Robin Trower.
 - Speed and depth controls. Chorus mode vs vibrato mode.
 
-**Fulltone Custom Shop MDV-3 Mini DejaVibe 3**
-- Higher-end Uni-Vibe variant with vintage photocell circuit
-- More authentic to the original Shin-ei Uni-Vibe character
+**MXR EVH Phase 90**
+- The EVH-signature MXR Phase 90 with switchable Script (vintage, subtler) vs Block (modern, more pronounced) voicings.
+- Script mode: classic EVH "Eruption" / "Ain't Talkin' 'Bout Love" swirl, also serviceable as a Univibe-adjacent modulation for Hendrix-style passages.
+- Block mode: more pronounced phasing, post-1980 EVH territory.
+
+**MXR Analog Chorus**
+- Analog bucket-brigade chorus. Adds dimensional thickness to clean tones.
+- Useful for KWS Bi-Chorus role, 80s clean-tone flavors, doubling effect on ballads.
 
 **Boss PS-6 Harmonist**
 - Intelligent pitch shifting, detune mode for chorus-like thickening
@@ -145,15 +177,22 @@ Source of truth: `gear.txt` in the repo root. Always read this file for current 
 - TonePrint-capable delay with looper
 - Multiple delay types (analog, tape, crystal, etc.)
 
+**TC Electronic Hall of Fame 2 Reverb**
+- Multi-algorithm reverb (room, hall, plate, spring, modulated, shimmer, gated, etc.)
+- TonePrint-capable. Mash footswitch for pressure-sensitive expression.
+- Light room/spring for clean tones; bigger halls for ballad/ambient context.
+
 **Wampler Faux Spring Reverb**
 - Spring reverb emulation
 - Post-delay in chain, or can be amp-independent reverb
 
 ### Utility
 
+**TC Electronic PolyTune 3** — Polyphonic LED tuner. Always-on always-first-in-chain.
 **Boss CS-3 Compression Sustainer** — Compressor for clean sustain, chicken-pickin', and even dynamics
-**DigiTech Drop** — Polyphonic pitch shift for drop tunings without retuning (Drop D, Drop C#, Drop C, full step down)
-**Radial BigShot ABY** — True-bypass A/B/Y switch for dual amp routing (EVH + Mesa simultaneously, or switching between)
+**MXR Smartgate Noise Gate** — Noise gate, useful with high-gain rigs (5150 / Mesa) to control hiss between phrases.
+**DigiTech Drop** — Polyphonic pitch shift for drop tunings without retuning (Drop D, Drop C#, Drop C, full step down). Also useful for Eb tuning without retuning the guitar — relevant for SRV/KWS Hendrix-cover work.
+**Radial BigShot ABY** — True-bypass A/B/Y switch for dual amp routing (EVH + Mesa simultaneously, Twin + Blues Deluxe for KWS-style two-amp blend, or switching between any pair)
 **Voodoo Lab Pedal Power MONDO** — Isolated power supply for the entire board
 
 ### Signal Chain Principles

@@ -76,11 +76,11 @@ You analyze and advise on:
   - The RANGE between these extremes is the point — wider than almost any electric guitarist.
 - **Rake technique**: Dragging pick across muted strings before landing on target note. Percussive "rrrrip" adding aggression. Almost every entrance to a bent note begins with a rake.
 - **Pick attack specifics**: Fender Medium picks (confirmed by tech Rene Martinez), aggressive tilted angle, deep into strings (pick goes THROUGH the string), producing thick percussive "snap" on attack.
-- **Heavy strings (.013-.058 GHS Nickel Rockers)**: Higher tension = more acoustic volume, more fundamental, harder to bend (bends are deliberate, not casual), better dynamic response (light touch = genuinely quiet, heavy attack = massive output). Arguably the single most important element in his tone.
+- **Heavy strings (.013/.015/.019p/.028/.038/.058 GHS Nickel Rockers)**: Note the .019 is a **plain G string** (not wound), unusual for sets this heavy and a meaningful tonal/playing factor — wound G string changes bend feel and sustain character. Higher tension = more acoustic volume, more fundamental, harder to bend (bends are deliberate, not casual), better dynamic response (light touch = genuinely quiet, heavy attack = massive output). Arguably the single most important element in his tone. Note: Rene Martinez moved SRV to a .011 high E in 1989 after the .013 began damaging his fingertips; the .013 set is most-of-career, not entire-career.
 
 ### Signal Chain
 - **Number One Strat**: 1963 body, 1962 slab-board rosewood neck (warmer/rounder than maple). Stock early-'60s single-coils. Neck pickup = primary solo voice (fattest, most vocal, strongest fundamental). Standard right-handed tremolo.
-- **Ibanez Tube Screamer TS-808**: CRITICAL — NOT a distortion pedal. Gain set LOW (~3-4 on drive).
+- **Ibanez Tube Screamer (TS-9 primary, not TS-808)**: Pedal lore commonly says SRV used a TS-808, but his actual primary was the TS-9 from 1982 through most of the 80s, and a TS-10 from 1988 onward (per Rene Martinez and stage-photo / customs-document evidence). TS-808 saw only brief use late-1981 to early-1982 — never appeared on an officially released SRV recording. The voicing differences across the three models are subtle compared to how SRV actually used the pedal: as a clean boost into Vibroverbs, level all the way up, drive set to relatively low gain. CRITICAL — NOT a distortion pedal. Gain set LOW (~3-4 on drive).
   - Mid boost: characteristic hump at ~720Hz pushes mids forward, cuts through mix, emphasizes vocal quality
   - Compression: mild leveling — limits peaks slightly, brings up quiet signals. NOT heavy compression.
   - Bass cut: rolls off low frequencies, tightens low end of cranked Fenders (prevents boom/mud)

@@ -3448,25 +3448,85 @@ const SVG_TOP = 26;
 const SVG_FRET_MARKERS = [3, 5, 7, 9, 12, 15, 17, 19];
 const SVG_DOUBLE_MARKERS = [12, 24];
 
-// ── SVG Chord Diagram ────────────────────────────────
+// ── Shared fretboard chrome helpers ──────────────────
+// Every fretboard renderer used to inline ~50-80 lines of identical SVG chrome
+// (markers, numbers, nut, strings, fret lines). These helpers centralize that
+// so the four callers (Scales, Chords, Heat map, Play Mode) share one source
+// of truth for the base layer geometry and visual treatment.
+function fretboardGeometry(opts) {
+  const tuning = opts.tuning;
+  const numFrets = opts.numFrets;
+  const stringSpacing = opts.stringSpacing != null ? opts.stringSpacing : SVG_STRING_SPACING;
+  const fretSpacing  = opts.fretSpacing  != null ? opts.fretSpacing  : SVG_FRET_SPACING;
+  const left = opts.left != null ? opts.left : SVG_LEFT;
+  const top  = opts.top  != null ? opts.top  : SVG_TOP;
+  const numStrings = tuning.length;
+  const W = left + numFrets * fretSpacing + 30;
+  const H = top + (numStrings - 1) * stringSpacing + 40;
+  return { tuning, numFrets, numStrings, stringSpacing, fretSpacing, left, top, W, H };
+}
+
+function fretboardSVGOpen(geom) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${geom.W} ${geom.H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace; display:block">`;
+}
+
+// Renders fret markers, fret numbers, nut, string lines, and fret lines.
+// Low E (s=0) at bottom; thickness gradient places thicker strings at the bottom.
+function fretboardBaseLayers(geom) {
+  const { tuning, numFrets, numStrings, stringSpacing, fretSpacing, left, top, H } = geom;
+  let svg = '';
+
+  // Fret position markers (between-fret dots)
+  for (let f = 0; f <= numFrets; f++) {
+    if (!SVG_FRET_MARKERS.includes(f)) continue;
+    const x = left + f * fretSpacing - fretSpacing / 2;
+    const yMid = top + (numStrings - 1) * stringSpacing / 2;
+    if (SVG_DOUBLE_MARKERS.includes(f)) {
+      svg += `<circle cx="${x}" cy="${yMid - stringSpacing * 0.7}" r="4" fill="#2a2a2f"/>`;
+      svg += `<circle cx="${x}" cy="${yMid + stringSpacing * 0.7}" r="4" fill="#2a2a2f"/>`;
+    } else {
+      svg += `<circle cx="${x}" cy="${yMid}" r="4" fill="#2a2a2f"/>`;
+    }
+  }
+
+  // Fret numbers below the neck
+  for (let f = 0; f <= numFrets; f++) {
+    svg += `<text x="${left + f * fretSpacing}" y="${H - 6}" font-size="11" fill="#3a3a4a" text-anchor="middle">${f}</text>`;
+  }
+
+  // Nut
+  svg += `<rect x="${left - 3}" y="${top - 4}" width="5" height="${(numStrings - 1) * stringSpacing + 8}" fill="#c8c8cc" rx="1"/>`;
+
+  // String lines + open-note labels — thickness gradient: thicker at bottom (low E)
+  for (let s = 0; s < numStrings; s++) {
+    const y = top + (numStrings - 1 - s) * stringSpacing;
+    const thickness = 1 + (numStrings - 1 - s) * 0.35;
+    svg += `<line x1="${left}" y1="${y}" x2="${left + numFrets * fretSpacing}" y2="${y}" stroke="#2a2a2f" stroke-width="${thickness}"/>`;
+    svg += `<text x="${left - 14}" y="${y + 4}" font-size="11" fill="#6a6a78" text-anchor="middle">${tuning[s]}</text>`;
+  }
+
+  // Fret lines (nut color at f=0, dim elsewhere)
+  for (let f = 0; f <= numFrets; f++) {
+    const x = left + f * fretSpacing;
+    const lineColor = f === 0 ? '#c8c8cc' : '#1c1c1f';
+    svg += `<line x1="${x}" y1="${top - 4}" x2="${x}" y2="${top + (numStrings - 1) * stringSpacing + 4}" stroke="${lineColor}" stroke-width="1.5"/>`;
+  }
+
+  return svg;
+}
 
 // ── SVG Fretboard for Scales ─────────────────────────
 function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, overlayMode, ovCtx) {
   overlayMode = overlayMode || 'standard';
   const scaleSet = new Set(scaleIntervals.map(i => noteAt(root, i % 12)));
 
-  const numStrings = tuningNotes.length;
-  const stringSpacing = SVG_STRING_SPACING;
-  const fretSpacing = SVG_FRET_SPACING;
-  const left = SVG_LEFT;
-  const top = SVG_TOP;
+  const geom = fretboardGeometry({ tuning: tuningNotes, numFrets });
+  const { numStrings, stringSpacing, fretSpacing, left, top } = geom;
   const dotR = 15;
-  const W = left + numFrets * fretSpacing + 30;
-  const H = top + (numStrings - 1) * stringSpacing + 40;
 
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace; display:block">`;
+  let svg = fretboardSVGOpen(geom);
 
-  // CAGED zone outline for overlay modes
+  // CAGED zone outline for overlay modes (renders before chrome so strings sit on top)
   if (overlayMode !== 'standard' && ovCtx) {
     const _rE = ((noteIndex(ovCtx.chordRoot) - noteIndex('E')) % 12 + 12) % 12;
     const _rA = ((noteIndex(ovCtx.chordRoot) - noteIndex('A')) % 12 + 12) % 12;
@@ -3499,44 +3559,7 @@ function fretboardSVG(root, scaleIntervals, tuningNotes, numFrets, labelMode, ov
     }
   }
 
-  // Fret markers
-  for (let f = 0; f <= numFrets; f++) {
-    if (SVG_FRET_MARKERS.includes(f)) {
-      const x = left + f * fretSpacing - fretSpacing / 2;
-      const yMid = top + (numStrings - 1) * stringSpacing / 2;
-      if (SVG_DOUBLE_MARKERS.includes(f)) {
-        svg += `<circle cx="${x}" cy="${yMid - stringSpacing * 0.7}" r="4" fill="#2a2a2f"/>`;
-        svg += `<circle cx="${x}" cy="${yMid + stringSpacing * 0.7}" r="4" fill="#2a2a2f"/>`;
-      } else {
-        svg += `<circle cx="${x}" cy="${yMid}" r="4" fill="#2a2a2f"/>`;
-      }
-    }
-  }
-
-  // Fret numbers
-  for (let f = 0; f <= numFrets; f++) {
-    const x = left + f * fretSpacing;
-    svg += `<text x="${x}" y="${H - 6}" font-size="11" fill="#3a3a4a" text-anchor="middle">${f}</text>`;
-  }
-
-  // Nut
-  svg += `<rect x="${left - 3}" y="${top - 4}" width="5" height="${(numStrings-1)*stringSpacing+8}" fill="#c8c8cc" rx="1"/>`;
-
-  // String lines — low E (s=0) at bottom, high E at top
-  for (let s = 0; s < numStrings; s++) {
-    const y = top + (numStrings - 1 - s) * stringSpacing;
-    const thickness = 1 + (numStrings - 1 - s) * 0.35;
-    svg += `<line x1="${left}" y1="${y}" x2="${left + numFrets * fretSpacing}" y2="${y}" stroke="#2a2a2f" stroke-width="${thickness}"/>`;
-    const openNote = tuningNotes[s];
-    svg += `<text x="${left - 14}" y="${y + 4}" font-size="11" fill="#6a6a78" text-anchor="middle">${openNote}</text>`;
-  }
-
-  // Fret lines
-  for (let f = 0; f <= numFrets; f++) {
-    const x = left + f * fretSpacing;
-    const lineColor = f === 0 ? '#c8c8cc' : '#1c1c1f';
-    svg += `<line x1="${x}" y1="${top - 4}" x2="${x}" y2="${top + (numStrings-1)*stringSpacing + 4}" stroke="${lineColor}" stroke-width="1.5"/>`;
-  }
+  svg += fretboardBaseLayers(geom);
 
   // Dots — between frets (f>=1), at nut (f=0). Low E at bottom.
   for (let s = 0; s < numStrings; s++) {
@@ -3822,60 +3845,18 @@ function computeCAGEDVoicingMap(root, quality, tuningNotes, numFrets) {
 function chordFretboardSVG(root, chordIntervals, tuningNotes, numFrets, labelMode, inversionMap, voicingMap, openZone) {
   const chordSet = new Set(chordIntervals.map(i => noteAt(root, i % 12)));
 
-  const numStrings = tuningNotes.length;
-  const stringSpacing = SVG_STRING_SPACING;
-  const fretSpacing = SVG_FRET_SPACING;
-  const left = SVG_LEFT;
-  const top = SVG_TOP;
+  const geom = fretboardGeometry({ tuning: tuningNotes, numFrets });
+  const { numStrings, stringSpacing, fretSpacing, left, top } = geom;
   const dotR = 15;
-  const W = left + numFrets * fretSpacing + 30;
-  const H = top + (numStrings - 1) * stringSpacing + 40;
 
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace; display:block">`;
+  let svg = fretboardSVGOpen(geom);
+  svg += fretboardBaseLayers(geom);
 
-  // Fret markers
-
-
-  for (let f = 0; f <= numFrets; f++) {
-    if (SVG_FRET_MARKERS.includes(f)) {
-      const x = left + f * fretSpacing - fretSpacing / 2;
-      const yMid = top + (numStrings - 1) * stringSpacing / 2;
-      if (SVG_DOUBLE_MARKERS.includes(f)) {
-        svg += `<circle cx="${x}" cy="${yMid - stringSpacing * 0.7}" r="4" fill="#2a2a2f"/>`;
-        svg += `<circle cx="${x}" cy="${yMid + stringSpacing * 0.7}" r="4" fill="#2a2a2f"/>`;
-      } else {
-        svg += `<circle cx="${x}" cy="${yMid}" r="4" fill="#2a2a2f"/>`;
-      }
-    }
-  }
-
-  // Fret numbers
-  for (let f = 0; f <= numFrets; f++) {
-    svg += `<text x="${left + f * fretSpacing}" y="${H - 6}" font-size="11" fill="#3a3a4a" text-anchor="middle">${f}</text>`;
-  }
-
-  // Nut
-  svg += `<rect x="${left - 3}" y="${top - 4}" width="5" height="${(numStrings-1)*stringSpacing+8}" fill="#c8c8cc" rx="1"/>`;
-
-  // Helper: between-fret X, bottom-up Y
+  // Position helpers used by zone overlays and dot rendering below
   const dotXPos = (f) => f === 0 ? left : left + (f - 0.5) * fretSpacing;
   const stringYPos = (s) => top + (numStrings - 1 - s) * stringSpacing;
   const zoneLeftX = (minF) => minF === 0 ? left - 14 : (dotXPos(minF - 1) + dotXPos(minF)) / 2;
   const zoneRightX = (maxF) => maxF >= numFrets ? dotXPos(maxF) + fretSpacing * 0.4 : (dotXPos(maxF) + dotXPos(maxF + 1)) / 2;
-
-  // String lines — low E (s=0) at bottom, high E at top
-  for (let s = 0; s < numStrings; s++) {
-    const y = stringYPos(s);
-    const thickness = 1 + (numStrings - 1 - s) * 0.35;
-    svg += `<line x1="${left}" y1="${y}" x2="${left + numFrets * fretSpacing}" y2="${y}" stroke="#2a2a2f" stroke-width="${thickness}"/>`;
-    svg += `<text x="${left - 14}" y="${y + 4}" font-size="11" fill="#6a6a78" text-anchor="middle">${tuningNotes[s]}</text>`;
-  }
-
-  // Fret lines
-  for (let f = 0; f <= numFrets; f++) {
-    const lineColor = f === 0 ? '#c8c8cc' : '#1c1c1f';
-    svg += `<line x1="${left + f * fretSpacing}" y1="${top - 4}" x2="${left + f * fretSpacing}" y2="${top + (numStrings-1)*stringSpacing + 4}" stroke="${lineColor}" stroke-width="1.5"/>`;
-  }
 
   // CAGED zone overlays
   const cagedShapes = getCAGEDShapesForRoot(root, tuningNotes, numFrets);
@@ -4908,51 +4889,13 @@ function buildHeatMap(parsedChords, keyRoot) {
 
 // ── Heat map SVG ─────────────────────────────────────
 function heatMapSVG(heatData, keyRoot, tuningNotes, numFrets, mode) {
-  const numStrings = tuningNotes.length;
-  const fretSpacing = SVG_FRET_SPACING, stringSpacing = 30; // compact spacing for heat map
-  const left = SVG_LEFT, top = 20, dotR = 12;
-  const W = left + numFrets * fretSpacing + 30;
-  const H = top + (numStrings-1) * stringSpacing + 40;
+  // Compact spacing — heat map sits in tighter UI surface than other fretboards
+  const geom = fretboardGeometry({ tuning: tuningNotes, numFrets, stringSpacing: 30, top: 20 });
+  const { numStrings, stringSpacing, fretSpacing, left, top } = geom;
+  const dotR = 12;
 
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace; display:block">`;
-
-  // Fret markers
-
-
-  for (let f=0; f<=numFrets; f++) {
-    if (SVG_FRET_MARKERS.includes(f)) {
-      const x = left + f*fretSpacing - fretSpacing/2;
-      const yMid = top + (numStrings-1)*stringSpacing/2;
-      if (SVG_DOUBLE_MARKERS.includes(f)) {
-        svg += `<circle cx="${x}" cy="${yMid - stringSpacing*0.7}" r="4" fill="#2a2a2f"/>`;
-        svg += `<circle cx="${x}" cy="${yMid + stringSpacing*0.7}" r="4" fill="#2a2a2f"/>`;
-      } else {
-        svg += `<circle cx="${x}" cy="${yMid}" r="4" fill="#2a2a2f"/>`;
-      }
-    }
-  }
-
-  // Fret numbers
-  for (let f=0; f<=numFrets; f++) {
-    svg += `<text x="${left+f*fretSpacing}" y="${H-6}" font-size="11" fill="#3a3a4a" text-anchor="middle">${f}</text>`;
-  }
-
-  // Nut
-  svg += `<rect x="${left-3}" y="${top-4}" width="5" height="${(numStrings-1)*stringSpacing+8}" fill="#c8c8cc" rx="1"/>`;
-
-  // Strings — low E (s=0) at bottom, high E at top
-  for (let s=0; s<numStrings; s++) {
-    const y = top + (numStrings-1-s)*stringSpacing;
-    const thickness = 1 + (numStrings-1-s)*0.35;
-    svg += `<line x1="${left}" y1="${y}" x2="${left+numFrets*fretSpacing}" y2="${y}" stroke="#2a2a2f" stroke-width="${thickness}"/>`;
-    svg += `<text x="${left-14}" y="${y+4}" font-size="11" fill="#6a6a78" text-anchor="middle">${tuningNotes[s]}</text>`;
-  }
-
-  // Fret lines
-  for (let f=0; f<=numFrets; f++) {
-    const x = left + f*fretSpacing;
-    svg += `<line x1="${x}" y1="${top-4}" x2="${x}" y2="${top+(numStrings-1)*stringSpacing+4}" stroke="${f===0?'#c8c8cc':'#1c1c1f'}" stroke-width="1.5"/>`;
-  }
+  let svg = fretboardSVGOpen(geom);
+  svg += fretboardBaseLayers(geom);
 
   // Heat dots
   for (let s=0; s<numStrings; s++) {
@@ -5004,51 +4947,13 @@ function renderDecoderClassify(keyRoot, keyMode, tuningNotes, numFrets) {
   const pentaKey = minorScales.includes(scaleKey) ? 'pentatonic_minor' : 'pentatonic_major';
   const pentaNotes = new Set(SCALE_FORMULAS[pentaKey].intervals.map(i => noteAt(keyRoot, i)));
 
-  const numStrings = tuningNotes.length;
-  const fretSpacing = SVG_FRET_SPACING, stringSpacing = 30; // compact spacing for classify
-  const left = SVG_LEFT, top = 20, dotR = 12;
-  const W = left + numFrets * fretSpacing + 30;
-  const H = top + (numStrings - 1) * stringSpacing + 40;
+  // Compact spacing — Decoder classify shares the heat-map UI surface
+  const geom = fretboardGeometry({ tuning: tuningNotes, numFrets, stringSpacing: 30, top: 20 });
+  const { numStrings, stringSpacing, fretSpacing, left, top } = geom;
+  const dotR = 12;
 
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace; display:block">`;
-
-  // Fret markers
-
-
-  for (let f = 0; f <= numFrets; f++) {
-    if (SVG_FRET_MARKERS.includes(f)) {
-      const x = left + f * fretSpacing - fretSpacing / 2;
-      const yMid = top + (numStrings - 1) * stringSpacing / 2;
-      if (SVG_DOUBLE_MARKERS.includes(f)) {
-        svg += `<circle cx="${x}" cy="${yMid - stringSpacing*0.7}" r="4" fill="#2a2a2f"/>`;
-        svg += `<circle cx="${x}" cy="${yMid + stringSpacing*0.7}" r="4" fill="#2a2a2f"/>`;
-      } else {
-        svg += `<circle cx="${x}" cy="${yMid}" r="4" fill="#2a2a2f"/>`;
-      }
-    }
-  }
-
-  // Fret numbers
-  for (let f = 0; f <= numFrets; f++) {
-    svg += `<text x="${left+f*fretSpacing}" y="${H-6}" font-size="11" fill="#3a3a4a" text-anchor="middle">${f}</text>`;
-  }
-
-  // Nut
-  svg += `<rect x="${left-3}" y="${top-4}" width="5" height="${(numStrings-1)*stringSpacing+8}" fill="#c8c8cc" rx="1"/>`;
-
-  // Strings — low E at bottom
-  for (let s = 0; s < numStrings; s++) {
-    const y = top + (numStrings - 1 - s) * stringSpacing;
-    const thickness = 1 + (numStrings - 1 - s) * 0.35;
-    svg += `<line x1="${left}" y1="${y}" x2="${left+numFrets*fretSpacing}" y2="${y}" stroke="#2a2a2f" stroke-width="${thickness}"/>`;
-    svg += `<text x="${left-14}" y="${y+4}" font-size="11" fill="#6a6a78" text-anchor="middle">${tuningNotes[s]}</text>`;
-  }
-
-  // Fret lines
-  for (let f = 0; f <= numFrets; f++) {
-    const x = left + f * fretSpacing;
-    svg += `<line x1="${x}" y1="${top-4}" x2="${x}" y2="${top+(numStrings-1)*stringSpacing+4}" stroke="${f===0?'#c8c8cc':'#1c1c1f'}" stroke-width="1.5"/>`;
-  }
+  let svg = fretboardSVGOpen(geom);
+  svg += fretboardBaseLayers(geom);
 
   // Classified dots
   for (let s = 0; s < numStrings; s++) {
@@ -6605,51 +6510,11 @@ function renderPlayFretboard(chordName) {
 }
 
 function buildPlayFretboardSVG({ pentaNotesSet, chordToneSet, chordRoot, targetNote, tuning, numFrets, cagedZone, nextTargetNote, approachNoteSet, chordToneIntervals, keyRoot }) {
-  const nStr = tuning.length;
-  const SS   = SVG_STRING_SPACING;
-  const FS   = SVG_FRET_SPACING;
-  const left = SVG_LEFT;
-  const top  = SVG_TOP;
-  const W    = left + numFrets * FS + 30;
-  const H    = top  + (nStr - 1) * SS + 40;
+  const geom = fretboardGeometry({ tuning, numFrets });
+  const { numStrings: nStr, stringSpacing: SS, fretSpacing: FS, left, top } = geom;
 
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" style="font-family:'Space Mono',monospace; display:block">`;
-
-  // Fret markers
-  SVG_FRET_MARKERS.filter(f => f <= numFrets).forEach(f => {
-    if (f > numFrets) return;
-    const x    = left + f * FS - FS / 2;
-    const yMid = top + (nStr - 1) * SS / 2;
-    if (f === 12) {
-      svg += `<circle cx="${x}" cy="${yMid - SS * 0.7}" r="4" fill="#2a2a2f"/>`;
-      svg += `<circle cx="${x}" cy="${yMid + SS * 0.7}" r="4" fill="#2a2a2f"/>`;
-    } else {
-      svg += `<circle cx="${x}" cy="${yMid}" r="4" fill="#2a2a2f"/>`;
-    }
-  });
-
-  // Fret numbers
-  for (let f = 0; f <= numFrets; f++) {
-    svg += `<text x="${left + f * FS}" y="${H - 6}" font-size="11" fill="#3a3a4a" text-anchor="middle">${f}</text>`;
-  }
-
-  // Nut
-  svg += `<rect x="${left - 3}" y="${top - 4}" width="5" height="${(nStr-1)*SS+8}" fill="#c8c8cc" rx="1"/>`;
-
-  // Strings — low E (s=0) at bottom
-  for (let s = 0; s < nStr; s++) {
-    const y = top + (nStr - 1 - s) * SS;
-    const t = 1 + s * 0.35;
-    svg += `<line x1="${left}" y1="${y}" x2="${left + numFrets * FS}" y2="${y}" stroke="#2a2a2f" stroke-width="${t}"/>`;
-    svg += `<text x="${left - 14}" y="${y + 4}" font-size="11" fill="#6a6a78" text-anchor="middle">${tuning[s]}</text>`;
-  }
-
-  // Fret lines
-  for (let f = 0; f <= numFrets; f++) {
-    const x  = left + f * FS;
-    const lc = f === 0 ? '#c8c8cc' : '#1c1c1f';
-    svg += `<line x1="${x}" y1="${top - 4}" x2="${x}" y2="${top + (nStr-1)*SS + 4}" stroke="${lc}" stroke-width="1.5"/>`;
-  }
+  let svg = fretboardSVGOpen(geom);
+  svg += fretboardBaseLayers(geom);
 
   // CAGED zone overlay — always shown for spatial anchoring
   // Bold on non-diatonic (conflict), subtle on diatonic (position awareness)

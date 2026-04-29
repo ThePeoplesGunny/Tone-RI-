@@ -6,13 +6,39 @@
 
 ## Next Target
 
-Current: Beta 4.3.1 — `|| 12` fret-0 patch on top of 4.3. Zero open defects. Next: pipeline testing on real TiddlyWiki content. Section editor UI (manual route authoring) deferred — auto-compute covers common case.
+Current: Beta 4.3.1, dashboard re-baselined (April 2026). Zero open defects. 7 active gap loops queued from 4-agent re-baseline — sequence TBD with user. Pipeline testing on real TiddlyWiki content remains queued.
 
 ---
 
 ## Open Technical Debt
 
-No open defects. Resolution history in version log.
+No open defects.
+
+**7 active gap loops** (queued, not blocking — surfaced by April 2026 re-baseline, see TONE_CONTEXT "Re-baseline event"):
+
+| ID | W | Source | Summary |
+|----|---|--------|---------|
+| `tone-vocabulary` | 3 | KWS | Per-song tone recipe + era + signal-chain. TONE_RECIPES has 1 entry; Hendrix material vs original material on different stacks invisible. |
+| `mixolydian-ghost` | 2 | Hendrix + EVH | Mixolydian b7 has data in PENTA_PATHWAYS_EXT but no live Play Mode ghost. Asymmetric with renderDorianGhost. |
+| `blues-b5-ghost` | 2 | Hendrix + EVH | Blues b5 lives in pathway data and Scales tab; no live render in Play Mode. |
+| `two-voice-rhythm` | 2 | SRV | Thumb-bass + treble-comp simultaneity. "Pride and Joy" identity. Single-voice render model is current assumption. |
+| `per-song-tuning` | 2 | KWS | Library row cannot declare tuning; contradicts "tuning is a parameter" axiom. Subsumed by tone-vocabulary but smaller. |
+| `open-string-pedal-tone` | 1 | EVH | Drop-D / open-A drone against moving shapes ("Unchained" idiom). |
+| `triad-ornament-layer` | 1 | Hendrix | Hammer-on/pull-off ornaments between triad voicings ("Little Wing" decoration). |
+
+---
+
+## Architectural Review (April 2026)
+
+3R review (Refactor / Reengineer / Rewrite) completed:
+
+- **Theory engine** — Refactor (light touch). 4.1 algorithmic core is real and load-bearing. Residual: `computeNumeral` suffix cascade should be driven from `CHORD_REGISTRY[].suffix`.
+- **Render layer** — Reengineer. ~400 lines of duplicated fretboard chrome across 4 renderers (`fretboardSVG`, `chordFretboardSVG`, `heatMapSVG`, `buildPlayFretboardSVG`) plus partial duplicates in 4 more. Extract `fretboardChrome`, `dotLayer`, `decorations` helpers in place. No framework, no build step.
+- **State / event wiring** — Refactor (small, opportunistic). 184 `getElementById` calls + manual re-render dispatch on `_activeContext` mutation. Collect dispatch into one helper.
+- **Tone Engineer panel** — Don't refactor yet. Populate `TONE_RECIPES` first (covered by `tone-vocabulary` loop), then evaluate schema.
+- **Full rewrite** — Rejected. Single-file architecture is load-bearing.
+
+Sequencing: re-baseline (done) → fretboard chrome extraction → render-template cleanup → engine numeral fix → state dispatch helper.
 
 ---
 

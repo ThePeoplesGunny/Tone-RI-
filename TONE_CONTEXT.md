@@ -379,20 +379,28 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 - **Modes — Parallel View**: ordered bright→dark
 - **Diatonic Pattern**: mode-aware (major/minor), chord names from active key
 
-### Dashboard Tab (updated in 3.8 — full agent system + pipeline; KWS player agent added 4.3.1-era)
+### Dashboard Tab (re-baselined April 2026 — see "Re-baseline event" below)
 - **8 agents** across two categories:
-  - Player perspectives (4): Hendrix, EVH, SRV, KWS — catalog-grounded evaluation
+  - Player perspectives (4): Hendrix, EVH, SRV, KWS — catalog-grounded evaluation, all wired into dimension scores
   - Operational (4): Architect (code structure), UI/UX (glanceability), Guitar Systems Engineer (theory engine), Tone Engineer (signal chain + gear)
-- Alignment scores: player agents rate TONE against their principles
-- Weighted priority actions (W1-W3): consolidated from all agent evaluations. W3 items (7#9, PENTA_PATHWAYS) resolved in 3.8.
-- Consensus areas: where agents agree TONE is strong
-- Conflict areas: where agents disagree on priorities or approach
-- **Distillation pipeline (new in 3.8):** 3 skills visible on dashboard
+- **10 alignment dimensions** (was 9). New 10th: "Tone / era context per song" — surfaced by KWS lens; KWS-only baseline pending re-eval from other player agents.
+- **Per-dimension scores**: 4 player columns (hendrix, evh, srv, kws). Render code averages all numeric values, tolerating partial coverage (D10 has 3 nulls).
+- Alignment scores: player agents rate TONE against their principles. Each dimension carries `drivers` (verified features), `limiters` (multi-agent flagged gaps), `linkedLoops`, `projected` (honest near-target / below-target language; "at ceiling" only used when justified).
+- **16 control loops total**: 9 done, 7 active gaps (mixolydian-ghost W2, blues-b5-ghost W2, two-voice-rhythm W2, open-string-pedal-tone W1, triad-ornament-layer W1, tone-vocabulary W3, per-song-tuning W2). Each loop carries agent intersection notes (close/partial/caution/neutral).
+- **Distillation pipeline (3.8):** 3 skills visible on dashboard
   - `/analyze-tab`: tablature → harmonic analysis + technique inventory + transferable principles
   - `/tone-match`: reference tone → signal chain recipe mapped to user's gear
   - `/distill`: master orchestrator, routes through agent quality gates, produces TONE-ready package
-- Future layer recommendations: agent-identified gaps for Layers 10-11
-- Agent definitions stored in `.claude/agents/` (8 files: architect, evh, guitar-systems, hendrix, kws, srv, tone-engineer, uiux + `_protocol.md` meta-file), skill definitions in `.claude/commands/` (3 files). KWS agent (added post-3.8) is not yet wired into Dashboard rendering — exists for direct Claude Code subagent invocation.
+- Agent definitions live at `<repo-parent>/.claude/agents/` (parent of the git repo, where Claude Code subagent resolution finds them). Skill definitions in `Tone (RI)/.claude/commands/` (3 files).
+
+### Re-baseline event (April 2026)
+- **What:** 4-agent re-evaluation of dashboard scores against current Beta 4.3.1 code with file:line citations.
+- **Why:** Discovered that for ~30 commits over 25 days, player agent files were misfiled and never invoked. All scores generated during that window — many stamped "at ceiling. resolved." — were untrustworthy.
+- **Outcome:**
+  - 6 of 9 prior dimensions had inflated or undersold scores. Average movements: rhythm/lead -0.6 (SRV cited double-stop independence absence), modal extension +0.75 (Hendrix cited renderDorianGhost the prior agent never read), zoom spectrum +1.0 (multi-agent: song-route per-section zoom credited).
+  - 7 gap loops surfaced from 4 distinct agent lenses, sequenced by weight.
+  - 1 new dimension surfaced (Tone/era context per song) — connects to the Tone Engineer prototype's single-recipe limit.
+- **Trust calibration going forward:** "At ceiling. Resolved." now requires score ≥9.5 and zero limiters. Dashboard `projected` text is the honest-state field, not a marketing field.
 
 ### Library Tab (unchanged)
 - Form: title, artist, key, mode, chords, genre, year, tempo, capo, tags, notes

@@ -286,7 +286,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 
 ---
 
-## Current Feature State — Beta 4.3.1 (current baseline)
+## Current Feature State — Beta 4.4 (current baseline)
 
 ### How Features Map to the Structural Skills + New Layers
 
@@ -394,7 +394,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 - Agent definitions live at `<repo-parent>/.claude/agents/` (parent of the git repo, where Claude Code subagent resolution finds them). Skill definitions in `Tone (RI)/.claude/commands/` (3 files).
 
 ### Re-baseline event (April 2026)
-- **What:** 4-agent re-evaluation of dashboard scores against current Beta 4.3.1 code with file:line citations.
+- **What:** 4-agent re-evaluation of dashboard scores against current Beta 4.3.1 code with file:line citations (carried forward into 4.4 unchanged).
 - **Why:** Discovered that for ~30 commits over 25 days, player agent files were misfiled and never invoked. All scores generated during that window — many stamped "at ceiling. resolved." — were untrustworthy.
 - **Outcome:**
   - 6 of 9 prior dimensions had inflated or undersold scores. Average movements: rhythm/lead -0.6 (SRV cited double-stop independence absence), modal extension +0.75 (Hendrix cited renderDorianGhost the prior agent never read), zoom spectrum +1.0 (multi-agent: song-route per-section zoom credited).

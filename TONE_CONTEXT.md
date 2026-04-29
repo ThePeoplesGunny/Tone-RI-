@@ -379,9 +379,9 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 - **Modes — Parallel View**: ordered bright→dark
 - **Diatonic Pattern**: mode-aware (major/minor), chord names from active key
 
-### Dashboard Tab (updated in 3.8 — full agent system + pipeline)
-- **7 agents** across two categories:
-  - Player perspectives (3): Hendrix, EVH, SRV — catalog-grounded evaluation
+### Dashboard Tab (updated in 3.8 — full agent system + pipeline; KWS player agent added 4.3.1-era)
+- **8 agents** across two categories:
+  - Player perspectives (4): Hendrix, EVH, SRV, KWS — catalog-grounded evaluation
   - Operational (4): Architect (code structure), UI/UX (glanceability), Guitar Systems Engineer (theory engine), Tone Engineer (signal chain + gear)
 - Alignment scores: player agents rate TONE against their principles
 - Weighted priority actions (W1-W3): consolidated from all agent evaluations. W3 items (7#9, PENTA_PATHWAYS) resolved in 3.8.
@@ -392,7 +392,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
   - `/tone-match`: reference tone → signal chain recipe mapped to user's gear
   - `/distill`: master orchestrator, routes through agent quality gates, produces TONE-ready package
 - Future layer recommendations: agent-identified gaps for Layers 10-11
-- Agent definitions stored in `.claude/agents/` (7 files), skill definitions in `.claude/commands/` (3 files)
+- Agent definitions stored in `.claude/agents/` (8 files: architect, evh, guitar-systems, hendrix, kws, srv, tone-engineer, uiux + `_protocol.md` meta-file), skill definitions in `.claude/commands/` (3 files). KWS agent (added post-3.8) is not yet wired into Dashboard rendering — exists for direct Claude Code subagent invocation.
 
 ### Library Tab (unchanged)
 - Form: title, artist, key, mode, chords, genre, year, tempo, capo, tags, notes

@@ -6,7 +6,18 @@
 
 ## Next Target
 
-Current: Beta 4.4 — fretboard chrome extraction + Play Mode thickness fix. Dashboard re-baselined (April 2026). Zero open defects. 7 active gap loops queued from 4-agent re-baseline — sequence TBD with user. Pipeline testing on real TiddlyWiki content remains queued.
+**Gear tab — Phase 1** (per `GEAR_TAB_DESIGN.md` v0.2). Design doc is agent-reviewed (Architect, UI/UX, Tone Engineer, Guitar Systems) and user-approved. Three contested decisions resolved (notation fidelity per setting, Gear tab is standalone from Play Mode, edit mode is text-only / no knob drag). Schema-level role assertion validation (Section 3.7 of design doc) is the load-bearing structural change that makes the Univibe-class hallucination impossible.
+
+Implementation order from the design doc:
+1. **Phase 1** — author `gear-inventory.js` covering 100% of `gear.txt` with structured controls, switches, sides, role tags
+2. **Phase 2** — `buildRoleIndex()` + role tag audit
+3. **Phase 3** — Tone Engineer agent updated with role-index lookup + structural validation; rerun KWS recipe to verify Univibe DIRECT MATCH replaces Phase 90 substitute
+4. **Phase 4** — `TONE_RECIPES` schema + first two hand-authored recipes (KWS While We Cry 1995, KWS Voodoo Child 1997)
+5. **Phase 4.5** — `serializePresets → serializeDataBlocks` generalization. **Minimum-viable stopping point.** Phases 5+ are incremental rendering improvements and can ship as separate betas.
+
+Beta 4.4 baseline holds. Zero open defects.
+
+Pipeline testing on real TiddlyWiki content remains queued (separate from Gear tab work).
 
 ---
 
@@ -14,17 +25,22 @@ Current: Beta 4.4 — fretboard chrome extraction + Play Mode thickness fix. Das
 
 No open defects.
 
-**7 active gap loops** (queued, not blocking — surfaced by April 2026 re-baseline, see TONE_CONTEXT "Re-baseline event"):
+**7 active gap loops** (surfaced by April 2026 re-baseline, see TONE_CONTEXT "Re-baseline event"). Two are now in active service via the Gear tab build path:
 
-| ID | W | Source | Summary |
-|----|---|--------|---------|
-| `tone-vocabulary` | 3 | KWS | Per-song tone recipe + era + signal-chain. TONE_RECIPES has 1 entry; Hendrix material vs original material on different stacks invisible. |
-| `mixolydian-ghost` | 2 | Hendrix + EVH | Mixolydian b7 has data in PENTA_PATHWAYS_EXT but no live Play Mode ghost. Asymmetric with renderDorianGhost. |
-| `blues-b5-ghost` | 2 | Hendrix + EVH | Blues b5 lives in pathway data and Scales tab; no live render in Play Mode. |
-| `two-voice-rhythm` | 2 | SRV | Thumb-bass + treble-comp simultaneity. "Pride and Joy" identity. Single-voice render model is current assumption. |
-| `per-song-tuning` | 2 | KWS | Library row cannot declare tuning; contradicts "tuning is a parameter" axiom. Subsumed by tone-vocabulary but smaller. |
-| `open-string-pedal-tone` | 1 | EVH | Drop-D / open-A drone against moving shapes ("Unchained" idiom). |
-| `triad-ornament-layer` | 1 | Hendrix | Hammer-on/pull-off ornaments between triad voicings ("Little Wing" decoration). |
+| ID | W | Source | Summary | Status |
+|----|---|--------|---------|--------|
+| `tone-vocabulary` | 3 | KWS | Per-song tone recipe + era + signal-chain. | **In active service via Gear tab Phase 4+** |
+| `per-song-tuning` | 2 | KWS | Library row cannot declare tuning; contradicts "tuning is a parameter" axiom. | **In active service via `recipe.guitar.tuning` (Gear tab Phase 4)** — note: per Guitar Systems R1, recipe tuning is authoritative for Gear tab only and does NOT propagate to Decoder/Chords/Scales/Theory |
+| `mixolydian-ghost` | 2 | Hendrix + EVH | Mixolydian b7 has data in PENTA_PATHWAYS_EXT but no live Play Mode ghost. Asymmetric with renderDorianGhost. | Queued |
+| `blues-b5-ghost` | 2 | Hendrix + EVH | Blues b5 lives in pathway data and Scales tab; no live render in Play Mode. | Queued |
+| `two-voice-rhythm` | 2 | SRV | Thumb-bass + treble-comp simultaneity. "Pride and Joy" identity. Single-voice render model is current assumption. | Queued |
+| `open-string-pedal-tone` | 1 | EVH | Drop-D / open-A drone against moving shapes ("Unchained" idiom). | Queued |
+| `triad-ornament-layer` | 1 | Hendrix | Hammer-on/pull-off ornaments between triad voicings ("Little Wing" decoration). | Queued |
+
+**Tracked follow-ups from Gear tab v0.2 (not Beta gap loops):**
+- Tremonti Mesa settings research event (before authoring Tremonti recipe in Phase 9 of Gear tab build)
+- TUNING_PRESETS constant unification (small refactor; eliminates dropdown/recipe-id drift)
+- Helix block-level modeling (v2 of Gear tab)
 
 ---
 

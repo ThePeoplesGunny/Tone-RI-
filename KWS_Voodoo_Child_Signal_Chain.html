@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KWS Voodoo Child &mdash; Signal Chain</title>
+<style>
+  @page { size: Letter landscape; margin: 0.35in; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #111;
+    font-size: 9pt;
+    line-height: 1.25;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1.4px solid #111;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+  }
+  .header h1 { margin: 0; font-size: 14pt; letter-spacing: 0.3px; }
+  .header .meta { font-size: 8.25pt; color: #444; text-align: right; }
+  .header .meta b { color: #111; }
+
+  svg.chain { display: block; width: 100%; height: auto; }
+
+  .legend {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 6px;
+    padding-top: 5px;
+    border-top: 1px solid #bbb;
+    font-size: 8pt;
+    color: #444;
+  }
+  .legend .grp { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .legend .swatch {
+    display: inline-block;
+    width: 9px; height: 9px;
+    border-radius: 2px;
+    margin-right: 3px;
+    vertical-align: -1px;
+  }
+  .legend .v { background: #2a8c3f; }
+  .legend .i { background: #c97a1f; }
+  .legend .a { background: #b03030; }
+  .legend .always { background: #333; }
+  .legend .section { background: #6a6abf; }
+
+  .footnotes {
+    margin-top: 4px;
+    font-size: 7.75pt;
+    color: #555;
+    line-height: 1.35;
+  }
+  .footnotes b { color: #111; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Kenny Wayne Shepherd &mdash; <span style="font-weight:400;">Voodoo Child (Slight Return)</span></h1>
+    <div style="font-size:8.5pt;color:#555;margin-top:1px;">Signal chain &middot; v1 verification graphic &middot; <i>Blue on Black</i> CD single, 1997 (<i>Trouble Is&hellip;</i> session rig)</div>
+  </div>
+  <div class="meta">
+    <div><b>Guitar:</b> Fender Ultra Luxe Strat &middot; <b>Tuning:</b> Eb std</div>
+    <div><b>Strings:</b> .011 / .014 / .018 / .038 / .048 / .058 &middot; <b>Pick:</b> Dunlop heavy</div>
+  </div>
+</div>
+
+<svg class="chain" viewBox="0 0 1080 670" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#222"/>
+    </marker>
+    <linearGradient id="knobFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a3a3a"/>
+      <stop offset="1" stop-color="#1a1a1a"/>
+    </linearGradient>
+    <linearGradient id="ampFace" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6e2419"/>
+      <stop offset="1" stop-color="#4a160c"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ============ TOP ROW: GUITAR + 5 PEDALS ============ -->
+
+  <!-- Guitar -->
+  <g transform="translate(10,30)">
+    <rect x="0" y="0" width="80" height="60" rx="8" fill="#fff" stroke="#111" stroke-width="1.4"/>
+    <text x="40" y="22" text-anchor="middle" font-size="10" font-weight="700">GUITAR</text>
+    <text x="40" y="36" text-anchor="middle" font-size="7.5" fill="#444">Strat (Ultra Luxe)</text>
+    <text x="40" y="48" text-anchor="middle" font-size="7" fill="#666">Bridge / Neck</text>
+  </g>
+  <line x1="92" y1="60" x2="118" y2="60" stroke="#222" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- PEDAL: Wah -->
+  <g transform="translate(120,5)">
+    <!-- Card -->
+    <rect x="0" y="0" width="170" height="170" rx="6" fill="#fafafa" stroke="#111" stroke-width="1.2"/>
+    <rect x="0" y="0" width="170" height="22" rx="6" fill="#222"/>
+    <text x="85" y="15" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">DUNLOP MC404 WAH</text>
+    <text x="85" y="33" text-anchor="middle" font-size="7" fill="#666">CAE / vintage Hendrix-style voicing</text>
+
+    <!-- Switches -->
+    <g transform="translate(20,55)">
+      <text x="35" y="-3" text-anchor="middle" font-size="7" fill="#333" font-weight="600">Q SWITCH</text>
+      <rect x="0" y="0" width="70" height="22" rx="3" fill="#fff" stroke="#666"/>
+      <rect x="0" y="0" width="35" height="22" rx="3" fill="#c97a1f" opacity="0.85"/>
+      <text x="17.5" y="14.5" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">VINTAGE</text>
+      <text x="52.5" y="14.5" text-anchor="middle" font-size="7.5" fill="#888">MODERN</text>
+    </g>
+    <g transform="translate(95,55)">
+      <text x="30" y="-3" text-anchor="middle" font-size="7" fill="#333" font-weight="600">INDUCTOR</text>
+      <rect x="0" y="0" width="60" height="22" rx="3" fill="#fff" stroke="#666"/>
+      <rect x="0" y="0" width="30" height="22" rx="3" fill="#d4a020" opacity="0.85"/>
+      <text x="15" y="14.5" text-anchor="middle" font-size="7.5" font-weight="700" fill="#222">YELLOW</text>
+      <text x="45" y="14.5" text-anchor="middle" font-size="7.5" fill="#888">RED</text>
+    </g>
+
+    <!-- Engagement strip -->
+    <rect x="0" y="125" width="170" height="20" fill="#6a6abf"/>
+    <text x="85" y="139" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">ENGAGED: INTRO RIFF + FUNK BREAK</text>
+
+    <!-- Provenance -->
+    <rect x="0" y="148" width="170" height="22" fill="#fff" stroke="#111" stroke-width="0.6"/>
+    <circle cx="14" cy="159" r="4.5" fill="#c97a1f"/>
+    <text x="24" y="162" font-size="7" fill="#333">Inferred &mdash; KWS uses CAE Wah; vintage Q matches Hendrix lineage</text>
+  </g>
+  <line x1="292" y1="90" x2="318" y2="90" stroke="#222" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- PEDAL: Phase 90 -->
+  <g transform="translate(320,5)">
+    <rect x="0" y="0" width="170" height="170" rx="6" fill="#fafafa" stroke="#111" stroke-width="1.2"/>
+    <rect x="0" y="0" width="170" height="22" rx="6" fill="#f7c520"/>
+    <text x="85" y="15" text-anchor="middle" font-size="9" font-weight="700" fill="#222">MXR EVH PHASE 90</text>
+    <text x="85" y="33" text-anchor="middle" font-size="7" fill="#666">Substituting for Uni-Vibe</text>
+
+    <!-- One big knob (Speed) -->
+    <g transform="translate(50,80)">
+      <text x="0" y="-22" text-anchor="middle" font-size="7.5" font-weight="700" fill="#222">SPEED</text>
+      <circle cx="0" cy="0" r="22" fill="url(#knobFill)" stroke="#888" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="22" fill="none" stroke="#000" stroke-width="0.6"/>
+      <!-- Indicator: 10 o'clock = -60deg from up -->
+      <line x1="0" y1="0" x2="0" y2="-19" stroke="#fff" stroke-width="2.4" transform="rotate(-60)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2.5" fill="#666"/>
+      <!-- Tick marks at min/max -->
+      <line x1="0" y1="-22" x2="0" y2="-26" stroke="#222" stroke-width="0.8" transform="rotate(-150)"/>
+      <line x1="0" y1="-22" x2="0" y2="-26" stroke="#222" stroke-width="0.8" transform="rotate(150)"/>
+      <text x="0" y="38" text-anchor="middle" font-size="8" font-weight="700" fill="#222">10 o'clock</text>
+      <text x="0" y="48" text-anchor="middle" font-size="7" fill="#666">slow / Leslie-ish</text>
+    </g>
+
+    <!-- Script switch -->
+    <g transform="translate(105,55)">
+      <text x="30" y="-3" text-anchor="middle" font-size="7" fill="#333" font-weight="600">SCRIPT</text>
+      <rect x="0" y="0" width="60" height="22" rx="3" fill="#fff" stroke="#666"/>
+      <rect x="0" y="0" width="30" height="22" rx="3" fill="#2a8c3f" opacity="0.85"/>
+      <text x="15" y="14.5" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">OUT</text>
+      <text x="45" y="14.5" text-anchor="middle" font-size="7.5" fill="#888">IN</text>
+      <text x="30" y="35" text-anchor="middle" font-size="6.5" fill="#666">(button OUT = script)</text>
+    </g>
+
+    <rect x="0" y="125" width="170" height="20" fill="#6a6abf"/>
+    <text x="85" y="139" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">ENGAGED: FUNK BREAK ONLY</text>
+
+    <rect x="0" y="148" width="170" height="22" fill="#fff" stroke="#111" stroke-width="0.6"/>
+    <circle cx="14" cy="159" r="4.5" fill="#b03030"/>
+    <text x="24" y="162" font-size="7" fill="#333">Assumed &mdash; substitute for KWS's Uni-Vibe; not equivalent</text>
+  </g>
+  <line x1="492" y1="90" x2="518" y2="90" stroke="#222" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- PEDAL: Duellist (Heavy Hand) -->
+  <g transform="translate(520,5)">
+    <rect x="0" y="0" width="240" height="170" rx="6" fill="#fafafa" stroke="#111" stroke-width="1.2"/>
+    <rect x="0" y="0" width="240" height="22" rx="6" fill="#1a3a6e"/>
+    <text x="120" y="15" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">KING TONE DUELLIST &mdash; HEAVY HAND</text>
+    <text x="120" y="33" text-anchor="middle" font-size="7" fill="#666">Klon-flavored boost role (right channel side)</text>
+
+    <!-- Three knobs -->
+    <!-- Drive: 12:30 -> 15deg -->
+    <g transform="translate(50,80)">
+      <text x="0" y="-22" text-anchor="middle" font-size="7.5" font-weight="700" fill="#222">DRIVE</text>
+      <circle cx="0" cy="0" r="20" fill="url(#knobFill)" stroke="#888" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-17" stroke="#fff" stroke-width="2.2" transform="rotate(15)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2.5" fill="#666"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(-150)"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(150)"/>
+      <text x="0" y="36" text-anchor="middle" font-size="8" font-weight="700" fill="#222">12:30</text>
+    </g>
+    <!-- Tone: 11:00 -> -30deg -->
+    <g transform="translate(120,80)">
+      <text x="0" y="-22" text-anchor="middle" font-size="7.5" font-weight="700" fill="#222">TONE</text>
+      <circle cx="0" cy="0" r="20" fill="url(#knobFill)" stroke="#888" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-17" stroke="#fff" stroke-width="2.2" transform="rotate(-30)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2.5" fill="#666"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(-150)"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(150)"/>
+      <text x="0" y="36" text-anchor="middle" font-size="8" font-weight="700" fill="#222">11:00</text>
+    </g>
+    <!-- Volume: 1:00 -> 30deg -->
+    <g transform="translate(190,80)">
+      <text x="0" y="-22" text-anchor="middle" font-size="7.5" font-weight="700" fill="#222">VOLUME</text>
+      <circle cx="0" cy="0" r="20" fill="url(#knobFill)" stroke="#888" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-17" stroke="#fff" stroke-width="2.2" transform="rotate(30)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2.5" fill="#666"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(-150)"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(150)"/>
+      <text x="0" y="36" text-anchor="middle" font-size="8" font-weight="700" fill="#222">1:00</text>
+    </g>
+
+    <rect x="0" y="125" width="240" height="20" fill="#6a6abf"/>
+    <text x="120" y="139" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">ENGAGED: SOLOS (STACK ON TOP OF TS808)</text>
+
+    <rect x="0" y="148" width="240" height="22" fill="#fff" stroke="#111" stroke-width="0.6"/>
+    <circle cx="14" cy="159" r="4.5" fill="#b03030"/>
+    <text x="24" y="162" font-size="7" fill="#333">Assumed &mdash; KWS used Klon Centaur in 1997; Duellist HH = closest analog</text>
+  </g>
+  <line x1="762" y1="90" x2="788" y2="90" stroke="#222" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- PEDAL: TS808 -->
+  <g transform="translate(790,5)">
+    <rect x="0" y="0" width="240" height="170" rx="6" fill="#fafafa" stroke="#111" stroke-width="1.2"/>
+    <rect x="0" y="0" width="240" height="22" rx="6" fill="#3d8a4a"/>
+    <text x="120" y="15" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">IBANEZ TS808</text>
+    <text x="120" y="33" text-anchor="middle" font-size="7" fill="#666">SRV/KWS recipe: low drive, high level, mid push</text>
+
+    <!-- Drive: 9:00 -> -90deg -->
+    <g transform="translate(50,80)">
+      <text x="0" y="-22" text-anchor="middle" font-size="7.5" font-weight="700" fill="#222">DRIVE</text>
+      <circle cx="0" cy="0" r="20" fill="url(#knobFill)" stroke="#888" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-17" stroke="#fff" stroke-width="2.2" transform="rotate(-90)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2.5" fill="#666"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(-150)"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(150)"/>
+      <text x="0" y="36" text-anchor="middle" font-size="8" font-weight="700" fill="#222">9:00</text>
+    </g>
+    <!-- Tone: 12:00 -> 0deg -->
+    <g transform="translate(120,80)">
+      <text x="0" y="-22" text-anchor="middle" font-size="7.5" font-weight="700" fill="#222">TONE</text>
+      <circle cx="0" cy="0" r="20" fill="url(#knobFill)" stroke="#888" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-17" stroke="#fff" stroke-width="2.2" transform="rotate(0)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2.5" fill="#666"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(-150)"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(150)"/>
+      <text x="0" y="36" text-anchor="middle" font-size="8" font-weight="700" fill="#222">12:00</text>
+    </g>
+    <!-- Level: 2:00 -> 60deg -->
+    <g transform="translate(190,80)">
+      <text x="0" y="-22" text-anchor="middle" font-size="7.5" font-weight="700" fill="#222">LEVEL</text>
+      <circle cx="0" cy="0" r="20" fill="url(#knobFill)" stroke="#888" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-17" stroke="#fff" stroke-width="2.2" transform="rotate(60)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2.5" fill="#666"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(-150)"/>
+      <line x1="0" y1="-20" x2="0" y2="-24" stroke="#222" stroke-width="0.8" transform="rotate(150)"/>
+      <text x="0" y="36" text-anchor="middle" font-size="8" font-weight="700" fill="#222">2:00</text>
+    </g>
+
+    <rect x="0" y="125" width="240" height="20" fill="#6a6abf"/>
+    <text x="120" y="139" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">ENGAGED: SOLOS</text>
+
+    <rect x="0" y="148" width="240" height="22" fill="#fff" stroke="#111" stroke-width="0.6"/>
+    <circle cx="14" cy="159" r="4.5" fill="#c97a1f"/>
+    <text x="24" y="162" font-size="7" fill="#333">Inferred &mdash; KWS confirmed TS808 in 1997 rig; per-knob settings inferred</text>
+  </g>
+
+  <!-- ============ ROW 2: HoF2 + Split + Amps ============ -->
+
+  <!-- HoF2 (positioned middle-left, before split) -->
+  <g transform="translate(120,200)">
+    <rect x="0" y="0" width="200" height="160" rx="6" fill="#fafafa" stroke="#111" stroke-width="1.2"/>
+    <rect x="0" y="0" width="200" height="22" rx="6" fill="#3a3a3a"/>
+    <text x="100" y="15" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">TC HALL OF FAME 2</text>
+    <text x="100" y="33" text-anchor="middle" font-size="7" fill="#666">Light room reverb &mdash; ambient fill only</text>
+
+    <!-- Decay: 9:00 -->
+    <g transform="translate(40,75)">
+      <text x="0" y="-20" text-anchor="middle" font-size="7" font-weight="700" fill="#222">DECAY</text>
+      <circle cx="0" cy="0" r="17" fill="url(#knobFill)" stroke="#888" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-14" stroke="#fff" stroke-width="2" transform="rotate(-90)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#666"/>
+      <text x="0" y="32" text-anchor="middle" font-size="7.5" font-weight="700" fill="#222">9:00</text>
+    </g>
+    <!-- Tone: 12:00 -->
+    <g transform="translate(100,75)">
+      <text x="0" y="-20" text-anchor="middle" font-size="7" font-weight="700" fill="#222">TONE</text>
+      <circle cx="0" cy="0" r="17" fill="url(#knobFill)" stroke="#888" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-14" stroke="#fff" stroke-width="2" transform="rotate(0)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#666"/>
+      <text x="0" y="32" text-anchor="middle" font-size="7.5" font-weight="700" fill="#222">12:00</text>
+    </g>
+    <!-- Level: 9:30 -> -75deg -->
+    <g transform="translate(160,75)">
+      <text x="0" y="-20" text-anchor="middle" font-size="7" font-weight="700" fill="#222">LEVEL</text>
+      <circle cx="0" cy="0" r="17" fill="url(#knobFill)" stroke="#888" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-14" stroke="#fff" stroke-width="2" transform="rotate(-75)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#666"/>
+      <text x="0" y="32" text-anchor="middle" font-size="7.5" font-weight="700" fill="#222">9:30</text>
+    </g>
+
+    <rect x="0" y="115" width="200" height="20" fill="#333"/>
+    <text x="100" y="129" text-anchor="middle" font-size="7.5" font-weight="700" fill="#fff">ENGAGED: ALWAYS ON</text>
+
+    <rect x="0" y="138" width="200" height="22" fill="#fff" stroke="#111" stroke-width="0.6"/>
+    <circle cx="14" cy="149" r="4.5" fill="#b03030"/>
+    <text x="24" y="152" font-size="7" fill="#333">Assumed &mdash; light ambient layer; amps carry primary reverb</text>
+  </g>
+
+  <!-- TS808 → HoF2 connector (down arrow then left) -->
+  <path d="M 910 175 L 910 188 L 220 188 L 220 198" fill="none" stroke="#222" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- HoF2 → split point -->
+  <line x1="320" y1="280" x2="350" y2="280" stroke="#222" stroke-width="1.4"/>
+  <!-- Split node -->
+  <g transform="translate(360,280)">
+    <circle cx="0" cy="0" r="8" fill="#222"/>
+    <text x="0" y="-14" text-anchor="middle" font-size="7" font-weight="700" fill="#222">SPLIT</text>
+    <text x="0" y="22" text-anchor="middle" font-size="6.5" fill="#666">Pan: Twin ~10 o'clock / Blues Deluxe ~2 o'clock</text>
+  </g>
+  <!-- Split → Twin (up-right) -->
+  <path d="M 368 280 L 435 280 L 435 240 L 440 240" fill="none" stroke="#222" stroke-width="1.4" marker-end="url(#arr)"/>
+  <!-- Split → Blues Deluxe (down-right) -->
+  <path d="M 368 280 L 435 280 L 435 480 L 440 480" fill="none" stroke="#222" stroke-width="1.4" marker-end="url(#arr)"/>
+
+  <!-- ============ AMP: Tone Master Twin Reverb (top right) ============ -->
+  <g transform="translate(440,200)">
+    <!-- Frame -->
+    <rect x="0" y="0" width="620" height="100" rx="4" fill="url(#ampFace)" stroke="#222" stroke-width="1.4"/>
+    <rect x="6" y="6" width="608" height="88" rx="2" fill="none" stroke="#d4a55c" stroke-width="0.8"/>
+    <text x="14" y="22" font-size="9" font-weight="700" fill="#f4d6a0" letter-spacing="1">FENDER TONE MASTER TWIN REVERB</text>
+    <text x="14" y="34" font-size="7" fill="#e0c498">Clean platform &middot; pan ~10 o'clock</text>
+
+    <!-- Knobs row: Volume, Treble, Mid, Bass, Presence, Reverb -->
+    <g transform="translate(50,68)">
+      <!-- Volume 5.5: numeric 0-10 → angle = 210 + n*30, mod 360. 5.5 = 210+165=375 = 15deg -->
+      <g>
+        <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">VOLUME</text>
+        <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+        <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(15)" stroke-linecap="round"/>
+        <circle cx="0" cy="0" r="2" fill="#888"/>
+        <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">5.5</text>
+      </g>
+    </g>
+    <g transform="translate(140,68)">
+      <!-- Treble 6: 210 + 180 = 390 = 30deg -->
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">TREBLE</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(30)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">6</text>
+    </g>
+    <g transform="translate(230,68)">
+      <!-- Mid 6: 30deg -->
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">MID</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(30)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">6</text>
+    </g>
+    <g transform="translate(320,68)">
+      <!-- Bass 5: 210+150 = 360 = 0deg -->
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">BASS</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(0)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">5</text>
+    </g>
+    <g transform="translate(410,68)">
+      <!-- Presence 4: 210+120=330 = -30deg -->
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">PRESENCE</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(-30)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">4</text>
+    </g>
+    <g transform="translate(500,68)">
+      <!-- Reverb 3.5: 210+105=315 = -45deg -->
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">REVERB</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(-45)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">3.5</text>
+    </g>
+
+    <!-- Switches/state on right -->
+    <g transform="translate(560,50)">
+      <text x="20" y="-2" text-anchor="middle" font-size="6.5" font-weight="700" fill="#f4d6a0">CHANNEL</text>
+      <rect x="0" y="2" width="40" height="14" rx="2" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.6"/>
+      <rect x="0" y="2" width="20" height="14" rx="2" fill="#2a8c3f"/>
+      <text x="10" y="12" text-anchor="middle" font-size="6.5" font-weight="700" fill="#fff">NORM</text>
+      <text x="30" y="12" text-anchor="middle" font-size="6.5" fill="#888">VIB</text>
+
+      <text x="20" y="33" text-anchor="middle" font-size="6.5" font-weight="700" fill="#f4d6a0">BRIGHT</text>
+      <rect x="0" y="37" width="40" height="14" rx="2" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.6"/>
+      <rect x="20" y="37" width="20" height="14" rx="2" fill="#b03030"/>
+      <text x="10" y="47" text-anchor="middle" font-size="6.5" fill="#888">ON</text>
+      <text x="30" y="47" text-anchor="middle" font-size="6.5" font-weight="700" fill="#fff">OFF</text>
+    </g>
+  </g>
+  <!-- Twin provenance -->
+  <g transform="translate(440,304)">
+    <rect x="0" y="0" width="620" height="20" fill="#fff" stroke="#111" stroke-width="0.6"/>
+    <circle cx="14" cy="10" r="4.5" fill="#2a8c3f"/>
+    <text x="24" y="13" font-size="7" fill="#333"><tspan font-weight="700">Verified</tspan> &mdash; settings translated from KWS published Bassman numbers (MusicRadar 2018); normal-channel-when-blending rule per KWS</text>
+  </g>
+
+  <!-- ============ AMP: Blues Deluxe (bottom right) ============ -->
+  <g transform="translate(440,440)">
+    <rect x="0" y="0" width="620" height="100" rx="4" fill="url(#ampFace)" stroke="#222" stroke-width="1.4"/>
+    <rect x="6" y="6" width="608" height="88" rx="2" fill="none" stroke="#d4a55c" stroke-width="0.8"/>
+    <text x="14" y="22" font-size="9" font-weight="700" fill="#f4d6a0" letter-spacing="1">FENDER BLUES DELUXE</text>
+    <text x="14" y="34" font-size="7" fill="#e0c498">Crunch platform &middot; pan ~2 o'clock &middot; <i>Vibro-King role analog</i></text>
+
+    <!-- Volume 6.5: 210+195=405 = 45deg -->
+    <g transform="translate(50,68)">
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">VOLUME</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(45)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">6.5</text>
+    </g>
+    <!-- Master 5.5: 15deg -->
+    <g transform="translate(135,68)">
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">MASTER</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(15)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">5.5</text>
+    </g>
+    <!-- Treble 6: 30deg -->
+    <g transform="translate(220,68)">
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">TREBLE</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(30)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">6</text>
+    </g>
+    <!-- Mid 6.5: 45deg -->
+    <g transform="translate(305,68)">
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">MID</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(45)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">6.5</text>
+    </g>
+    <!-- Bass 5: 0deg -->
+    <g transform="translate(390,68)">
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">BASS</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(0)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">5</text>
+    </g>
+    <!-- Presence 4: -30deg -->
+    <g transform="translate(475,68)">
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">PRESENCE</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(-30)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">4</text>
+    </g>
+    <!-- Reverb 2.5: 210+75=285 = -75deg -->
+    <g transform="translate(550,68)">
+      <text x="0" y="-32" text-anchor="middle" font-size="7" font-weight="700" fill="#f4d6a0">REVERB</text>
+      <circle cx="0" cy="0" r="14" fill="#1a1a1a" stroke="#d4a55c" stroke-width="0.8"/>
+      <line x1="0" y1="0" x2="0" y2="-12" stroke="#f4d6a0" stroke-width="2" transform="rotate(-75)" stroke-linecap="round"/>
+      <circle cx="0" cy="0" r="2" fill="#888"/>
+      <text x="0" y="26" text-anchor="middle" font-size="8" font-weight="700" fill="#f4d6a0">2.5</text>
+    </g>
+  </g>
+  <!-- Blues Deluxe state strip + provenance -->
+  <g transform="translate(440,544)">
+    <rect x="0" y="0" width="620" height="20" fill="#fff" stroke="#111" stroke-width="0.6"/>
+    <text x="10" y="13" font-size="7" fill="#333"><tspan font-weight="700">Channel:</tspan> Normal &middot; <tspan font-weight="700">Drive footswitch:</tspan> OFF (amp breakup, not preamp gain)</text>
+  </g>
+  <g transform="translate(440,566)">
+    <rect x="0" y="0" width="620" height="20" fill="#fff" stroke="#111" stroke-width="0.6"/>
+    <circle cx="14" cy="10" r="4.5" fill="#c97a1f"/>
+    <text x="24" y="13" font-size="7" fill="#333"><tspan font-weight="700">Inferred</tspan> &mdash; Blues Deluxe substituting for Vibro-King; closest 6L6 mid-wattage Fender in your inventory; back off volume short of fizz</text>
+  </g>
+
+  <!-- ============ NOTES PANEL (bottom left) ============ -->
+  <g transform="translate(10,400)">
+    <rect x="0" y="0" width="420" height="240" rx="4" fill="#fff" stroke="#111" stroke-width="1.2" stroke-dasharray="3,3"/>
+    <text x="12" y="20" font-size="10" font-weight="700" fill="#111">VERIFICATION NOTES</text>
+    <text x="12" y="34" font-size="7" fill="#666">Walk pedal-by-pedal &middot; flag any knob to adjust &middot; capture deltas here</text>
+
+    <line x1="12" y1="46" x2="408" y2="46" stroke="#bbb" stroke-width="0.6"/>
+    <text x="12" y="60" font-size="8" font-weight="700" fill="#222">Wah:</text>
+    <line x1="50" y1="62" x2="408" y2="62" stroke="#bbb" stroke-width="0.5"/>
+    <text x="12" y="80" font-size="8" font-weight="700" fill="#222">Phase 90:</text>
+    <line x1="68" y1="82" x2="408" y2="82" stroke="#bbb" stroke-width="0.5"/>
+    <text x="12" y="100" font-size="8" font-weight="700" fill="#222">Duellist:</text>
+    <line x1="60" y1="102" x2="408" y2="102" stroke="#bbb" stroke-width="0.5"/>
+    <text x="12" y="120" font-size="8" font-weight="700" fill="#222">TS808:</text>
+    <line x1="50" y1="122" x2="408" y2="122" stroke="#bbb" stroke-width="0.5"/>
+    <text x="12" y="140" font-size="8" font-weight="700" fill="#222">HoF2:</text>
+    <line x1="46" y1="142" x2="408" y2="142" stroke="#bbb" stroke-width="0.5"/>
+    <text x="12" y="160" font-size="8" font-weight="700" fill="#222">Twin:</text>
+    <line x1="44" y1="162" x2="408" y2="162" stroke="#bbb" stroke-width="0.5"/>
+    <text x="12" y="180" font-size="8" font-weight="700" fill="#222">Blues Deluxe:</text>
+    <line x1="78" y1="182" x2="408" y2="182" stroke="#bbb" stroke-width="0.5"/>
+    <text x="12" y="200" font-size="8" font-weight="700" fill="#222">Pan balance:</text>
+    <line x1="76" y1="202" x2="408" y2="202" stroke="#bbb" stroke-width="0.5"/>
+    <text x="12" y="220" font-size="8" font-weight="700" fill="#222">Other:</text>
+    <line x1="48" y1="222" x2="408" y2="222" stroke="#bbb" stroke-width="0.5"/>
+  </g>
+</svg>
+
+<div class="legend">
+  <div class="grp">
+    <span><b>Provenance:</b></span>
+    <span><span class="swatch v"></span>verified (KWS published)</span>
+    <span><span class="swatch i"></span>inferred (analog/translated)</span>
+    <span><span class="swatch a"></span>assumed (interpolated)</span>
+  </div>
+  <div class="grp">
+    <span><b>Engagement:</b></span>
+    <span><span class="swatch always"></span>always on</span>
+    <span><span class="swatch section"></span>section-scoped</span>
+  </div>
+</div>
+
+<div class="footnotes">
+  <b>Knob convention:</b> guitar-pedal knobs sweep 7 o'clock (min) &rarr; 5 o'clock (max), 300&deg; total. Amp knobs use Fender numeric scale 0&ndash;10 (0 = 7 o'clock, 5 = 12 o'clock, 10 = 5 o'clock). White indicator line shows actual position.
+  &nbsp;&nbsp;<b>Sources:</b> KWS interview &mdash; <i>The Music Universe</i> 2022 (1997 rig confirmation) &middot; MusicRadar 2018 rig tour (amp settings, two-amp pan strategy) &middot; Premier Guitar 2021/2023 Rig Rundowns &middot; Wikipedia/Discogs (<i>Blue on Black</i> 1997 single).
+</div>
+
+</body>
+</html>

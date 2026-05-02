@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KWS Voodoo Child &mdash; Signal Chain v2</title>
+<style>
+  @page { size: Letter landscape; margin: 0.3in; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #111;
+    font-size: 8.75pt;
+    line-height: 1.25;
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1.4px solid #111;
+    padding-bottom: 4px; margin-bottom: 8px;
+  }
+  .header h1 { margin: 0; font-size: 13.5pt; }
+  .header .meta { font-size: 8pt; color: #444; text-align: right; }
+  .header .meta b { color: #111; }
+
+  /* Chain layout */
+  .chain {
+    display: flex; align-items: stretch; gap: 4px;
+    margin-bottom: 8px;
+  }
+  .arrow { display: flex; align-items: center; font-size: 16pt; color: #222; padding: 0 2px; }
+  .stage { display: flex; flex-direction: column; min-width: 0; }
+
+  /* Card framing */
+  .card {
+    border: 1.2px solid #111;
+    background: #fafafa;
+    border-radius: 5px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    height: 100%;
+  }
+  .card .head {
+    background: #111;
+    color: #fff;
+    padding: 3px 6px;
+    font-size: 8.25pt;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-align: center;
+    line-height: 1.15;
+  }
+  .card .photo-wrap {
+    position: relative;
+    background: #fff;
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .card .photo-wrap img {
+    display: block;
+    height: 145px;
+    width: auto;
+  }
+  .card .photo-wrap svg.overlay {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    height: 145px;
+    width: auto;
+    pointer-events: none;
+  }
+  .card .strip {
+    padding: 2px 4px;
+    font-size: 7pt;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .strip.engaged { background: #4a4ab0; color: #fff; font-weight: 700; }
+  .strip.engaged.always { background: #2c2c2c; }
+  .strip.engaged.section { background: #6a4ab0; }
+  .strip.prov { font-size: 6.75pt; padding: 2px 4px; display: flex; align-items: center; gap: 4px; }
+  .strip.prov .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .prov.verified .dot { background: #2a8c3f; }
+  .prov.inferred .dot { background: #c97a1f; }
+  .prov.assumed .dot { background: #b03030; }
+  .prov.verified { color: #1a5a26; }
+  .prov.inferred { color: #8a5414; }
+  .prov.assumed { color: #80201f; }
+
+  /* Guitar stage compact */
+  .guitar-stage .card { background: #fff8e8; border-color: #888; }
+  .guitar-stage .head { background: #6a4a1c; }
+  .guitar-stage .body {
+    padding: 8px;
+    text-align: center;
+    flex: 1;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .guitar-stage .body .icon { font-size: 22pt; line-height: 1; }
+  .guitar-stage .body b { font-size: 8pt; }
+
+  /* Amp area */
+  .amps {
+    display: flex; gap: 8px;
+    margin-top: 4px;
+  }
+  .amp { flex: 1; }
+  .amp.twin .face { background: linear-gradient(180deg,#1a1a1a 0%, #0c0c0c 100%); }
+  .amp.tweed .face {
+    background:
+      repeating-linear-gradient(45deg, #c89a55 0 4px, #b88542 4px 8px, #a07530 8px 14px),
+      #b88542;
+  }
+  .amp .frame {
+    border: 6px solid #1a1a1a;
+    border-radius: 4px;
+    padding: 4px;
+    background: #1a1a1a;
+  }
+  .amp.tweed .frame { border-color: #4a2f15; background: #4a2f15; }
+  .amp .face {
+    border: 2px solid #d4a55c;
+    border-radius: 2px;
+    padding: 8px 10px 6px;
+    color: #f4d6a0;
+  }
+  .amp.tweed .face { border-color: #1a1a1a; color: #1a1a1a; }
+  .amp .face .label-bar {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1px solid #d4a55c; padding-bottom: 3px; margin-bottom: 6px;
+  }
+  .amp.tweed .face .label-bar { border-bottom-color: #1a1a1a; }
+  .amp .face .label-bar h2 {
+    margin: 0; font-size: 10pt; letter-spacing: 1.5px; font-weight: 700;
+  }
+  .amp .face .label-bar .role { font-size: 7.5pt; }
+  .amp .knobs {
+    display: flex; justify-content: space-around; align-items: flex-start;
+    padding-top: 4px;
+  }
+  .knob-cell {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    min-width: 50px;
+  }
+  .knob-cell .lbl { font-size: 7pt; font-weight: 700; letter-spacing: 0.5px; }
+  .knob-cell .val {
+    font-size: 9pt; font-weight: 700;
+    background: #fff; color: #111;
+    padding: 0 4px; border-radius: 3px;
+    min-width: 22px; text-align: center;
+  }
+  .amp .switches {
+    display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px;
+    font-size: 7pt;
+  }
+  .amp .switches .sw {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .amp .switches .sw .pos {
+    background: #fff; color: #111; padding: 1px 5px; border-radius: 3px; font-weight: 700;
+  }
+  .amp .switches .sw .pos.off { background: transparent; color: inherit; opacity: 0.6; text-decoration: line-through; }
+  .amp .strip { padding: 2px 6px; font-size: 7pt; }
+
+  /* Pan indicator + split */
+  .split-row {
+    display: flex; align-items: center; gap: 4px;
+    margin: 6px 0 2px;
+    font-size: 7.5pt;
+  }
+  .split-row .marker {
+    width: 12px; height: 12px; border-radius: 50%; background: #111;
+  }
+  .split-row .branch {
+    flex: 1; height: 1.4px; background: #222; position: relative;
+  }
+  .split-row .branch.up::before, .split-row .branch.dn::before {
+    content: ''; position: absolute; right: 0; width: 1.4px; background: #222;
+  }
+  .split-row .branch.up::before { top: -16px; height: 16px; }
+  .split-row .branch.dn::before { bottom: -16px; height: 16px; }
+
+  /* Legend / footer */
+  .legend {
+    display: flex; justify-content: space-between; gap: 12px;
+    margin-top: 6px; padding-top: 4px;
+    border-top: 1px solid #bbb;
+    font-size: 7.5pt; color: #444;
+  }
+  .legend .grp { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .legend .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 3px; vertical-align: -1px; }
+  .legend .v { background: #2a8c3f; }
+  .legend .i { background: #c97a1f; }
+  .legend .a { background: #b03030; }
+  .legend .always { background: #2c2c2c; }
+  .legend .section { background: #6a4ab0; }
+  .footnotes {
+    margin-top: 4px;
+    font-size: 7pt; color: #555;
+    line-height: 1.35;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Kenny Wayne Shepherd &mdash; <span style="font-weight:400;">Voodoo Child (Slight Return)</span></h1>
+    <div style="font-size:8pt;color:#555;margin-top:1px;">v2 graphic &middot; <i>Blue on Black</i> CD single, 1997 (<i>Trouble Is&hellip;</i> session rig) &middot; Eb-standard</div>
+  </div>
+  <div class="meta">
+    <div><b>Guitar:</b> Fender Ultra Luxe Strat &middot; bridge / neck</div>
+    <div><b>Strings:</b> .011&ndash;.058 &middot; <b>Pick:</b> Dunlop heavy</div>
+  </div>
+</div>
+
+<div class="chain">
+
+  <!-- Guitar -->
+  <div class="stage guitar-stage" style="width:90px;">
+    <div class="card">
+      <div class="head">GUITAR</div>
+      <div class="body">
+        <div class="icon">&#x1F3B8;</div>
+        <b>Strat</b>
+        <div style="font-size:7pt;color:#555;margin-top:2px;">Eb std</div>
+        <div style="font-size:6.5pt;color:#777;">Bridge / neck</div>
+      </div>
+    </div>
+  </div>
+  <div class="arrow">&#x25B8;</div>
+
+  <!-- WAH (no photo, SVG sketch) -->
+  <div class="stage" style="width:140px;">
+    <div class="card">
+      <div class="head">DUNLOP MC404 WAH</div>
+      <div class="photo-wrap" style="height:165px;background:#f0f0f0;">
+        <svg viewBox="0 0 200 200" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
+          <!-- Wah profile sketch -->
+          <defs>
+            <linearGradient id="wahbody" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#444"/>
+              <stop offset="1" stop-color="#111"/>
+            </linearGradient>
+          </defs>
+          <!-- Treadle on incline -->
+          <path d="M 30 140 L 170 80 L 170 130 L 30 165 Z" fill="url(#wahbody)" stroke="#000" stroke-width="1.5"/>
+          <!-- Treadle top ribbed -->
+          <line x1="50" y1="135" x2="170" y2="92" stroke="#666" stroke-width="0.6"/>
+          <line x1="60" y1="129" x2="170" y2="100" stroke="#666" stroke-width="0.6"/>
+          <line x1="70" y1="124" x2="170" y2="108" stroke="#666" stroke-width="0.6"/>
+          <line x1="80" y1="120" x2="170" y2="115" stroke="#666" stroke-width="0.6"/>
+          <!-- Pivot circle -->
+          <circle cx="170" cy="130" r="12" fill="#222" stroke="#888" stroke-width="1"/>
+          <circle cx="170" cy="130" r="3" fill="#666"/>
+          <!-- Base -->
+          <rect x="20" y="160" width="160" height="22" rx="2" fill="#1a1a1a" stroke="#000"/>
+          <!-- Switch indicators -->
+          <circle cx="50" cy="171" r="4" fill="#c97a1f"/>
+          <text x="50" y="195" text-anchor="middle" font-size="7" fill="#222" font-weight="700">Q: VINTAGE</text>
+          <circle cx="150" cy="171" r="4" fill="#d4a020"/>
+          <text x="150" y="195" text-anchor="middle" font-size="7" fill="#222" font-weight="700">YELLOW</text>
+        </svg>
+      </div>
+      <div class="strip engaged section">INTRO RIFF + FUNK BREAK</div>
+      <div class="strip prov inferred"><span class="dot"></span><span>Inferred &mdash; KWS uses CAE Wah; vintage Q for Hendrix-lineage warmth</span></div>
+    </div>
+  </div>
+  <div class="arrow">&#x25B8;</div>
+
+  <!-- UNI-VIBE (corrected: was Phase 90 in v1) -->
+  <div class="stage" style="width:135px;">
+    <div class="card">
+      <div class="head">MXR M68 UNI-VIBE</div>
+      <div class="photo-wrap">
+        <img src=".assets_v2/univibe.png" alt="MXR Uni-Vibe">
+        <svg class="overlay" viewBox="0 0 520 740" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <!-- LEVEL 12:00 (top-left knob) -->
+          <g transform="translate(115,140)">
+            <circle r="55" fill="none" stroke="#ff8a3c" stroke-width="6" opacity="0.85"/>
+            <line x1="0" y1="0" x2="0" y2="-50" stroke="#ff8a3c" stroke-width="9" transform="rotate(0)" stroke-linecap="round"/>
+            <rect x="-46" y="62" width="92" height="32" rx="16" fill="#ff8a3c"/>
+            <text x="0" y="84" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">LVL 12:00</text>
+          </g>
+          <!-- SPEED 10:00 (top-middle knob) -->
+          <g transform="translate(260,140)">
+            <circle r="55" fill="none" stroke="#ff8a3c" stroke-width="6" opacity="0.85"/>
+            <line x1="0" y1="0" x2="0" y2="-50" stroke="#ff8a3c" stroke-width="9" transform="rotate(-60)" stroke-linecap="round"/>
+            <rect x="-50" y="62" width="100" height="32" rx="16" fill="#ff8a3c"/>
+            <text x="0" y="84" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">SPD 10:00</text>
+          </g>
+          <!-- DEPTH 1:00 (top-right knob) -->
+          <g transform="translate(405,140)">
+            <circle r="55" fill="none" stroke="#ff8a3c" stroke-width="6" opacity="0.85"/>
+            <line x1="0" y1="0" x2="0" y2="-50" stroke="#ff8a3c" stroke-width="9" transform="rotate(30)" stroke-linecap="round"/>
+            <rect x="-50" y="62" width="100" height="32" rx="16" fill="#ff8a3c"/>
+            <text x="0" y="84" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">DPT 1:00</text>
+          </g>
+          <!-- VIBE/CHORUS toggle -->
+          <g transform="translate(260,310)">
+            <rect x="-70" y="-18" width="140" height="36" rx="6" fill="#ff8a3c" stroke="#fff" stroke-width="2"/>
+            <text x="0" y="6" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">MODE: VIBE</text>
+          </g>
+        </svg>
+      </div>
+      <div class="strip engaged section">FUNK BREAK ONLY</div>
+      <div class="strip prov verified"><span class="dot"></span><span>Verified &mdash; KWS used Uni-Vibe in 1997 rig; you own M68 (correct slot)</span></div>
+    </div>
+  </div>
+  <div class="arrow">&#x25B8;</div>
+
+  <!-- DUELLIST -->
+  <div class="stage" style="width:175px;">
+    <div class="card">
+      <div class="head">KING TONE DUELLIST &mdash; HEAVY HAND</div>
+      <div class="photo-wrap">
+        <img src=".assets_v2/duellist.png" alt="King Tone Duellist">
+        <svg class="overlay" viewBox="0 0 720 720" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <!-- VOLUME-A (small, top-right) 1:00 -->
+          <g transform="translate(560,90)">
+            <circle r="32" fill="none" stroke="#ff8a3c" stroke-width="5" opacity="0.85"/>
+            <line x1="0" y1="0" x2="0" y2="-28" stroke="#ff8a3c" stroke-width="6" transform="rotate(30)" stroke-linecap="round"/>
+            <rect x="-44" y="38" width="88" height="28" rx="14" fill="#ff8a3c"/>
+            <text x="0" y="58" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">VOL 1:00</text>
+          </g>
+          <!-- TONE-A (small, top-mid-right) 11:00 -->
+          <g transform="translate(450,108)">
+            <circle r="32" fill="none" stroke="#ff8a3c" stroke-width="5" opacity="0.85"/>
+            <line x1="0" y1="0" x2="0" y2="-28" stroke="#ff8a3c" stroke-width="6" transform="rotate(-30)" stroke-linecap="round"/>
+            <rect x="-44" y="38" width="88" height="28" rx="14" fill="#ff8a3c"/>
+            <text x="0" y="58" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">TON 11:00</text>
+          </g>
+          <!-- DRIVE-A (large, right) 12:30 -->
+          <g transform="translate(545,275)">
+            <circle r="92" fill="none" stroke="#ff8a3c" stroke-width="7" opacity="0.85"/>
+            <line x1="0" y1="0" x2="0" y2="-83" stroke="#ff8a3c" stroke-width="11" transform="rotate(15)" stroke-linecap="round"/>
+            <rect x="-58" y="105" width="116" height="34" rx="17" fill="#ff8a3c"/>
+            <text x="0" y="128" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">DRV 12:30</text>
+          </g>
+          <!-- "B" side dimmed -->
+          <g opacity="0.25">
+            <circle cx="180" cy="275" r="92" fill="none" stroke="#888" stroke-width="3" stroke-dasharray="6,4"/>
+            <text x="180" y="280" text-anchor="middle" font-size="20" font-weight="700" fill="#888">B side</text>
+            <text x="180" y="305" text-anchor="middle" font-size="14" fill="#888">unused</text>
+          </g>
+        </svg>
+      </div>
+      <div class="strip engaged section">SOLOS &mdash; STACK W/ TS808</div>
+      <div class="strip prov assumed"><span class="dot"></span><span>Assumed &mdash; Duellist Heavy Hand as Klon Centaur analog</span></div>
+    </div>
+  </div>
+  <div class="arrow">&#x25B8;</div>
+
+  <!-- TS808 -->
+  <div class="stage" style="width:140px;">
+    <div class="card">
+      <div class="head">IBANEZ TS808</div>
+      <div class="photo-wrap">
+        <img src=".assets_v2/ts808.png" alt="Ibanez TS808">
+        <svg class="overlay" viewBox="0 0 600 770" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <!-- Knobs are at top of TS808; photo cuts them off so overlay shows them at top -->
+          <!-- DRIVE 9:00 -->
+          <g transform="translate(140,70)">
+            <circle r="55" fill="rgba(0,0,0,0.55)" stroke="#ff8a3c" stroke-width="6"/>
+            <line x1="0" y1="0" x2="0" y2="-48" stroke="#ff8a3c" stroke-width="9" transform="rotate(-90)" stroke-linecap="round"/>
+            <rect x="-50" y="62" width="100" height="32" rx="16" fill="#ff8a3c"/>
+            <text x="0" y="84" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">DRV 9:00</text>
+          </g>
+          <!-- TONE 12:00 -->
+          <g transform="translate(300,70)">
+            <circle r="55" fill="rgba(0,0,0,0.55)" stroke="#ff8a3c" stroke-width="6"/>
+            <line x1="0" y1="0" x2="0" y2="-48" stroke="#ff8a3c" stroke-width="9" transform="rotate(0)" stroke-linecap="round"/>
+            <rect x="-50" y="62" width="100" height="32" rx="16" fill="#ff8a3c"/>
+            <text x="0" y="84" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">TON 12:00</text>
+          </g>
+          <!-- LEVEL 2:00 -->
+          <g transform="translate(460,70)">
+            <circle r="55" fill="rgba(0,0,0,0.55)" stroke="#ff8a3c" stroke-width="6"/>
+            <line x1="0" y1="0" x2="0" y2="-48" stroke="#ff8a3c" stroke-width="9" transform="rotate(60)" stroke-linecap="round"/>
+            <rect x="-50" y="62" width="100" height="32" rx="16" fill="#ff8a3c"/>
+            <text x="0" y="84" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">LVL 2:00</text>
+          </g>
+        </svg>
+      </div>
+      <div class="strip engaged section">SOLOS</div>
+      <div class="strip prov inferred"><span class="dot"></span><span>Inferred &mdash; KWS confirmed TS808 in 1997; per-knob settings inferred</span></div>
+    </div>
+  </div>
+  <div class="arrow">&#x25B8;</div>
+
+  <!-- HoF2 -->
+  <div class="stage" style="width:140px;">
+    <div class="card">
+      <div class="head">TC HALL OF FAME 2</div>
+      <div class="photo-wrap">
+        <img src=".assets_v2/hof2.png" alt="TC Hall of Fame 2">
+        <svg class="overlay" viewBox="0 0 600 720" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+          <!-- DECAY 9:00 (top-left small) -->
+          <g transform="translate(105,135)">
+            <circle r="40" fill="rgba(0,0,0,0.5)" stroke="#ff8a3c" stroke-width="5"/>
+            <line x1="0" y1="0" x2="0" y2="-34" stroke="#ff8a3c" stroke-width="7" transform="rotate(-90)" stroke-linecap="round"/>
+            <rect x="-46" y="48" width="92" height="28" rx="14" fill="#ff8a3c"/>
+            <text x="0" y="68" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">DEC 9:00</text>
+          </g>
+          <!-- TONE 12:00 -->
+          <g transform="translate(220,125)">
+            <circle r="40" fill="rgba(0,0,0,0.5)" stroke="#ff8a3c" stroke-width="5"/>
+            <line x1="0" y1="0" x2="0" y2="-34" stroke="#ff8a3c" stroke-width="7" transform="rotate(0)" stroke-linecap="round"/>
+            <rect x="-46" y="48" width="92" height="28" rx="14" fill="#ff8a3c"/>
+            <text x="0" y="68" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">TON 12:00</text>
+          </g>
+          <!-- LEVEL 9:30 -->
+          <g transform="translate(335,115)">
+            <circle r="40" fill="rgba(0,0,0,0.5)" stroke="#ff8a3c" stroke-width="5"/>
+            <line x1="0" y1="0" x2="0" y2="-34" stroke="#ff8a3c" stroke-width="7" transform="rotate(-75)" stroke-linecap="round"/>
+            <rect x="-46" y="48" width="92" height="28" rx="14" fill="#ff8a3c"/>
+            <text x="0" y="68" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">LVL 9:30</text>
+          </g>
+          <!-- TYPE: ROOM (selector) -->
+          <g transform="translate(355,330)">
+            <circle r="80" fill="rgba(0,0,0,0.55)" stroke="#ff8a3c" stroke-width="6"/>
+            <line x1="0" y1="0" x2="0" y2="-72" stroke="#ff8a3c" stroke-width="10" transform="rotate(-150)" stroke-linecap="round"/>
+            <rect x="-60" y="92" width="120" height="32" rx="16" fill="#ff8a3c"/>
+            <text x="0" y="114" text-anchor="middle" font-size="20" font-weight="700" fill="#fff">TYPE: ROOM</text>
+          </g>
+        </svg>
+      </div>
+      <div class="strip engaged always">ALWAYS ON (LIGHT ROOM)</div>
+      <div class="strip prov assumed"><span class="dot"></span><span>Assumed &mdash; subtle ambient layer; amps carry primary reverb</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Split row -->
+<div class="split-row">
+  <div class="marker"></div>
+  <div style="font-size:7.5pt;font-weight:700;color:#222;padding-left:4px;">SPLIT</div>
+  <div class="branch">
+    <span style="position:absolute;right:50%;transform:translateX(50%);top:-12px;font-size:7pt;color:#666;">Pan: Twin ~10 o'clock &middot; Blues Deluxe ~2 o'clock (FOH spread per KWS)</span>
+  </div>
+</div>
+
+<!-- AMP SECTION -->
+<div class="amps">
+
+  <!-- Tone Master Twin Reverb (Blackface) -->
+  <div class="amp twin">
+    <div class="frame">
+      <div class="face">
+        <div class="label-bar">
+          <h2>FENDER TONE MASTER TWIN REVERB</h2>
+          <div class="role">Clean platform &middot; pan ~10 o'clock</div>
+        </div>
+        <div class="knobs">
+          <div class="knob-cell">
+            <div class="lbl">VOLUME</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#1a1a1a" stroke="#d4a55c" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#f4d6a0" stroke-width="3" transform="rotate(15)" stroke-linecap="round"/>
+              <circle r="3" fill="#888"/>
+              <line x1="0" y1="-22" x2="0" y2="-26" stroke="#d4a55c" stroke-width="1" transform="rotate(-150)"/>
+              <line x1="0" y1="-22" x2="0" y2="-26" stroke="#d4a55c" stroke-width="1" transform="rotate(150)"/>
+            </svg>
+            <div class="val">5.5</div>
+          </div>
+          <div class="knob-cell">
+            <div class="lbl">TREBLE</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#1a1a1a" stroke="#d4a55c" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#f4d6a0" stroke-width="3" transform="rotate(30)" stroke-linecap="round"/>
+              <circle r="3" fill="#888"/>
+            </svg>
+            <div class="val">6</div>
+          </div>
+          <div class="knob-cell">
+            <div class="lbl">MID</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#1a1a1a" stroke="#d4a55c" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#f4d6a0" stroke-width="3" transform="rotate(30)" stroke-linecap="round"/>
+              <circle r="3" fill="#888"/>
+            </svg>
+            <div class="val">6</div>
+          </div>
+          <div class="knob-cell">
+            <div class="lbl">BASS</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#1a1a1a" stroke="#d4a55c" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#f4d6a0" stroke-width="3" transform="rotate(0)" stroke-linecap="round"/>
+              <circle r="3" fill="#888"/>
+            </svg>
+            <div class="val">5</div>
+          </div>
+          <div class="knob-cell">
+            <div class="lbl">PRESENCE</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#1a1a1a" stroke="#d4a55c" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#f4d6a0" stroke-width="3" transform="rotate(-30)" stroke-linecap="round"/>
+              <circle r="3" fill="#888"/>
+            </svg>
+            <div class="val">4</div>
+          </div>
+          <div class="knob-cell">
+            <div class="lbl">REVERB</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#1a1a1a" stroke="#d4a55c" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#f4d6a0" stroke-width="3" transform="rotate(-45)" stroke-linecap="round"/>
+              <circle r="3" fill="#888"/>
+            </svg>
+            <div class="val">3.5</div>
+          </div>
+          <div class="switches">
+            <div class="sw">
+              <span class="lbl">CHANNEL</span>
+              <span class="pos">NORMAL</span>
+              <span style="opacity:0.5;font-size:6.5pt;">(not VIB)</span>
+            </div>
+            <div class="sw">
+              <span class="lbl">BRIGHT</span>
+              <span class="pos">OFF</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="strip prov verified" style="margin-top:2px;"><span class="dot"></span><span><b>Verified</b> &mdash; settings translated from KWS published Bassman numbers (MusicRadar 2018); Twin reissue = Tone Master direct match</span></div>
+  </div>
+
+  <!-- Blues Deluxe (Tweed) -->
+  <div class="amp tweed">
+    <div class="frame">
+      <div class="face">
+        <div class="label-bar">
+          <h2 style="color:#1a1a1a;">FENDER BLUES DELUXE</h2>
+          <div class="role">Crunch platform &middot; pan ~2 o'clock &middot; <i>Vibro-King role analog</i></div>
+        </div>
+        <div class="knobs">
+          <div class="knob-cell">
+            <div class="lbl">VOLUME</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#fff8e8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#1a1a1a" stroke-width="3" transform="rotate(45)" stroke-linecap="round"/>
+              <circle r="3" fill="#1a1a1a"/>
+            </svg>
+            <div class="val">6.5</div>
+          </div>
+          <div class="knob-cell">
+            <div class="lbl">MASTER</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#fff8e8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#1a1a1a" stroke-width="3" transform="rotate(15)" stroke-linecap="round"/>
+              <circle r="3" fill="#1a1a1a"/>
+            </svg>
+            <div class="val">5.5</div>
+          </div>
+          <div class="knob-cell">
+            <div class="lbl">TREBLE</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#fff8e8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#1a1a1a" stroke-width="3" transform="rotate(30)" stroke-linecap="round"/>
+              <circle r="3" fill="#1a1a1a"/>
+            </svg>
+            <div class="val">6</div>
+          </div>
+          <div class="knob-cell">
+            <div class="lbl">MID</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#fff8e8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#1a1a1a" stroke-width="3" transform="rotate(45)" stroke-linecap="round"/>
+              <circle r="3" fill="#1a1a1a"/>
+            </svg>
+            <div class="val">6.5</div>
+          </div>
+          <div class="knob-cell">
+            <div class="lbl">BASS</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#fff8e8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#1a1a1a" stroke-width="3" transform="rotate(0)" stroke-linecap="round"/>
+              <circle r="3" fill="#1a1a1a"/>
+            </svg>
+            <div class="val">5</div>
+          </div>
+          <div class="knob-cell">
+            <div class="lbl">PRESENCE</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#fff8e8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#1a1a1a" stroke-width="3" transform="rotate(-30)" stroke-linecap="round"/>
+              <circle r="3" fill="#1a1a1a"/>
+            </svg>
+            <div class="val">4</div>
+          </div>
+          <div class="knob-cell">
+            <div class="lbl">REVERB</div>
+            <svg width="48" height="48" viewBox="-30 -30 60 60">
+              <circle r="22" fill="#fff8e8" stroke="#1a1a1a" stroke-width="1.2"/>
+              <line x1="0" y1="0" x2="0" y2="-19" stroke="#1a1a1a" stroke-width="3" transform="rotate(-75)" stroke-linecap="round"/>
+              <circle r="3" fill="#1a1a1a"/>
+            </svg>
+            <div class="val">2.5</div>
+          </div>
+          <div class="switches">
+            <div class="sw">
+              <span class="lbl">CHANNEL</span>
+              <span class="pos">NORMAL</span>
+              <span style="opacity:0.5;font-size:6.5pt;">drive footswitch OFF</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="strip prov inferred" style="margin-top:2px;"><span class="dot"></span><span><b>Inferred</b> &mdash; Blues Deluxe in Vibro-King role; closest 6L6 mid-wattage Fender in inventory; back off volume short of fizz</span></div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="grp">
+    <span><b>Provenance:</b></span>
+    <span><span class="swatch v"></span>verified (KWS published)</span>
+    <span><span class="swatch i"></span>inferred (analog/translated)</span>
+    <span><span class="swatch a"></span>assumed (interpolated)</span>
+  </div>
+  <div class="grp">
+    <span><b>Engagement:</b></span>
+    <span><span class="swatch always"></span>always on</span>
+    <span><span class="swatch section"></span>section-scoped</span>
+  </div>
+</div>
+
+<div class="footnotes">
+  <b>v2 corrections:</b> v1 substituted MXR EVH Phase 90 for Uni-Vibe — but you own the M68 Uni-Vibe (gear.txt:27), so the correct slot is now filled. Pedals not engaged for this song are omitted entirely (per recipe-purity rule). Each owned pedal shown with its actual photo + dial overlay; amps shown as Fender-styled control panels.
+  &nbsp;&nbsp;<b>Knob convention:</b> pedal knobs sweep 7 o'clock&nbsp;&rarr;&nbsp;5 o'clock (300&deg;); amp knobs use 0&ndash;10 numeric (0=7&nbsp;o'clock, 5=12&nbsp;o'clock, 10=5&nbsp;o'clock). Orange ring = annotated dial position; orange line indicates direction.
+</div>
+
+</body>
+</html>

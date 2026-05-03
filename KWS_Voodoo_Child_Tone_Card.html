@@ -56,6 +56,29 @@
   td.k { width: 22%; font-weight: 600; }
   td.v { width: 28%; font-family: "Consolas", "Courier New", monospace; }
   td.note { color: #444; font-size: 9pt; }
+  /* Section map — dominant element above the fold */
+  .section-map { font-size: 9pt; }
+  .section-map th { font-size: 8.5pt; }
+  .section-map td { padding: 4px 6px; }
+  .section-map td.section-name { font-weight: 700; width: 18%; }
+  .section-map td.cell-mono { font-family: "Consolas", "Courier New", monospace; font-size: 9pt; }
+  .section-map td.empty { color: #999; text-align: center; }
+  .section-map .always-on-row td { background: #f7f7f0; font-style: italic; color: #555; }
+  /* Single-line signal flow strip — replaces the visual chain illustration */
+  .flow {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 9.25pt;
+    background: #f4f4ee;
+    border: 1px solid #aaa;
+    padding: 5px 8px;
+    margin: 4px 0 0;
+    line-height: 1.5;
+    word-spacing: 1px;
+  }
+  .flow .arrow { color: #888; padding: 0 2px; }
+  .flow .group { white-space: nowrap; }
+  .flow .side { color: #444; font-size: 8.5pt; }
+  .flow .aby { color: #b60; font-weight: 600; }
   .two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -74,9 +97,27 @@
     letter-spacing: 0.6px;
     margin-bottom: 4px;
   }
-  ol.chain { margin: 4px 0 0 18px; padding: 0; }
-  ol.chain li { margin: 1px 0; }
-  ol.chain li.off { color: #888; text-decoration: line-through; }
+  /* Per-knob provenance dot — worst-of aggregation per pedal in the Pedal column */
+  .dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: 1px;
+    border: 1px solid transparent;
+  }
+  .dot.assumed   { background: #b8b8b8; border-color: #888; }
+  .dot.inferred  { background: #e7a14a; border-color: #b66a00; }
+  .dot.verified  { background: #2a7a2a; border-color: #1a4a1a; }
+  .dot.validated { background: #2a7a2a; border-color: #1a4a1a; box-shadow: 0 0 0 1.5px #fff inset; }
+  /* Alternate-notation cross-check: authored notation primary, converted as ≈ secondary */
+  .alt {
+    color: #666;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.5pt;
+    margin-left: 4px;
+  }
   .badge {
     display: inline-block;
     font-size: 7.5pt;
@@ -120,6 +161,9 @@
   ul.tight { margin: 2px 0 4px 16px; padding: 0; }
   ul.tight li { margin: 1px 0; }
   .legend { font-size: 8.5pt; color: #555; margin: 4px 0 0; }
+  .dot-legend { font-size: 8.25pt; color: #555; margin: 4px 0 0; }
+  .dot-legend .dot { margin-right: 3px; margin-left: 8px; }
+  .dot-legend .dot:first-child { margin-left: 0; }
 </style>
 </head>
 <body>
@@ -134,41 +178,120 @@
   <span><b>Pick:</b> Dunlop heavy</span>
 </div>
 
+<h2>Section Map &mdash; What's Engaged When</h2>
+<div class="legend">Largest decision is "what's on right now." Read across.</div>
+<table class="section-map" style="margin-top:4px;">
+  <tr>
+    <th>Section</th>
+    <th>Pickup</th>
+    <th>Amps</th>
+    <th>Drives</th>
+    <th>Mod</th>
+    <th>Time</th>
+    <th>Notes</th>
+  </tr>
+  <tr class="always-on-row">
+    <td class="section-name">Always on</td>
+    <td>—</td>
+    <td class="cell-mono">Twin + BD (panned 10 / 2)</td>
+    <td class="empty">—</td>
+    <td class="empty">—</td>
+    <td class="cell-mono">HoF2 light</td>
+    <td>ABY split; both amps just on the verge of breakup.</td>
+  </tr>
+  <tr>
+    <td class="section-name">Intro / main riff</td>
+    <td class="cell-mono">Bridge</td>
+    <td class="cell-mono">Twin + BD</td>
+    <td class="cell-mono">TS808 in as riff settles</td>
+    <td class="cell-mono">Wah</td>
+    <td class="cell-mono">HoF2</td>
+    <td>Dry-clean opening, Wah engaged. TS808 kicks in once the riff lands.</td>
+  </tr>
+  <tr>
+    <td class="section-name">Funk break</td>
+    <td class="cell-mono">Neck</td>
+    <td class="cell-mono">Twin + BD</td>
+    <td class="empty">—</td>
+    <td class="cell-mono">Wah, Phase 90 (script)</td>
+    <td class="cell-mono">HoF2</td>
+    <td>"Stand up next to a mountain" &mdash; Wah on the rhythmic stabs. Phase 90 = Uni-Vibe substitute.</td>
+  </tr>
+  <tr>
+    <td class="section-name">Solos</td>
+    <td class="cell-mono">Bridge</td>
+    <td class="cell-mono">Twin + BD</td>
+    <td class="cell-mono">TS808 + Duellist HH (stack)</td>
+    <td class="empty">—</td>
+    <td class="cell-mono">HoF2</td>
+    <td>Blues Deluxe should be audibly grinding under the stack.</td>
+  </tr>
+  <tr>
+    <td class="section-name">Octavia moment</td>
+    <td class="cell-mono">Bridge</td>
+    <td class="cell-mono">Twin + BD</td>
+    <td class="cell-mono"><i>(Octavia &mdash; skip)</i></td>
+    <td class="empty">—</td>
+    <td class="cell-mono">HoF2</td>
+    <td>One brief octave-up section. <span class="badge a">explicit-skip</span> &mdash; you don't own an Octavia; section can be omitted.</td>
+  </tr>
+</table>
+
+<div class="flow">
+  <span class="group">Strat <span class="side">[bridge / neck per section]</span></span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">PolyTune 3</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">Wah (MC404)</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">Phase 90 <span class="side">[Uni-Vibe substitute]</span></span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">Duellist <span class="side">[Heavy Hand side]</span></span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">TS808</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">HoF2</span>
+  <span class="arrow">&rarr;</span>
+  <span class="aby">ABY</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">[ Twin <span class="side">pan ~10</span> &nbsp;||&nbsp; Blues Deluxe <span class="side">pan ~2</span> ]</span>
+</div>
+<div class="legend">Engaged-or-routed-through gear only. Off-this-track pedals (5150 OD, MXR Chorus, Flashback) are not in the chain for this recipe.</div>
+
 <h2>Two-Amp Setup &mdash; Pan + Blend</h2>
 <div class="legend">
   Run both amps simultaneously. Pan one ~10 o'clock, the other ~2 o'clock. Goal: amps just on the verge of breakup; pedals send it over the edge.
-  <span class="badge v">verified</span> = KWS published numbers &nbsp; <span class="badge a">assumed</span> = interpolated for your amp
 </div>
 
 <div class="two-col" style="margin-top:6px;">
   <div class="panel">
-    <h3>Tone Master Twin Reverb <span class="badge v">match: Twin reissue</span></h3>
+    <h3><span class="dot verified" title="worst-of-knobs: verified"></span>Tone Master Twin Reverb <span class="badge v">match: Twin reissue</span></h3>
     <div class="role">Clean platform &middot; pan ~10 o'clock</div>
     <table>
-      <tr><td class="k">Channel</td><td class="v">Normal</td></tr>
-      <tr><td class="k">Volume</td><td class="v">5&ndash;6</td></tr>
-      <tr><td class="k">Treble</td><td class="v">6</td></tr>
-      <tr><td class="k">Mid</td><td class="v">6</td></tr>
-      <tr><td class="k">Bass</td><td class="v">5</td></tr>
-      <tr><td class="k">Presence</td><td class="v">4</td></tr>
-      <tr><td class="k">Reverb</td><td class="v">3&ndash;4</td></tr>
-      <tr><td class="k">Bright switch</td><td class="v">OFF</td></tr>
+      <tr><td class="k">Channel</td><td class="v"><span class="dot verified"></span>Normal</td></tr>
+      <tr><td class="k">Volume</td><td class="v"><span class="dot verified"></span>5&ndash;6 <span class="alt">≈12 o'clock</span></td></tr>
+      <tr><td class="k">Treble</td><td class="v"><span class="dot verified"></span>6 <span class="alt">≈1 o'clock</span></td></tr>
+      <tr><td class="k">Mid</td><td class="v"><span class="dot verified"></span>6 <span class="alt">≈1 o'clock</span></td></tr>
+      <tr><td class="k">Bass</td><td class="v"><span class="dot verified"></span>5 <span class="alt">≈12 o'clock</span></td></tr>
+      <tr><td class="k">Presence</td><td class="v"><span class="dot verified"></span>4 <span class="alt">≈11 o'clock</span></td></tr>
+      <tr><td class="k">Reverb</td><td class="v"><span class="dot verified"></span>3&ndash;4 <span class="alt">≈10&ndash;11 o'clock</span></td></tr>
+      <tr><td class="k">Bright switch</td><td class="v"><span class="dot verified"></span>OFF</td></tr>
     </table>
     <div class="legend" style="margin-top:4px;">Normal channel (not Vibrato) when blending two amps &mdash; phase issues otherwise.</div>
   </div>
 
   <div class="panel">
-    <h3>Blues Deluxe <span class="badge a">analog: Vibro-King role</span></h3>
+    <h3><span class="dot inferred" title="worst-of-knobs: inferred"></span>Blues Deluxe <span class="badge a">role-fill: Vibro-King</span></h3>
     <div class="role">Crunch platform &middot; pan ~2 o'clock</div>
     <table>
-      <tr><td class="k">Channel</td><td class="v">Normal (drive OFF)</td></tr>
-      <tr><td class="k">Volume</td><td class="v">6&ndash;7</td></tr>
-      <tr><td class="k">Master</td><td class="v">5&ndash;6</td></tr>
-      <tr><td class="k">Treble</td><td class="v">6</td></tr>
-      <tr><td class="k">Mid</td><td class="v">6.5</td></tr>
-      <tr><td class="k">Bass</td><td class="v">5</td></tr>
-      <tr><td class="k">Presence</td><td class="v">4</td></tr>
-      <tr><td class="k">Reverb</td><td class="v">2&ndash;3</td></tr>
+      <tr><td class="k">Channel</td><td class="v"><span class="dot verified"></span>Normal (drive OFF)</td></tr>
+      <tr><td class="k">Volume</td><td class="v"><span class="dot inferred"></span>6&ndash;7 <span class="alt">≈1 o'clock</span></td></tr>
+      <tr><td class="k">Master</td><td class="v"><span class="dot inferred"></span>5&ndash;6 <span class="alt">≈12 o'clock</span></td></tr>
+      <tr><td class="k">Treble</td><td class="v"><span class="dot inferred"></span>6 <span class="alt">≈1 o'clock</span></td></tr>
+      <tr><td class="k">Mid</td><td class="v"><span class="dot inferred"></span>6.5 <span class="alt">≈1 o'clock</span></td></tr>
+      <tr><td class="k">Bass</td><td class="v"><span class="dot inferred"></span>5 <span class="alt">≈12 o'clock</span></td></tr>
+      <tr><td class="k">Presence</td><td class="v"><span class="dot inferred"></span>4 <span class="alt">≈11 o'clock</span></td></tr>
+      <tr><td class="k">Reverb</td><td class="v"><span class="dot inferred"></span>2&ndash;3 <span class="alt">≈9&ndash;10 o'clock</span></td></tr>
     </table>
     <div class="legend" style="margin-top:4px;">Translated from KWS's published Bassman settings (vol 7 / treble 7 / bass 5 / mid 6.5 / pres 4). Blues Deluxe is hotter &mdash; back the volume off and stop short of fizz.</div>
   </div>
@@ -176,74 +299,57 @@
 
 <div class="quote">"What I really like is them to be just on the verge of breaking up, then the pedals send it just over the edge." &mdash; KWS, MusicRadar 2018</div>
 
-<h2>Pedal Chain (Front of Amp)</h2>
-<ol class="chain">
-  <li>Guitar &mdash; Fender Ultra Luxe Strat (bridge for main riff, neck for funk break)</li>
-  <li>TC Electronic PolyTune 3</li>
-  <li>Dunlop MC404 CAE Wah <b>&mdash; ON for intro riff &amp; funk break</b></li>
-  <li>MXR EVH Phase 90 (script mode) <b>&mdash; ON for the funk break only</b> &nbsp;<span class="badge a">Uni-Vibe substitute</span></li>
-  <li>King Tone Duellist &mdash; Heavy Hand side <b>(stack target for solos)</b> &nbsp;<span class="badge a">Klon-flavored boost role</span></li>
-  <li>Ibanez TS808 &mdash; mid-push, on for solos</li>
-  <li>MXR Analog Chorus &mdash; off (not used on this track)</li>
-  <li class="off">EVH 5150 Overdrive &mdash; wrong character; bypass</li>
-  <li>TC Electronic Hall of Fame 2 &mdash; light room reverb</li>
-  <li>TC Electronic Flashback Delay &mdash; off; engage sparingly for solo accents only</li>
-</ol>
-<div class="legend">Octavia moment: KWS uses a Roger Mayer Octavia for one brief octave-up section (he's said the octave effect, not the fuzz, is the point). You don't own one &mdash; skip the moment or substitute if you've added an octave pedal since the last gear update.</div>
-
-<h2>Pedal Settings &mdash; Starting Points <span class="badge a">clock-face = interpolated</span></h2>
-<table>
+<h2>Pedal Settings &mdash; Starting Points</h2>
+<div class="dot-legend">
+  Provenance per knob:
+  <span class="dot verified"></span>verified
+  <span class="dot inferred"></span>inferred
+  <span class="dot assumed"></span>assumed
+  <span class="dot validated"></span>validated (you've dialed and confirmed)
+  &nbsp;&middot;&nbsp; Pedal-name dot = worst-of-knobs across that pedal's settings.
+</div>
+<table style="margin-top:4px;">
   <tr>
     <th>Pedal</th><th>Knob</th><th>Setting</th><th>Why</th>
   </tr>
   <tr>
-    <td class="k">King Tone Duellist (Heavy Hand)</td>
-    <td>Drive</td><td class="v">12&ndash;1 o'clock</td>
+    <td class="k"><span class="dot assumed" title="worst-of-knobs: assumed"></span>King Tone Duellist (Heavy Hand)</td>
+    <td>Drive</td><td class="v"><span class="dot assumed"></span>12&ndash;1 o'clock <span class="alt">≈5&ndash;6/10</span></td>
     <td class="note" rowspan="3">Klon-style transparent push w/ a bit more attitude. Stack on top of TS808 for solo lift.</td>
   </tr>
-  <tr><td></td><td>Tone</td><td class="v">11 o'clock</td></tr>
-  <tr><td></td><td>Volume</td><td class="v">1 o'clock</td></tr>
+  <tr><td></td><td>Tone</td><td class="v"><span class="dot assumed"></span>11 o'clock <span class="alt">≈4/10</span></td></tr>
+  <tr><td></td><td>Volume</td><td class="v"><span class="dot assumed"></span>1 o'clock <span class="alt">≈6/10</span></td></tr>
 
   <tr>
-    <td class="k">Ibanez TS808</td>
-    <td>Drive</td><td class="v">9 o'clock</td>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>Ibanez TS808</td>
+    <td>Drive</td><td class="v"><span class="dot inferred"></span>9 o'clock <span class="alt">≈2/10</span></td>
     <td class="note" rowspan="3">SRV/KWS recipe: low drive, high level, pushing the amp's own breakup &mdash; not adding pedal distortion.</td>
   </tr>
-  <tr><td></td><td>Tone</td><td class="v">12 o'clock</td></tr>
-  <tr><td></td><td>Level</td><td class="v">2 o'clock</td></tr>
+  <tr><td></td><td>Tone</td><td class="v"><span class="dot inferred"></span>12 o'clock <span class="alt">≈5/10</span></td></tr>
+  <tr><td></td><td>Level</td><td class="v"><span class="dot inferred"></span>2 o'clock <span class="alt">≈7/10</span></td></tr>
 
   <tr>
-    <td class="k">MXR EVH Phase 90</td>
-    <td>Speed</td><td class="v">~10 o'clock (slow)</td>
-    <td class="note" rowspan="2">Press button OUT for script mode (smoother, less pronounced). Closest you have to the 1997 Uni-Vibe role for the funk break.</td>
+    <td class="k"><span class="dot assumed" title="worst-of-knobs: assumed"></span>MXR EVH Phase 90 <span class="badge a">substitute: Uni-Vibe</span></td>
+    <td>Speed</td><td class="v"><span class="dot assumed"></span>~10 o'clock (slow) <span class="alt">≈3/10</span></td>
+    <td class="note" rowspan="2">Press button OUT for script mode (smoother, less pronounced). Closest you have to the 1997 Uni-Vibe role for the funk break. <b>Note:</b> if MXR M68 Uni-Vibe is in your inventory, swap this row out &mdash; it's a direct match, not a substitute.</td>
   </tr>
-  <tr><td></td><td>Script switch</td><td class="v">Script mode (out)</td></tr>
+  <tr><td></td><td>Script switch</td><td class="v"><span class="dot assumed"></span>Script mode (out)</td></tr>
 
   <tr>
-    <td class="k">Dunlop MC404 Wah</td>
-    <td>Q</td><td class="v">Vintage (lower Q)</td>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>Dunlop MC404 Wah</td>
+    <td>Q</td><td class="v"><span class="dot inferred"></span>Vintage (lower Q)</td>
     <td class="note" rowspan="2">Hendrix-tradition wah voicing; vintage inductor for warmer sweep.</td>
   </tr>
-  <tr><td></td><td>Inductor</td><td class="v">Yellow / Vintage</td></tr>
+  <tr><td></td><td>Inductor</td><td class="v"><span class="dot inferred"></span>Yellow / Vintage</td></tr>
 
   <tr>
-    <td class="k">TC Hall of Fame 2</td>
-    <td>Decay</td><td class="v">9 o'clock</td>
+    <td class="k"><span class="dot assumed" title="worst-of-knobs: assumed"></span>TC Hall of Fame 2</td>
+    <td>Decay</td><td class="v"><span class="dot assumed"></span>9 o'clock <span class="alt">≈2/10</span></td>
     <td class="note" rowspan="3">Light ambient room. The track is amp-reverb-forward; HoF only fills in.</td>
   </tr>
-  <tr><td></td><td>Tone</td><td class="v">12 o'clock</td></tr>
-  <tr><td></td><td>Level</td><td class="v">9&ndash;10 o'clock</td></tr>
+  <tr><td></td><td>Tone</td><td class="v"><span class="dot assumed"></span>12 o'clock <span class="alt">≈5/10</span></td></tr>
+  <tr><td></td><td>Level</td><td class="v"><span class="dot assumed"></span>9&ndash;10 o'clock <span class="alt">≈2&ndash;3/10</span></td></tr>
 </table>
-
-<h2>Song-Specific Deployment</h2>
-<ul class="tight">
-  <li><b>Tuning:</b> Eb standard (Eb&ndash;Ab&ndash;Db&ndash;Gb&ndash;Bb&ndash;Eb). Matches Hendrix studio tuning &mdash; KWS plays it in B-natural shapes against Eb tuning.</li>
-  <li><b>Pickups:</b> Bridge for the main riff. Neck for the funk-break "stand up next to a mountain" section.</li>
-  <li><b>Intro / main riff:</b> Wah ON. Drive stack OFF for the dry-clean opening; kick TS808 in as the riff settles. Phase 90 OFF.</li>
-  <li><b>Funk break:</b> Engage Phase 90 (script). Neck pickup. Wah on the rhythmic chord stabs.</li>
-  <li><b>Solos:</b> Stack TS808 + Duellist Heavy Hand. Bridge pickup. The Blues Deluxe should be audibly grinding.</li>
-  <li><b>Octavia moment:</b> One small octave-up section &mdash; skip if you don't have an octave pedal patched in.</li>
-</ul>
 
 <h2>Verified vs. Assumed</h2>
 <div class="two-col">
@@ -261,7 +367,7 @@
     <h3 style="margin-top:0;">Assumed / interpolated <span class="badge a">a</span></h3>
     <ul class="tight">
       <li>Duellist Heavy Hand as Klon Centaur analog &mdash; circuit-philosophy mapping, not KWS-demonstrated.</li>
-      <li>Phase 90 (script) as Uni-Vibe substitute &mdash; adequate, not equivalent.</li>
+      <li>Phase 90 (script) as Uni-Vibe substitute &mdash; adequate, not equivalent. Re-author against MXR M68 once Gear tab Phase 1 lands.</li>
       <li>Blues Deluxe in the Vibro-King role &mdash; closest you own; Vibro-King breaks up smoother. Stop short of fizz.</li>
       <li>All clock-face pedal positions are starting points &mdash; KWS hasn't published per-song pedal settings.</li>
     </ul>
@@ -288,7 +394,7 @@
 
 <div class="footer">
   Sources: KWS interview &mdash; <i>The Music Universe</i> 2022 (Trouble Is&hellip; 25 re-record) &middot; MusicRadar 2018 rig tour &middot; Premier Guitar 2021 / 2023 Rig Rundowns &middot; Wikipedia/Discogs (Blue on Black single, 1997).
-  Notation fidelity: amp values numeric per KWS's published settings; pedal positions clock-face (starting points, not published).
+  Notation fidelity: amp values numeric per KWS's published settings; pedal positions clock-face (starting points, not published). Both notations shown for cross-check &mdash; authored value primary, converted approximation in parens prefixed by &asymp;.
 </div>
 
 </body>

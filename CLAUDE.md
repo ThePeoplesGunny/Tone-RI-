@@ -12,7 +12,7 @@ The project is under git (first commit 2026-03-27). Older provenance — pre-rep
 
 **Gear tab — Phase 1.** v0.2 design is approved (see `GEAR_TAB_DESIGN.md`). Implementation phases are listed in Section 6 of that document; Phase 4.5 is marked as the minimum-viable stopping point. Read `GEAR_TAB_DESIGN.md` Sections 0-3 before any code work — particularly Section 3.7 (schema-level role assertion validation, the load-bearing structural guard) and Section 3.4 (notation fidelity per setting).
 
-The four `engineer_*.txt` source files at `c:\claude\TONE RI\` (parent of repo) inform the recipe authoring effort that follows Phase 4. The KWS interview (`engineer_KWS agent interview.txt`) is the canonical good-output example and the source for the first two TONE_RECIPES seed entries.
+The five `engineer_*.txt` source files at `c:\claude\TONE RI\` (parent of repo) inform the recipe authoring effort that follows Phase 4. The KWS interview (`engineer_KWS agent interview.txt`) is the canonical good-output example and the source for the first two TONE_RECIPES seed entries.
 
 ## Working directory note (Windows)
 
@@ -41,7 +41,9 @@ There is no build step, no package manager, no test runner. The app is a single 
 - `GEAR_TAB_DESIGN.md` — v0.2 design doc for the Gear tab; agent-reviewed and user-approved; pre-implementation. Phase 1 is the next code action.
 - `.claude/commands/` — three slash-skill definitions: `analyze-tab.md`, `distill.md`, `tone-match.md`.
 - `../.claude/agents/` (parent of repo) — eight subagent definitions (`hendrix.md`, `evh.md`, `srv.md`, `kws.md`, `architect.md`, `uiux.md`, `guitar-systems.md`, `tone-engineer.md`) plus `_protocol.md` (universal evaluation structure all agents follow). Subagent resolution looks above the repo root, which is why they live there.
-- `../engineer_*.txt` (parent of repo, 4 files) — research source material for the Gear tab recipe-authoring effort: `narrative.txt` (general tone-pedagogy priors), `claude desktop Q&A.txt` (Marshall lineage table), `KWS agent interview.txt` (canonical recipe source — first two recipes derive from this), `pedal companies.txt` (workhorse-tier validation for owned TC/MXR/Boss pedals).
+- `../engineer_*.txt` (parent of repo, 5 files) — research source material for the Gear tab recipe-authoring effort: `narrative.txt` (general tone-pedagogy priors), `claude desktop Q&A.txt` (Marshall lineage table), `KWS agent interview.txt` (canonical recipe source — first two recipes derive from this), `pedal companies.txt` (workhorse-tier validation for owned TC/MXR/Boss pedals), `emulation.txt` (Lion '68 + PowerCab 212 Plus pairing — cab-modeling configuration and mode-by-mode settings for the user's owned amp/cab emulation rig).
+- `KWS_Voodoo_Child_Tone_Card.{html,pdf}` — **canonical printable tone-reference artifact**. Carries the section map (above the fold), single-line signal flow strip, two-amp panel, per-knob provenance dots (worst-of-knobs aggregation per pedal), dual-notation cross-check (authored value primary, alternate notation marked with ≈), and Test Notes panel. Restructured 2026-05-03 per UI/UX agent review of the v0–v5 chain artifacts (see archive note below). **Not a basis for the Gear tab schema** — informs print-companion design for Phase 9+ recipe authoring only.
+- `archive/KWS_Voodoo_Child_Signal_Chain{,_v2..v5}.{html,pdf,png}` — superseded iteration record. v0–v5 attempted a visual pedalboard-photo metaphor; UI/UX review (2026-05-03) found the metaphor itself was the wrong artifact for the use case (size-as-prominence inverted importance, no section selector, all-annotations-always-on, five design-doc violations). Retained for history; do not iterate on these.
 
 ## Code architecture inside the HTML
 
@@ -50,6 +52,7 @@ The HTML file is divided by `// ═══` banner comments. **Locate regions by 
 | Region | Banner anchor (Grep this) | What lives here |
 |---|---|---|
 | Markup (tabs) | `<!-- ══...═ CHORDS ══ -->` and siblings (`SCALES`, `THEORY`, `DECODER`, `LIBRARY`) | Tab DOM |
+| Markup (Dashboard tab) | `<!-- AGENT DASHBOARD -->` (`<section id="view-dashboard">`) | Dashboard tab DOM; rendered from `dashboard-data.js` |
 | **TONE Music Theory Engine** | `// TONE MUSIC THEORY ENGINE v1.0` | Pure functions: notes, intervals, chords, scales, voicings, CAGED, render helpers |
 | **Song Decoder Engine** | `// SONG DECODER ENGINE` | Key detection, chord parsing, harmonic analysis |
 | Preset data | `// PRESET DATA` | Built-in song presets |

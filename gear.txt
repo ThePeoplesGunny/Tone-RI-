@@ -3,7 +3,6 @@ Alesis Nitro Max Mesh Electronic Drum Set
 Boss CS-3 Compression Sustainer Pedal
 Boss PS-6 Harmonist Pedal
 Boss SDE-3 Dual Digital Delay Pedal
-Boss VE-20 Vocal Effects Processor
 Casio CDP-S360 88-key Compact Digital Piano
 DigiTech Drop Polyphonic Drop-tune Pitch-shift Pedal - Red
 Dunlop MC404 CAE Wah Pedal
@@ -17,7 +16,7 @@ Fender Audio Passport Conference S2 Portable PA System
 Fender Blues Deluxe 1x12-inch 40-watt Tube Combo Amp - Tweed
 Fender Tone Master Twin Reverb 2 x 12-inch 200-watt Combo Amp
 Fulltone Custom Shop Supa-Wah Multi-wah Pedal - Metallic White
-IK Multimedia TONEX ONE Brown Sound Amplifier/Cab/Effect Modeling Pedal - Limited Edition Red Certified Open Box
+IK Multimedia TONEX ONE Brown Sound Amplifier/Cab/Effect Modeling Pedal - Limited Edition Red
 Ibanez TS808 35th Anniversary Overdrive
 King Tone Duellist Dual Overdrive Pedal
 Line 6 Helix Guitar Multi-effects Floor Processor
@@ -47,9 +46,7 @@ Universal Audio UAFX Anti 1992 High Gain Amp Pedal
 Universal Audio UAFX Lion '68 Super Lead Amp Pedal
 Voodoo Lab Pedal Power MONDO 12-output Isolated Guitar Pedal Power Supply
 Vox V847-A Classic Reissue Wah Pedal
-Vox amPlug 2 Metal Headphone Guitar Amplifier
 Wampler Euphoria Overdrive Pedal
-Wampler Faux Spring Reverb Pedal
 Wampler Plexi-Drive British Overdrive Pedal
 Headrush FRFR-112 2000-watt 1x12-inch Powered Guitar Cabinet
 

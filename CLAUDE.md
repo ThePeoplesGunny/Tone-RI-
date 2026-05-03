@@ -10,7 +10,7 @@ The project is under git (first commit 2026-03-27). Older provenance — pre-rep
 
 ## Current implementation target
 
-**Gear tab — Phase 1.** v0.2 design is approved (see `GEAR_TAB_DESIGN.md`). Implementation phases are listed in Section 6 of that document; Phase 4.5 is marked as the minimum-viable stopping point. Read `GEAR_TAB_DESIGN.md` Sections 0-3 before any code work — particularly Section 3.7 (schema-level role assertion validation, the load-bearing structural guard) and Section 3.4 (notation fidelity per setting).
+**Gear tab — Phase 2.** Phase 1 (gear-inventory.js authoring) shipped 2026-05-03 — 38 in-scope items across 10 categories, 81 distinct role tags, `ROLE_INDEX['univibe-modulation'] = ['mxr-m68-univibe']` confirmed (Univibe-class hallucination is now structurally impossible). Phase 2 is `buildRoleIndex()` runtime + role tag audit. Implementation phases are listed in Section 6 of `GEAR_TAB_DESIGN.md`; Phase 4.5 is the minimum-viable stopping point. Read Sections 0-3 before any code work — particularly Section 3.7 (schema-level role assertion validation) and Section 3.4 (notation fidelity per setting).
 
 The five `engineer_*.txt` source files at `c:\claude\TONE RI\` (parent of repo) inform the recipe authoring effort that follows Phase 4. The KWS interview (`engineer_KWS agent interview.txt`) is the canonical good-output example and the source for the first two TONE_RECIPES seed entries.
 
@@ -20,7 +20,7 @@ The path is `c:\claude\TONE RI\Tone (RI)` — contains a space and literal paren
 
 ## Build, run, test
 
-There is no build step, no package manager, no test runner. The app is a single `.html` file with embedded CSS and JS plus one external `dashboard-data.js`.
+There is no build step, no package manager, no test runner. The app is a single `.html` file with embedded CSS and JS plus two external data files: `dashboard-data.js` and `gear-inventory.js`.
 
 - **Run:** open `TONE__BETA_v4_4_.html` in a browser (double-click on Windows). Local file:// is sufficient — no server needed.
 - **"Save":** the user clicks the in-app save/download button to produce a new HTML snapshot. Persistence is download-to-file, not localStorage. Treat the HTML file *as* the database.
@@ -34,6 +34,7 @@ There is no build step, no package manager, no test runner. The app is a single 
 
 - `TONE__BETA_v4_4_.html` — the entire app. Current beta. Bump the filename when shipping a new beta (e.g., `v4_5`); the previous file moves to `archive/`.
 - `dashboard-data.js` — `AGENT_DASHBOARD` constant powering the Dashboard tab. Loaded via `<script src="dashboard-data.js">` at the bottom of the HTML. Keep in sync when dimension/loop/agent changes ship.
+- `gear-inventory.js` — `GEAR_INVENTORY` constant (Gear tab Phase 1). Hand-maintained from `gear.txt`; covers 38 in-scope guitar-tone items across 10 categories (guitars / amps / cabinets / ampInABox / drives / modulation / timeBased / wahs / utility / modeler) with structured controls, switches, sides, and role tags per `GEAR_TAB_DESIGN.md` §3.1. Roles[] feed the role-index lookup and the §3.7 schema validation guard. Hand-edit the file directly when gear changes; no in-app authoring path.
 - `TONE_CONTEXT.md` — mission, design axioms, feature state, design decisions ledger.
 - `ROADMAP.md` — version log, open gap loops, next target.
 - `gear.txt` — user's actual gear inventory. The Tone Engineer agent and `/tone-match` skill map reference tones onto this list. Never invent gear that isn't here.

@@ -6,11 +6,11 @@
 
 ## Next Target
 
-**Gear tab — Phase 1** (per `GEAR_TAB_DESIGN.md` v0.2). Design doc is agent-reviewed (Architect, UI/UX, Tone Engineer, Guitar Systems) and user-approved. Three contested decisions resolved (notation fidelity per setting, Gear tab is standalone from Play Mode, edit mode is text-only / no knob drag). Schema-level role assertion validation (Section 3.7 of design doc) is the load-bearing structural change that makes the Univibe-class hallucination impossible.
+**Gear tab — Phase 2** (per `GEAR_TAB_DESIGN.md` v0.2). Design doc is agent-reviewed (Architect, UI/UX, Tone Engineer, Guitar Systems) and user-approved. Three contested decisions resolved (notation fidelity per setting, Gear tab is standalone from Play Mode, edit mode is text-only / no knob drag). Schema-level role assertion validation (Section 3.7 of design doc) is the load-bearing structural change that makes the Univibe-class hallucination impossible.
 
 Implementation order from the design doc:
-1. **Phase 1** — author `gear-inventory.js` covering 100% of `gear.txt` with structured controls, switches, sides, role tags
-2. **Phase 2** — `buildRoleIndex()` + role tag audit
+1. ~~**Phase 1**~~ — `gear-inventory.js` shipped 2026-05-03. 38 in-scope guitar-tone items across 10 categories; 81 distinct role tags; `ROLE_INDEX['univibe-modulation'] = ['mxr-m68-univibe']` confirmed (Univibe DIRECT MATCH available, Phase 90 no longer asserts that role).
+2. **Phase 2** — `buildRoleIndex()` runtime + role tag audit ← **next**
 3. **Phase 3** — Tone Engineer agent updated with role-index lookup + structural validation; rerun KWS recipe to verify Univibe DIRECT MATCH replaces Phase 90 substitute
 4. **Phase 4** — `TONE_RECIPES` schema + first two hand-authored recipes (KWS While We Cry 1995, KWS Voodoo Child 1997)
 5. **Phase 4.5** — `serializePresets → serializeDataBlocks` generalization. **Minimum-viable stopping point.** Phases 5+ are incremental rendering improvements and can ship as separate betas.

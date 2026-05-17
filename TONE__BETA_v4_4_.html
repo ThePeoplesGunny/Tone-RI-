@@ -7048,6 +7048,71 @@ function renderTriadChain() {
 // Dashboard data + render functions loaded from dashboard-data.js
 </script>
 <script src="dashboard-data.js"></script>
+<script src="gear-inventory.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════════
+// GEAR ROLE INDEX  (Gear Tab Phase 2 — GEAR_TAB_DESIGN.md §3.6)
+// ══════════════════════════════════════════════════════════════
+//
+// Derived view of GEAR_INVENTORY built once at app load. Inverts every
+// item's roles[] (and sides[].roles[]) into a role → fillers map. This is
+// the FORWARD half of the §3.7 two-sided anti-hallucination guard: query
+// ROLE_INDEX[role] to find the direct match before substituting. The
+// REVERSE half (schema rejects role assertions not backed by gear.roles[])
+// lands in Phase 3 with the recipe schema.
+//
+// `quality` is STRUCTURALLY derived (gear category only):
+//   'direct'       — owned unit fills the role as itself
+//   'amp-in-a-box' — UAFX-class amp-emulation pedal
+//   'capture'      — capture/profile pedal (TONEX)
+//   'fallback'     — Helix catch-all (§3.5 helix-fallback)
+// Substitution-judgment grades (e.g. §3.6's illustrative 'closest-analog',
+// per-role voicing like Lion '68 'Brown') are NOT emitted here — they are
+// Phase-3 Tone Engineer agent reasoning layered on top of this structural
+// index, per the §3.5 substitution-method taxonomy.
+//
+// An empty array (no key, surfaced via roleIndexGaps()) is an EXPLICIT GAP,
+// not an error: the role has no owned filler and resolves via helix-fallback
+// or §3.5 explicit-skip.
+
+function buildRoleIndex(inventory) {
+  const index = {};
+  const add = (role, entry) => { (index[role] || (index[role] = [])).push(entry); };
+  const qualityOf = (categoryKey, item) => {
+    if (categoryKey === 'modeler')   return 'fallback';
+    if (categoryKey === 'ampInABox') return item.captureSource ? 'capture' : 'amp-in-a-box';
+    return 'direct';
+  };
+  for (const categoryKey of Object.keys(inventory)) {
+    for (const item of inventory[categoryKey]) {
+      const q = qualityOf(categoryKey, item);
+      if (Array.isArray(item.roles)) {
+        for (const role of item.roles) add(role, { gearId: item.id, category: categoryKey, quality: q });
+      }
+      if (Array.isArray(item.sides)) {
+        for (const side of item.sides) {
+          if (!Array.isArray(side.roles)) continue;
+          for (const role of side.roles) add(role, { gearId: item.id, side: side.sideId, category: categoryKey, quality: 'direct' });
+        }
+      }
+    }
+  }
+  return index;
+}
+
+// Resolve a role to its fillers; [] means explicit gap (helix-fallback / explicit-skip).
+function resolveRole(role) { return (window.ROLE_INDEX && window.ROLE_INDEX[role]) || []; }
+
+// Roles a name set asks for that have no owned filler — Phase 2 audit surface.
+function roleIndexGaps(requestedRoles) {
+  return requestedRoles.filter(r => resolveRole(r).length === 0);
+}
+
+window.ROLE_INDEX = (typeof GEAR_INVENTORY !== 'undefined') ? buildRoleIndex(GEAR_INVENTORY) : {};
+window.buildRoleIndex = buildRoleIndex;
+window.resolveRole = resolveRole;
+window.roleIndexGaps = roleIndexGaps;
+</script>
 
 
 

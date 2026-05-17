@@ -174,7 +174,7 @@ const GEAR_INVENTORY = {
       ],
       globalControls: ['presence', 'resonance', 'master'],
       effectsLoop: true,
-      roles: ['high-gain', '5150-voice', 'evh-platform', 'evh-brown-sound-platform', 'high-gain-overdrive'],
+      roles: ['high-gain', '5150-voice', 'evh-platform', 'evh-brown-sound-platform'],
     },
     {
       id: 'mesa-dual-rectifier-100w',
@@ -197,7 +197,7 @@ const GEAR_INVENTORY = {
         { id: 'power-mode',     type: 'two-position', positions: ['100W', '50W (spongy)'] },
       ],
       effectsLoop: true,
-      roles: ['high-gain', 'rectifier-voice', 'modern-high-gain', 'tremonti-platform', 'high-gain-overdrive'],
+      roles: ['high-gain', 'rectifier-voice', 'modern-high-gain', 'tremonti-platform'],
     },
     {
       id: 'fender-tone-master-twin-reverb',

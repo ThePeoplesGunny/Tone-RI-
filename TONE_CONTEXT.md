@@ -296,7 +296,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 | Landmark Pentatonic | Play Mode (target note, forward vision, approach notes) + Forward Map (landmark positions) | **Strong** |
 | CAGED | Chords tab: Voicings (CAGED zone voicing map) + Triads (ACE zone model) + Forward Map (nearest shape hint) + Play Mode CAGED overlay | **Strong** |
 | Technique Bridge | Scales tab: Brewster overlay + universal interval colors + Play Mode: CAGED overlay, forward vision, approach notes, root dot shapes + arpeggio view (dual-mode) + triad chaining + song-route mapping (per-section navigation) | **Strong** — algorithmic core (4.1) + song-route (4.2) |
-| Gear & Tone | Gear inventory (gear.txt) + Tone Engineer agent + /tone-match skill — no in-app UI features yet | **Partial** — pipeline exists, in-app rendering TBD |
+| Gear & Tone | Structured `gear-inventory.js` (38 items) + `window.ROLE_INDEX` runtime (Gear tab Phase 2) + Tone Engineer agent + /tone-match skill — no in-app UI surface yet | **Partial** — inventory→role-index infrastructure live; agent role-index integration (Phase 3) + recipes (Phase 4) + rendering (Phase 5+) TBD |
 
 **Tabs are connected through shared context.** `_activeContext` propagates Decoder key/mode/chord to Chords, Scales, and Theory tabs.
 

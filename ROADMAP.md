@@ -10,8 +10,8 @@
 
 Implementation order from the design doc:
 1. ~~**Phase 1**~~ — `gear-inventory.js` shipped 2026-05-03. 38 in-scope guitar-tone items across 10 categories; 81 distinct role tags; `ROLE_INDEX['univibe-modulation'] = ['mxr-m68-univibe']` confirmed (Univibe DIRECT MATCH available, Phase 90 no longer asserts that role).
-2. **Phase 2** — `buildRoleIndex()` runtime + role tag audit ← **next**
-3. **Phase 3** — Tone Engineer agent updated with role-index lookup + structural validation; rerun KWS recipe to verify Univibe DIRECT MATCH replaces Phase 90 substitute
+2. ~~**Phase 2**~~ — `buildRoleIndex()` runtime + role tag audit shipped 2026-05-17. `<script src="gear-inventory.js">` added (Phase 1 leftover); `window.ROLE_INDEX` built at load with `resolveRole()`/`roleIndexGaps()` helpers; 81 roles / 38 items / 2 side-units verified via Node. Spot-check: Univibe/Klon/Plexi/Brown Sound/5150/Mesa Rec COVERED; JCM800/Hiwatt → `helix-fallback`; Octavia → §3.5 `explicit-skip` (all expected). Consistency fix: `high-gain-overdrive` removed from two amp heads (was polluting the OD-pedal role).
+3. **Phase 3** — Tone Engineer agent updated with role-index lookup + structural validation; rerun KWS recipe to verify Univibe DIRECT MATCH replaces Phase 90 substitute ← **next**
 4. **Phase 4** — `TONE_RECIPES` schema + first two hand-authored recipes (KWS While We Cry 1995, KWS Voodoo Child 1997)
 5. **Phase 4.5** — `serializePresets → serializeDataBlocks` generalization. **Minimum-viable stopping point.** Phases 5+ are incremental rendering improvements and can ship as separate betas.
 
@@ -38,6 +38,7 @@ No open defects.
 | `triad-ornament-layer` | 1 | Hendrix | Hammer-on/pull-off ornaments between triad voicings ("Little Wing" decoration). | Queued |
 
 **Tracked follow-ups from Gear tab v0.2 (not Beta gap loops):**
+- **Role-vocabulary review (Phase 3, Tone Engineer agent).** Phase 2 audit flagged borderline-descriptive role tags that lean description over query-target (`evh-eruption-swirl`, `evh-rhythm-shimmer`, `hendrix-rhythm-texture`, `watery-modulation`, `lush-modulation`, `cae-circuit`, `studio-wah`) and a naming inconsistency (`srv-boost`/`kws-boost` vs the documented `*-substitute` pattern). Not changed in Phase 2 — deletion could drop a useful forward query; vocabulary normalization is Tone Engineer judgment, owned by Phase 3's agent update. Resolve when the agent gains role-index lookup.
 - Tremonti Mesa settings research event (before authoring Tremonti recipe in Phase 9 of Gear tab build)
 - TUNING_PRESETS constant unification (small refactor; eliminates dropdown/recipe-id drift)
 - Helix block-level modeling (v2 of Gear tab)

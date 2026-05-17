@@ -391,7 +391,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
   - `/analyze-tab`: tablature → harmonic analysis + technique inventory + transferable principles
   - `/tone-match`: reference tone → signal chain recipe mapped to user's gear
   - `/distill`: master orchestrator, routes through agent quality gates, produces TONE-ready package
-- Agent definitions live at `<repo-parent>/.claude/agents/` (parent of the git repo, where Claude Code subagent resolution finds them). Skill definitions in `Tone (RI)/.claude/commands/` (3 files).
+- Agent definitions live at `.claude/agents/` (8 agents + `_protocol.md`). Skill definitions in `.claude/commands/` (5 files: `session-start`, `session-close`, `analyze-tab`, `distill`, `tone-match`). **Path history note:** prior to 2026-05-17 the agents lived at `<repo-parent>/.claude/agents/` based on a (false) belief that Claude Code resolves subagents from the parent of repo. That belief was debunked, agents were relocated inside the repo, and the two-layer `Tone (RI)/` nesting was collapsed the same day (Locked Decision #7).
 
 ### Re-baseline event (April 2026)
 - **What:** 4-agent re-evaluation of dashboard scores against current Beta 4.3.1 code with file:line citations (carried forward into 4.4 unchanged).

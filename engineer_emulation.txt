@@ -1,0 +1,139 @@
+Good question. This is the actual decision point. Let me research the Lion '68 + PowerCab pairing specifically — there's a real technical question here about whether the PowerCab is even being used correctly with this pedal.Got the MusicRadar reviewer specifically calling out the Powercab as a great pairing for the Lion '68. Let me also pull the PowerCab side to make sure the configuration is right.I have everything I need to give you a complete, honest answer.
+
+# Lion '68 + PowerCab 212 Plus — The Honest Verdict
+
+## The Configuration That Matters
+
+There's a critical setup question hiding in this. The PowerCab can run in three modes: **Flat (FRFR), Speaker Modeling (12 internal speakers), or IR (third-party impulse responses)**. The Lion '68 has **internal cab modeling** (six miked cabinets, derived from the OX Amp Top Box's modeling tech) **that can be bypassed**.
+
+**The right configuration:** Lion '68 cabs ON → PowerCab in **Flat (FRFR) mode**. This is the setup the Lion '68 was designed for. UA built the cab modeling to be the speaker stage, so the PowerCab needs to be transparent — full-range, flat-response, neutral 70Hz-20kHz. The Lion's cab models do the speaker work; the PowerCab just amplifies and reproduces what comes out of the pedal.
+
+**The wrong configuration:** Lion '68 cabs ON → PowerCab in Speaker Modeling mode. This is "two cabs stacked." You're telling the Lion to model a Greenback, then telling the PowerCab to model a different Greenback on top of it. The result is muddy, scooped, double-filtered. Common mistake. Sounds bad.
+
+**Alternative that also works:** Lion '68 cabs OFF (use UAFX Control app to disable) → PowerCab in Speaker Modeling mode. Now the Lion is amp-only, the PowerCab is the speaker. This works but you lose UA's high-quality cab modeling derived from the OX. Generally inferior to the first config for plexi tones specifically, since UA's Greenback/JBL D-120F mixed cab in Brown mode is the historically-correct EVH cabinet pairing.
+
+## What This Pairing Actually Delivers
+
+Verified from MusicRadar's review of the Lion '68: *"I found pleasing results with a Line 6 Powercab"* — explicitly called out as a good FRFR partner for the Lion.
+
+UA's own marketing: the Lion '68 includes *"the world's best speaker cabinet, mic, and room tones derived from the award-winning OX Amp Top Box."* The cab models are the same DSP that powers the OX — UA's flagship $1,300 reactive load box. You're getting the Cadillac speaker modeling for $399.
+
+User testimony from someone who owns a real plexi clone: *"I own a 50 watt 68' spec plexi clone so I know what the actually amps are supposed to sound like, feel like, and how it should respond to your playing and this pedal nails every single aspect of a plexi. Dare I say I prefer the pedal, mostly because of convenience, but also because I don't miss my actually plexi at all while I'm using it. No attenuators, speaker sims, variacs or tubes being abused."*
+
+That's the closest thing to a direct A/B comparison you'll get from a verified user — they own both, prefer the pedal, and explicitly mention the no-attenuator/no-Variac advantage.
+
+## The Three Modes — Settings for Your Use Case
+
+### Lead Mode (1968 Super Lead)
+**For:** Hendrix, McCready, vintage-Marshall classic rock crunch. The "factory" Plexi tone.
+**Settings to start:** Volume I at 5-6, Volume II at 4-5 (these jumper internally — both add gain), Treble 6, Middle 5, Bass 4, Presence 4. Bright cap ON (default).
+**Cab:** Try the "67 GBack 4x12" first (Greenback 4x12 — the classic Plexi cab). The "75 GBack" or the EV12 are alternatives.
+**This is the McCready / Yellow Ledbetter / Hendrix territory.**
+
+### Bass Mode (1968 Super Bass)
+**For:** Cleaner, darker, looser, more headroom. Pedal platform. Excellent for fuzz, delay, and chord work.
+**Settings to start:** Volume I at 4-5, Volume II at 4, Treble 6, Middle 6, Bass 5, Presence 4. No bright cap by default.
+**Cab:** Same Greenback 4x12 works well, or try the JBL D-120F (the bonus cab) for more clarity.
+**This is the "Plexi as pedal platform" mode.** Less crunch, more headroom.
+
+### Brown Mode (1968 Super Lead Variac'd to 90V)
+**For:** Van Halen I-era Brown Sound. The "hot-rodded Plexi" tone. EVH 1978-1984.
+**Settings to start:** Volume I at 7-8, Volume II at 5-6, Treble 6, Middle 5, Bass 4, Presence 5. Boost knob at noon (engages the EP-III preamp emulation — Eddie used an Echoplex EP-3 in front of his Plexi for additional gain). Bright cap OFF (default for Brown — it's removed in the model).
+**Cab:** "Mixed Greenback / JBL D-120F 4x12" — this is Eddie's actual cab on Van Halen I. UA built this cab specifically for Brown mode. **Use this one.**
+**This is the literal Brown Sound recipe.**
+
+## Hidden Settings via UAFX Control App
+
+These are where you fine-tune for your room and your PowerCab:
+
+- **Room Tone:** Adjusts the modeled room ambience around the cab. For PowerCab playback in a real room, dial this DOWN (you're already in a real room — no need to add a fake one). Some users zero it out completely. Try 9-10 o'clock max.
+- **Bright Cap:** Toggle on/off per mode. In Brown mode, leave it OFF (period-correct EVH spec). In Lead mode, try both — bright cap on for jangle, off for warmer breakup.
+- **Ghost Notes:** UA's emulation of the subtle harmonic artifacts a real tube amp produces. Leave on.
+- **Noise Gate:** Engage if you're getting hum at high gain (Brown mode especially).
+
+## The Honest Question: Is It Enough?
+
+This is the actual question. Let me answer it directly with what's verifiable and what isn't.
+
+**What's verifiable:**
+- The Lion '68's underlying modeling tech is the same DSP that drives UA's $1,300 OX Amp Top Box — universally regarded as among the best speaker emulation on the market
+- The Brown mode is explicitly modeled at 90V (Eddie's actual Variac voltage) with the historically-correct Greenback/JBL cab pairing
+- A verified owner of a real 1968-spec Plexi clone says the Lion '68 captures every aspect of plexi behavior and they prefer it for convenience
+- MusicRadar's reviewer explicitly endorses the PowerCab pairing
+- Multiple users specifically report it works at any volume without compromising tone — which a real Plexi cannot do
+
+**What's not verifiable (and never can be, even with full research):**
+- Whether YOUR ears, in YOUR room, with YOUR guitars, hear the difference between Lion '68 + PowerCab and a real SV20H + 4x12 with BrownBox at apartment volume
+- Whether you specifically value the *physical experience* of real EL34s pushing real air through a real 4x12 over the *tonal accuracy* of digital modeling — these are different things
+
+## Where the Pairing IS Genuinely Limited
+
+I'll be straight with you. Three honest limitations:
+
+**1. The "amp in the room" feel is different.** The PowerCab in Flat mode is intentionally neutral — it reproduces what you give it accurately. A 4x12 with EL34s pushing it has a specific resonance, low-end thump, and physical presence that comes from cab construction + speaker compliance + power amp interaction. The PowerCab approximates this well in Speaker Modeling mode but in Flat mode (which is correct for Lion '68 use) it's deliberately not coloring the sound. Some players prefer the more colored "real cab" feel even if it's less accurate to the modeled amp.
+
+**2. Picking dynamics and feel.** Real tube power amps have a specific compression/sag character when you dig in hard. The Lion '68 models this well — UA specifically calls out Brown mode's "aggressive attack and bounce" and the MusicRadar review highlighted feel and response to picking dynamics as the pedal's strength — but it's still a model. Some players can A/B and tell. Many can't, especially in mix or band context.
+
+**3. The "headroom ceiling" is digital.** A real Plexi pushed past its limits has a specific way of distorting the input. The Lion '68 has internal limits to its modeling. In practice, this almost never matters because you'd never push it that hard. But it's a real difference.
+
+## Where the Pairing IS Genuinely Excellent
+
+**1. Brown Sound character at any volume.** This is the killer feature. Real EVH Brown Sound requires a 100W Plexi pushed past 7 with a Variac at 90V — that's "rattling drywall" volume even in 5W mode on a Plexi clone. Lion '68 + PowerCab gets you that *exact tonal character* at apartment volume. You cannot do this with any tube amp, no matter how much money you throw at attenuators.
+
+**2. Three Plexis in one pedal.** A real rig that covered the Lion's three modes would be: a 1968 Super Lead, a 1968 Super Bass, AND a Variac'd modified Super Lead. Three vintage Marshall heads. That's $30,000+ in vintage gear, plus three different cabs. The Lion gives you all three at the flick of a switch.
+
+**3. Cab swapping in real time.** Same Greenback for Lead mode, swap to mixed Greenback/JBL D-120F for Brown mode, swap to EV12 for tighter modern Plexi. Five seconds. With real cabs you'd need to swap physical 4x12 cabinets.
+
+**4. Already integrated with your PowerCab signal chain.** ANTI 1992, Knuckles '92 (planned), Lion '68 — all UAFX pedals into the PowerCab. One signal chain, multiple amp characters. The SV20H breaks that uniformity.
+
+## The Real Comparison Table
+
+| Capability | Lion '68 + PowerCab | SV20H + BrownBox + 4x12 + Attenuator |
+|---|---|---|
+| Plexi tone accuracy | Excellent (OX-derived modeling) | Real circuit, real tubes |
+| Brown Sound character | Modeled at 90V correctly | Real Variac'd Plexi character |
+| Volume control | Knob, any level | Requires attenuator + may still be loud |
+| "Real EL34 air-pushing" feel | No — neutral FRFR speaker | Yes — real tubes into real cab |
+| Pick dynamics / sag / compression | Modeled well | Real tube physics |
+| Cost | Already owned | ~$1,845-$2,930 to add |
+| Switching between Plexi flavors | Switch flick | Different amp purchase per flavor |
+| Your existing rig integration | Already integrated | Adds a separate signal chain |
+| Maintenance | None | Tube replacement, biasing, road cases |
+
+## My Honest Assessment
+
+**The Lion '68 + PowerCab in correct configuration delivers approximately 85-90% of what a real SV20H + BrownBox + 4x12 rig delivers — and 100% of what most listeners can identify in a recording or mix.** UA's modeling is genuinely excellent and the OX-derived cab tech is the best in the business.
+
+The remaining 10-15% is real but specific: it's the physical experience of being in front of a 4x12 with EL34s actually moving air, the way a real tube power amp feels under your fingers, the resonant low-end that no FRFR speaker fully replicates regardless of how good the modeling is.
+
+**For your stated use case** — apartment volume playing in your room, no recording, no live performance, integrating with your existing UAFX rig — **the Lion '68 + PowerCab is genuinely sufficient.** Going to SV20H + BrownBox is paying $1,845+ for that last 10-15% of "real tube physical presence." That's a legitimate purchase if that specific thing matters to you. It's a wasteful purchase if what you actually want is "Plexi tone."
+
+## The Configuration Check
+
+If you want to verify the pairing is performing at its best in your room right now:
+
+1. **PowerCab mode:** Flat (FRFR) — confirm via display
+2. **PowerCab HF level:** 12 o'clock initial, adjust to taste
+3. **Lion '68 cabs:** ENABLED (LED on cab switch lit)
+4. **Lion '68 → PowerCab connection:** Mono 1/4" out from Lion → PowerCab input. Set PowerCab input to "Line Level" (NOT Instrument)
+5. **Output level pedal:** Lion '68's "Output" knob around noon
+6. **Room Tone in app:** Try at 0 first (you're in a real room), add only if needed
+7. **Power chain:** Make sure Lion '68 has an isolated 9V power supply — UAFX pedals are sensitive to power quality
+
+If you've been running with PowerCab in Speaker Modeling mode, switch to Flat mode and report back what you hear. That alone could change your assessment of whether the pedal is "enough."
+
+## Bottom Line for Your Decision
+
+**If your honest answer is "I want a real tube Plexi in my room because the physical experience matters to me as much as the tone":** Buy the SV20H + BrownBox path. The Lion '68 cannot deliver that physical experience.
+
+**If your honest answer is "I want Brown Sound and Plexi tones for playing along with songs in my apartment":** You already have it. The Knuckles '92 is the better next purchase — it fills a real gap (Marshall-style high-gain) that the Lion '68 doesn't cover.
+
+**Test before committing:** Verify your PowerCab is in Flat mode, Lion '68 cabs are on, Room Tone is at 0. Spend a session playing through Brown mode with the mixed Greenback/JBL cab. If you finish that session and the answer to "is this enough?" is yes — you have your answer. If it's no, then $1,845 toward an SV20H + BrownBox rig is justified.
+
+## What I Verified vs. What I Didn't
+
+**Verified:** Lion '68 cab modeling derived from OX Amp Top Box DSP. Brown mode explicitly modeled at 90V Variac with Greenback/JBL D-120F mixed cab. PowerCab Flat mode = 70Hz-20kHz neutral response, designed for amp pedals/modelers. Real-Plexi-owner verified preference for the Lion '68. MusicRadar review explicitly endorses PowerCab pairing. Lion '68 includes Echoplex EP-III preamp emulation in Boost knob (the actual EVH chain).
+
+**Not verified:** Any direct head-to-head A/B comparison of Lion '68 + PowerCab vs. SV20H + BrownBox + 4x12 in matched apartment-volume conditions — this specific comparison hasn't been documented in any review I found. Your personal listening preference. Whether 85-90% is "enough" for you — only you can answer this.
+
+Want me to dig into anything else — the Knuckles '92 comparison since it's planned next, optimal PowerCab placement in your room, or moving on?

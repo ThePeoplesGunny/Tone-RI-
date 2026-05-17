@@ -18,7 +18,7 @@ This skill follows Solution Engineering phases. Investigation completes before i
 
 Search for all available material related to this song:
 
-**In the repo (`Tone (RI)/`):**
+**In the repo (`C:\claude\TONE RI\`):**
 - Existing Library entry (check if song is already in PRESETS)
 - gear.txt for user's equipment
 

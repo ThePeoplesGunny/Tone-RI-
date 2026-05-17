@@ -195,7 +195,7 @@ Two cases — handle whichever matches the tab.
 
 **Case A — stacked voicings (clear chord columns).** For each chord event where two or more strings have fret numbers in the same column, collect the note set (pitch-class only, ignoring octave for chord identification — but keep octaves for voicing analysis).
 
-Leverage TONE's engine: use the logic in `identifyChord()` (defined in the current HTML file under `Tone (RI)/`). It reverse-looks-up a note set against `CHORD_REGISTRY` formulas and returns the best-matching chord name (root + quality).
+Leverage TONE's engine: use the logic in `identifyChord()` (defined in the current HTML file in the repo root). It reverse-looks-up a note set against `CHORD_REGISTRY` formulas and returns the best-matching chord name (root + quality).
 
 If `identifyChord()` returns no match or low confidence:
 - List the note set explicitly.

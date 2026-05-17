@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SRV Parallel Rig — Patch Sheet</title>
+<style>
+  :root{
+    --paper:#f4ede0;
+    --paper-2:#efe6d4;
+    --ink:#1c1813;
+    --ink-soft:#5a5142;
+    --rule:#cdbfa3;
+    --oxblood:#7c2a20;
+    --amber:#c0651f;
+    --tweed:#b89355;
+    --line:#3a3226;
+    --mono:"SFMono-Regular",ui-monospace,"Cascadia Mono","Consolas","Liberation Mono",Menlo,monospace;
+    --disp:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  html,body{background:#2a2620;color:var(--ink);font-family:var(--mono);}
+
+  body{
+    display:flex;justify-content:center;
+    padding:32px 16px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .sheet{
+    width:8.5in;
+    background:var(--paper);
+    background-image:
+      linear-gradient(0deg,rgba(124,42,32,.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(124,42,32,.03) 1px,transparent 1px);
+    background-size:18px 18px;
+    color:var(--ink);
+    padding:.55in .6in .5in;
+    box-shadow:0 18px 50px rgba(0,0,0,.55);
+    position:relative;
+  }
+  .sheet::before{
+    content:"";position:absolute;inset:.22in;
+    border:1px solid var(--rule);
+    pointer-events:none;
+  }
+
+  /* ---------- MASTHEAD ---------- */
+  header{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    border-bottom:3px solid var(--ink);
+    padding-bottom:10px;margin-bottom:4px;
+    position:relative;z-index:1;
+  }
+  .brandblock h1{
+    font-family:var(--disp);
+    font-size:30px;letter-spacing:-.5px;line-height:.95;
+    text-transform:uppercase;color:var(--ink);
+  }
+  .brandblock h1 .accent{color:var(--oxblood);}
+  .brandblock .sub{
+    font-size:9.5px;letter-spacing:3.5px;text-transform:uppercase;
+    color:var(--ink-soft);margin-top:6px;
+  }
+  .stamp{
+    text-align:right;font-size:9px;letter-spacing:1.5px;
+    color:var(--ink-soft);text-transform:uppercase;line-height:1.7;
+  }
+  .stamp b{color:var(--oxblood);font-size:10px;letter-spacing:2px;display:block;}
+  .tagrow{
+    display:flex;gap:0;margin:8px 0 18px;
+    border:1px solid var(--line);font-size:9.5px;letter-spacing:1px;
+    text-transform:uppercase;position:relative;z-index:1;
+  }
+  .tagrow div{padding:6px 12px;border-right:1px solid var(--line);}
+  .tagrow div:last-child{border-right:0;}
+  .tagrow .k{color:var(--ink-soft);}
+  .tagrow .v{color:var(--ink);font-weight:bold;}
+  .tagrow .lead{background:var(--ink);color:var(--paper);}
+
+  /* ---------- SECTION TITLES ---------- */
+  .sec{
+    display:flex;align-items:center;gap:10px;
+    margin:20px 0 11px;position:relative;z-index:1;
+  }
+  .sec .no{
+    font-family:var(--disp);font-size:11px;
+    background:var(--oxblood);color:var(--paper);
+    padding:3px 7px;letter-spacing:1px;
+  }
+  .sec h2{
+    font-family:var(--disp);text-transform:uppercase;
+    font-size:14px;letter-spacing:1px;color:var(--ink);
+  }
+  .sec .fill{flex:1;height:1px;background:var(--rule);}
+
+  /* ---------- SIGNAL CHAIN ---------- */
+  .chain{
+    position:relative;z-index:1;
+    border:1px solid var(--line);background:var(--paper-2);
+    padding:20px 16px;
+  }
+  .flowrow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0;}
+  .node{
+    border:1.5px solid var(--ink);background:var(--paper);
+    min-width:78px;text-align:center;padding:8px 6px;position:relative;
+  }
+  .node .typ{font-size:7px;letter-spacing:1.5px;color:var(--ink-soft);text-transform:uppercase;}
+  .node .nm{font-size:10px;font-weight:bold;line-height:1.15;margin-top:3px;text-transform:uppercase;}
+  .node.src{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .node.src .typ{color:var(--tweed);}
+  .node.split{background:var(--oxblood);color:var(--paper);border-color:var(--oxblood);}
+  .node.split .typ{color:var(--tweed);}
+  .wire{width:26px;height:1.5px;background:var(--line);position:relative;}
+  .wire::after{
+    content:"";position:absolute;right:-1px;top:-2.5px;
+    border-left:5px solid var(--line);
+    border-top:3px solid transparent;border-bottom:3px solid transparent;
+  }
+
+  .fork{display:flex;align-items:center;margin-top:14px;}
+  .brace{
+    width:30px;align-self:stretch;position:relative;margin-left:2px;
+  }
+  .brace::before{
+    content:"";position:absolute;left:0;top:25%;bottom:25%;width:14px;
+    border:1.5px solid var(--line);border-right:0;
+  }
+  .brace::after{
+    content:"";position:absolute;left:-26px;top:50%;width:26px;height:1.5px;
+    background:var(--line);transform:translateY(-50%);
+  }
+  .branches{display:flex;flex-direction:column;gap:12px;flex:1;}
+  .branch{display:flex;align-items:center;gap:0;}
+  .branch .lbl{
+    font-family:var(--disp);font-size:11px;color:var(--paper);
+    background:var(--ink);padding:4px 8px;letter-spacing:1px;
+  }
+  .branch.b .lbl{background:var(--amber);}
+  .branch .bwire{flex:1;height:1.5px;background:var(--line);position:relative;}
+  .branch .bwire::after{
+    content:"";position:absolute;right:-1px;top:-2.5px;
+    border-left:5px solid var(--line);
+    border-top:3px solid transparent;border-bottom:3px solid transparent;
+  }
+  .ampchip{
+    border:1.5px solid var(--ink);background:var(--paper);
+    padding:7px 12px;min-width:190px;
+  }
+  .ampchip .role{font-size:7px;letter-spacing:1.5px;color:var(--oxblood);text-transform:uppercase;font-weight:bold;}
+  .ampchip .anm{font-size:11px;font-weight:bold;text-transform:uppercase;margin-top:2px;}
+  .chainnote{
+    font-size:8.5px;color:var(--ink-soft);letter-spacing:.5px;
+    margin-top:14px;text-align:center;text-transform:uppercase;
+  }
+  .chainnote b{color:var(--oxblood);}
+
+  /* ---------- CARD GRID ---------- */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:relative;z-index:1;}
+  .card{border:1px solid var(--line);background:var(--paper-2);}
+  .card.full{grid-column:1/-1;}
+  .card .ch{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--ink);color:var(--paper);padding:6px 11px;
+  }
+  .card .ch .t{font-family:var(--disp);font-size:11px;letter-spacing:1px;text-transform:uppercase;}
+  .card .ch .meta{font-size:8px;letter-spacing:1.5px;color:var(--tweed);text-transform:uppercase;}
+  .card.amp .ch{background:var(--oxblood);}
+  .card.amp.b .ch{background:var(--amber);}
+  .rows{padding:9px 11px;}
+  .r{display:flex;justify-content:space-between;align-items:baseline;
+     padding:3.5px 0;border-bottom:1px dotted var(--rule);font-size:10.5px;}
+  .r:last-child{border-bottom:0;}
+  .r .lab{color:var(--ink-soft);letter-spacing:.5px;}
+  .r .val{font-weight:bold;color:var(--ink);}
+  .r .val.hot{color:var(--oxblood);}
+  .r .why{display:block;font-size:8px;color:var(--ink-soft);letter-spacing:.3px;
+          text-transform:uppercase;margin-top:1px;}
+
+  /* knob dials for amps */
+  .dials{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 11px 6px;}
+  .dial{text-align:center;}
+  .knob{
+    width:42px;height:42px;border-radius:50%;margin:0 auto;
+    background:
+      radial-gradient(circle at 38% 32%,#fbf5e8,#bda77f 70%,#8a7550);
+    border:2px solid var(--ink);position:relative;
+    box-shadow:inset 0 -2px 4px rgba(0,0,0,.25);
+  }
+  .knob i{
+    position:absolute;left:50%;top:50%;width:2px;height:18px;
+    background:var(--oxblood);transform-origin:bottom center;
+    transform:translate(-50%,-100%) rotate(var(--a));
+    border-radius:1px;
+  }
+  .knob::after{
+    content:"";position:absolute;inset:-6px;border-radius:50%;
+    border:1px dotted var(--rule);
+  }
+  .dial .dl{font-size:8px;letter-spacing:.5px;color:var(--ink-soft);
+            text-transform:uppercase;margin-top:7px;}
+  .dial .dv{font-size:11px;font-weight:bold;color:var(--ink);}
+  .switches{display:flex;flex-wrap:wrap;gap:5px;padding:4px 11px 11px;}
+  .pill{
+    font-size:8.5px;letter-spacing:1px;text-transform:uppercase;
+    border:1px solid var(--ink);padding:3px 8px;background:var(--paper);
+  }
+  .pill b{color:var(--oxblood);}
+  .pill.off{color:var(--ink-soft);border-color:var(--rule);}
+
+  /* ---------- PROCEDURE ---------- */
+  .proc{
+    border:1.5px solid var(--oxblood);background:var(--paper-2);
+    position:relative;z-index:1;
+  }
+  .proc .ph{
+    background:var(--oxblood);color:var(--paper);
+    font-family:var(--disp);font-size:12px;letter-spacing:1px;
+    text-transform:uppercase;padding:7px 12px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .proc .ph span{font-size:8px;letter-spacing:2px;color:var(--tweed);}
+  .steps{padding:10px 14px;counter-reset:s;}
+  .steps li{
+    list-style:none;display:flex;gap:10px;font-size:10px;line-height:1.45;
+    padding:5px 0;border-bottom:1px dotted var(--rule);
+  }
+  .steps li:last-child{border-bottom:0;}
+  .steps li::before{
+    counter-increment:s;content:counter(s);
+    font-family:var(--disp);font-size:11px;color:var(--paper);
+    background:var(--ink);min-width:20px;height:20px;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .steps li b{color:var(--oxblood);}
+
+  /* ---------- TWO-UP: SPEAKERS + TROUBLE ---------- */
+  .twoup{display:grid;grid-template-columns:1fr 1.35fr;gap:12px;position:relative;z-index:1;}
+
+  .stage{
+    border:1px solid var(--line);background:var(--paper-2);
+    padding:12px;display:flex;flex-direction:column;
+  }
+  .stage .lbl{font-size:8px;letter-spacing:2px;color:var(--ink-soft);
+               text-transform:uppercase;margin-bottom:10px;}
+  .stagebox{flex:1;display:flex;justify-content:center;align-items:flex-end;
+            gap:34px;padding:6px 0 22px;position:relative;}
+  .cab{position:relative;text-align:center;}
+  .cab .box{
+    width:54px;height:54px;border:2px solid var(--ink);background:var(--paper);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .cab.a .box{border-color:var(--oxblood);}
+  .cab.b .box{border-color:var(--amber);}
+  .cab .box::before{
+    content:"";width:30px;height:30px;border-radius:50%;
+    border:2px solid var(--ink-soft);
+    background:radial-gradient(circle at 40% 38%,#e7dcc4,#b9a880);
+  }
+  .cab.a{transform:rotate(11deg);}
+  .cab.b{transform:rotate(-11deg);}
+  .cab .ct{font-size:8px;font-weight:bold;margin-top:6px;text-transform:uppercase;}
+  .player{
+    position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);
+    font-size:8px;letter-spacing:1px;color:var(--oxblood);text-transform:uppercase;
+  }
+  .player::before{content:"▲";display:block;font-size:9px;}
+  .stagespecs{font-size:8.5px;line-height:1.6;color:var(--ink-soft);
+              letter-spacing:.3px;border-top:1px solid var(--rule);padding-top:8px;}
+  .stagespecs b{color:var(--ink);}
+
+  table{width:100%;border-collapse:collapse;font-size:9.5px;}
+  .trouble{border:1px solid var(--line);}
+  .trouble .ph{
+    background:var(--ink);color:var(--paper);
+    font-family:var(--disp);font-size:12px;letter-spacing:1px;
+    text-transform:uppercase;padding:7px 12px;
+  }
+  table th{
+    text-align:left;background:var(--paper-2);color:var(--ink-soft);
+    font-size:8px;letter-spacing:1.5px;text-transform:uppercase;
+    padding:6px 10px;border-bottom:1.5px solid var(--line);
+  }
+  table td{padding:6px 10px;border-bottom:1px dotted var(--rule);vertical-align:top;}
+  table tr:last-child td{border-bottom:0;}
+  table td.sym{font-weight:bold;color:var(--oxblood);width:38%;}
+  table td.fix b{color:var(--ink);}
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    margin-top:16px;border-top:2px solid var(--ink);padding-top:9px;
+    display:flex;gap:14px;align-items:flex-start;position:relative;z-index:1;
+  }
+  footer .tag{
+    font-family:var(--disp);font-size:9px;letter-spacing:1px;
+    background:var(--ink);color:var(--paper);padding:5px 8px;
+    text-transform:uppercase;white-space:nowrap;
+  }
+  footer p{font-size:8.5px;line-height:1.55;color:var(--ink-soft);letter-spacing:.3px;}
+  footer p b{color:var(--oxblood);}
+
+  /* ---------- PRINT ---------- */
+  @media print{
+    @page{size:Letter;margin:.4in;}
+    html,body{background:#fff;padding:0;}
+    .sheet{box-shadow:none;width:100%;padding:.15in .2in;}
+    .sheet::before{inset:.05in;}
+    .card,.proc,.chain,.twoup .stage,.trouble{break-inside:avoid;}
+    .grid{break-inside:avoid;}
+  }
+  @media (max-width:700px){
+    .sheet{width:100%;padding:24px 16px;}
+    .grid,.twoup{grid-template-columns:1fr;}
+    .flowrow{gap:6px 0;}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <div class="brandblock">
+      <h1>Stevie Ray <span class="accent">Vaughan</span></h1>
+      <div class="sub">Thick &amp; Growly · Parallel Two-Amp · Live/Practice Rig</div>
+    </div>
+    <div class="stamp">
+      <b>Patch Sheet</b>
+      Rev. A — bench-tuned<br>
+      Topology B · ABY parallel
+    </div>
+  </header>
+
+  <div class="tagrow">
+    <div><span class="k">GUITAR </span><span class="v">Ultra Luxe Strat</span></div>
+    <div class="lead"><span class="v">A · BLUES DELUXE</span></div>
+    <div><span class="k">B </span><span class="v">Tone Master Twin</span></div>
+    <div><span class="k">SPLIT </span><span class="v">Radial BigShot</span></div>
+  </div>
+
+  <!-- SIGNAL CHAIN -->
+  <div class="sec"><span class="no">01</span><h2>Signal Chain</h2><span class="fill"></span></div>
+  <div class="chain">
+    <div class="flowrow">
+      <div class="node src"><div class="typ">Source</div><div class="nm">Strat<br>Bridge PU</div></div>
+      <div class="wire"></div>
+      <div class="node"><div class="typ">Tuner</div><div class="nm">PolyTune 3</div></div>
+      <div class="wire"></div>
+      <div class="node"><div class="typ">Pitch</div><div class="nm">DigiTech Drop</div></div>
+      <div class="wire"></div>
+      <div class="node"><div class="typ">Comp</div><div class="nm">Boss CS-3</div></div>
+      <div class="wire"></div>
+      <div class="node"><div class="typ">Drive</div><div class="nm">Wampler Euphoria</div></div>
+      <div class="wire"></div>
+      <div class="node split"><div class="typ">Split</div><div class="nm">BigShot ABY</div></div>
+    </div>
+
+    <div class="fork">
+      <div class="brace"></div>
+      <div class="branches">
+        <div class="branch a">
+          <span class="lbl">A</span>
+          <span class="bwire"></span>
+          <div class="ampchip"><div class="role">Snarl · Mids + Grit</div><div class="anm">Fender Blues Deluxe</div></div>
+        </div>
+        <div class="branch b">
+          <span class="lbl">B</span>
+          <span class="bwire"></span>
+          <div class="ampchip"><div class="role">Fat Anchor · Clean Low-End</div><div class="anm">Fender Tone Master Twin</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="chainnote">Everything before the ABY hits <b>both</b> amps · Reverb = each amp's <b>own</b> onboard tank · HOF2 NOT used</div>
+  </div>
+
+  <!-- FRONT END SETTINGS -->
+  <div class="sec"><span class="no">02</span><h2>Front End — Guitar &amp; Pedals</h2><span class="fill"></span></div>
+  <div class="grid">
+
+    <div class="card">
+      <div class="ch"><span class="t">Guitar</span><span class="meta">Ultra Luxe Strat</span></div>
+      <div class="rows">
+        <div class="r"><span class="lab">Pickup</span><span class="val">Bridge — lead / Pos 4 — rhythm</span></div>
+        <div class="r"><span class="lab">Volume</span><span class="val">10 (set up) → prove cleanup 6–7</span></div>
+        <div class="r"><span class="lab">Tone</span><span class="val">7–8 <span class="why">roll off the last bit of ice</span></span></div>
+        <div class="r"><span class="lab">S-1 switch</span><span class="val">OUT (stock parallel)</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="t">PolyTune 3</span><span class="meta">Tuner · First</span></div>
+      <div class="rows">
+        <div class="r"><span class="lab">State</span><span class="val">Always on, buffer ON</span></div>
+        <div class="r"><span class="lab">Note</span><span class="val">Drives the long two-amp run</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="t">DigiTech Drop</span><span class="meta">Eb without retune</span></div>
+      <div class="rows">
+        <div class="r"><span class="lab">Amount</span><span class="val hot">1 — half-step</span></div>
+        <div class="r"><span class="lab">Mode</span><span class="val">DROP ONLY</span></div>
+        <div class="r"><span class="lab">If real Eb + .013s</span><span class="val">BYPASS this pedal instead</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="t">Boss CS-3</span><span class="meta">Compressor</span></div>
+      <div class="rows">
+        <div class="r"><span class="lab">Sustain</span><span class="val">3 <span class="why">light — bloom, not squash</span></span></div>
+        <div class="r"><span class="lab">Attack</span><span class="val">6 <span class="why">keeps pick transient</span></span></div>
+        <div class="r"><span class="lab">Tone</span><span class="val">5</span></div>
+        <div class="r"><span class="lab">Level</span><span class="val">6 <span class="why">gentle front-end push</span></span></div>
+      </div>
+    </div>
+
+    <div class="card full">
+      <div class="ch"><span class="t">Wampler Euphoria</span><span class="meta">SSS-flavor shaper · NOT the dirt source</span></div>
+      <div class="rows" style="display:grid;grid-template-columns:repeat(4,1fr);gap:0 14px;">
+        <div class="r"><span class="lab">Voicing</span><span class="val hot">CRUNCH</span></div>
+        <div class="r"><span class="lab">Drive</span><span class="val">5.5</span></div>
+        <div class="r"><span class="lab">Tone</span><span class="val">5</span></div>
+        <div class="r"><span class="lab">Volume</span><span class="val">6.5 <span class="why">slams both amp fronts</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AMPS -->
+  <div class="sec"><span class="no">03</span><h2>Amplifiers — Voiced as a Pair</h2><span class="fill"></span></div>
+  <div class="grid">
+
+    <div class="card amp a">
+      <div class="ch"><span class="t">A · Blues Deluxe</span><span class="meta">Normal ch · SNARL</span></div>
+      <div class="dials">
+        <div class="dial"><div class="knob" style="--a:27deg"><i></i></div><div class="dl">Volume</div><div class="dv">6</div></div>
+        <div class="dial"><div class="knob" style="--a:0deg"><i></i></div><div class="dl">Treble</div><div class="dv">5</div></div>
+        <div class="dial"><div class="knob" style="--a:67deg"><i></i></div><div class="dl">Mid</div><div class="dv">7.5</div></div>
+        <div class="dial"><div class="knob" style="--a:-40deg"><i></i></div><div class="dl">Bass</div><div class="dv">3.5</div></div>
+        <div class="dial"><div class="knob" style="--a:-27deg"><i></i></div><div class="dl">Presence</div><div class="dv">4</div></div>
+        <div class="dial"><div class="knob" style="--a:-81deg"><i></i></div><div class="dl">Reverb</div><div class="dv">2</div></div>
+      </div>
+      <div class="switches">
+        <span class="pill">Channel <b>NORMAL</b></span>
+        <span class="pill off">Bright OFF</span>
+        <span class="pill">Bass low = Twin owns the bottom</span>
+      </div>
+    </div>
+
+    <div class="card amp b">
+      <div class="ch"><span class="t">B · Tone Master Twin</span><span class="meta">Normal ch · FAT ANCHOR</span></div>
+      <div class="dials">
+        <div class="dial"><div class="knob" style="--a:-27deg"><i></i></div><div class="dl">Volume</div><div class="dv">~4*</div></div>
+        <div class="dial"><div class="knob" style="--a:0deg"><i></i></div><div class="dl">Treble</div><div class="dv">5</div></div>
+        <div class="dial"><div class="knob" style="--a:-27deg"><i></i></div><div class="dl">Mid</div><div class="dv">4</div></div>
+        <div class="dial"><div class="knob" style="--a:54deg"><i></i></div><div class="dl">Bass</div><div class="dv">7</div></div>
+        <div class="dial"><div class="knob" style="--a:-27deg"><i></i></div><div class="dl">Presence</div><div class="dv">4</div></div>
+        <div class="dial"><div class="knob" style="--a:-54deg"><i></i></div><div class="dl">Reverb</div><div class="dv">3</div></div>
+      </div>
+      <div class="switches">
+        <span class="pill">Channel <b>NORMAL</b></span>
+        <span class="pill off">Bright OFF</span>
+        <span class="pill">Cab-sim <b>VIBROVERB</b></span>
+        <span class="pill">*Vol set by level-match (§04)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABY PROCEDURE -->
+  <div class="sec"><span class="no">04</span><h2>ABY Phase Check — Do This Every Session</h2><span class="fill"></span></div>
+  <div class="proc">
+    <div class="ph">Make-or-Break Step <span>OUTPUT A+Y · ISOLATION ON · PHASE = BY EAR</span></div>
+    <ol class="steps">
+      <li>Dial both amps + pedals to spec. ABY: Output <b>A+Y</b>, Isolation <b>ON (transformer)</b>, Phase Normal.</li>
+      <li><b>Level-match first.</b> Solo A (Twin to 0), note loudness. Solo B. Turn the <b>Twin DOWN</b> to match the 40W Blues Deluxe — it is the reference.</li>
+      <li>Both amps up. Hold a low <b>open-A</b> chord. Listen to the body / low end.</li>
+      <li>Flip the ABY <b>Phase</b> switch. Play the exact same chord identically.</li>
+      <li><b>Keep the position with MORE low end &amp; fuller center.</b> Wrong = thin, hollow, scooped. Right = blooms. If subtle → you didn't level-match, redo step 2.</li>
+      <li><b>Mono check:</b> stand centered between the cabs and judge from there. Hollow there but fine off-axis = phase still wrong.</li>
+    </ol>
+  </div>
+
+  <!-- SPEAKERS + TROUBLE -->
+  <div class="sec"><span class="no">05</span><h2>Stage Placement &amp; Troubleshooting</h2><span class="fill"></span></div>
+  <div class="twoup">
+
+    <div class="stage">
+      <div class="lbl">Speaker Placement — the blend happens in the air</div>
+      <div class="stagebox">
+        <div class="cab a"><div class="box"></div><div class="ct">A · BD</div></div>
+        <div class="cab b"><div class="box"></div><div class="ct">B · Twin</div></div>
+        <div class="player">YOU</div>
+      </div>
+      <div class="stagespecs">
+        Inner edges <b>12–18″</b> apart · fronts <b>flush / same plane</b><br>
+        Toe both <b>inward</b>, axes cross ~6–8 ft out at you<br>
+        Speaker centers at <b>same height</b> (raise/tilt the 1×12)<br>
+        Set placement <b>first</b>, then re-run the §04 phase check
+      </div>
+    </div>
+
+    <div class="trouble">
+      <div class="ph">If It Sounds Wrong</div>
+      <table>
+        <tr><th>Symptom</th><th>Fix</th></tr>
+        <tr><td class="sym">Thin / hollow / no bottom</td><td class="fix">ABY phase wrong → redo <b>§04 steps 3–5</b></td></tr>
+        <tr><td class="sym">Honky / boxy</td><td class="fix">Amps fighting in mids → <b>Twin Mid down</b>, confirm BD Bass 3.5</td></tr>
+        <tr><td class="sym">Flubby / loose lows</td><td class="fix"><b>BD Bass down</b>, then <b>Twin Volume down</b></td></tr>
+        <tr><td class="sym">Fizzy top</td><td class="fix"><b>BD Volume −0.5</b>, Presence down, Bright OFF both</td></tr>
+        <tr><td class="sym">Tone drifted mid-set</td><td class="fix">Tube amp warmed up → re-check <b>level-match (§04.2)</b></td></tr>
+        <tr><td class="sym">Hum</td><td class="fix">Confirm ABY <b>Isolation = ON</b></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    <span class="tag">Honest Note</span>
+    <p>This nails SRV's <b>one-dirty + one-clean-fat</b> split. It will NOT do "two cranked dirty Fenders" — the Twin is digital and never power-distorts. The asymmetric-cleanup payoff needs the Blues Deluxe genuinely pushed. ~30% of SRV's thickness is <b>.013 strings at Eb + his right hand</b> — no rig setting recovers that part.</p>
+  </footer>
+
+</div>
+</body>
+</html>

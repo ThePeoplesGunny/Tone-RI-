@@ -18,11 +18,11 @@ The project is under git (first commit 2026-03-27). Older provenance — pre-rep
 
 **Gear tab — Phase 2.** Phase 1 (gear-inventory.js authoring) shipped 2026-05-03 — 38 in-scope items across 10 categories, 81 distinct role tags, `ROLE_INDEX['univibe-modulation'] = ['mxr-m68-univibe']` confirmed (Univibe-class hallucination is now structurally impossible). Phase 2 is `buildRoleIndex()` runtime + role tag audit. Implementation phases are listed in Section 6 of `GEAR_TAB_DESIGN.md`; Phase 4.5 is the minimum-viable stopping point. Read Sections 0-3 before any code work — particularly Section 3.7 (schema-level role assertion validation) and Section 3.4 (notation fidelity per setting).
 
-The five `engineer_*.txt` source files at `c:\claude\TONE RI\` (parent of repo) inform the recipe authoring effort that follows Phase 4. The KWS interview (`engineer_KWS agent interview.txt`) is the canonical good-output example and the source for the first two TONE_RECIPES seed entries.
+The five `engineer_*.txt` source files in the repo root inform the recipe authoring effort that follows Phase 4. The KWS interview (`engineer_KWS agent interview.txt`) is the canonical good-output example and the source for the first two TONE_RECIPES seed entries.
 
 ## Working directory note (Windows)
 
-The path is `c:\claude\TONE RI\Tone (RI)` — contains a space and literal parentheses. **Always double-quote the path** in Bash and PowerShell calls (e.g., `"c:/claude/TONE RI/Tone (RI)/TONE__BETA_v4_4_.html"`); unquoted parens are interpreted by the shell.
+The path is `C:\claude\TONE RI` — contains a space. **Always double-quote the path** in Bash and PowerShell calls (e.g., `"C:/claude/TONE RI/TONE__BETA_v4_4_.html"`); unquoted spaces split the argument. Prior nested layout (`Tone (RI)/` subdirectory with literal parens) was collapsed 2026-05-17 — the two-layer structure was an artifact of the (incorrect) "agents resolve from parent of repo" belief that was debunked when the orphaned-agents bug was found and fixed.
 
 ## Build, run, test
 
@@ -48,7 +48,13 @@ There is no build step, no package manager, no test runner. The app is a single 
 - `GEAR_TAB_DESIGN.md` — v0.2 design doc for the Gear tab; agent-reviewed and user-approved; pre-implementation. Phase 1 is the next code action.
 - `.claude/commands/` — five slash-skill definitions: `session-start.md`, `session-close.md` (universal, per global framework), and `analyze-tab.md`, `distill.md`, `tone-match.md` (TONE-specific).
 - `.claude/agents/` — eight subagent definitions (`hendrix.md`, `evh.md`, `srv.md`, `kws.md`, `architect.md`, `uiux.md`, `guitar-systems.md`, `tone-engineer.md`) plus `_protocol.md` (universal evaluation structure all agents follow). Claude Code resolves subagents from `<project_root>/.claude/agents/` and `~/.claude/agents/` only — it does not walk parent directories. A prior session (cdd1def, 2026-04-29) moved them to the parent folder believing parent-resolution worked; that belief was wrong and the agents were orphaned for ~19 days until the 2026-05-17 audit relocated them here.
-- `../engineer_*.txt` (parent of repo, 5 files) — research source material for the Gear tab recipe-authoring effort: `narrative.txt` (general tone-pedagogy priors), `claude desktop Q&A.txt` (Marshall lineage table), `KWS agent interview.txt` (canonical recipe source — first two recipes derive from this), `pedal companies.txt` (workhorse-tier validation for owned TC/MXR/Boss pedals), `emulation.txt` (Lion '68 + PowerCab 212 Plus pairing — cab-modeling configuration and mode-by-mode settings for the user's owned amp/cab emulation rig).
+- `engineer_*.txt` (5 files in repo root) — research source material for the Gear tab recipe-authoring effort: `narrative.txt` (general tone-pedagogy priors), `claude desktop Q&A.txt` (Marshall lineage table), `KWS agent interview.txt` (canonical recipe source — first two recipes derive from this), `pedal companies.txt` (workhorse-tier validation for owned TC/MXR/Boss pedals), `emulation.txt` (Lion '68 + PowerCab 212 Plus pairing — cab-modeling configuration and mode-by-mode settings for the user's owned amp/cab emulation rig).
+- `TONE_VISION.html` — North star interaction model prototype (signal → translation → execution). Not current build. Design target for post-Gear-tab UX evolution.
+- `TONE_WORKFLOW.html` — Session orientation artifact showing current workflow and gap analysis. Gap tags may be stale relative to v4.4.
+- `SRV_Parallel_Patch_Sheet.html` — SRV signal chain reference artifact.
+- `Be Here Now (Lead).pdf`, `Be Here Now (Rhythm).pdf`, `Be Here Now.png` — Oasis "Be Here Now" reference tab + voicing diagram.
+- `SRV - Little Wing.pdf` — SRV "Little Wing" reference tab.
+- `theory.png` — fretboard theory reference image.
 - `KWS_Voodoo_Child_Tone_Card.{html,pdf}` — **canonical printable tone-reference artifact**. Carries the section map (above the fold), single-line signal flow strip, two-amp panel, per-knob provenance dots (worst-of-knobs aggregation per pedal), dual-notation cross-check (authored value primary, alternate notation marked with ≈), and Test Notes panel. Restructured 2026-05-03 per UI/UX agent review of the v0–v5 chain artifacts (see archive note below). **Not a basis for the Gear tab schema** — informs print-companion design for Phase 9+ recipe authoring only.
 - `archive/KWS_Voodoo_Child_Signal_Chain{,_v2..v5}.{html,pdf,png}` — superseded iteration record. v0–v5 attempted a visual pedalboard-photo metaphor; UI/UX review (2026-05-03) found the metaphor itself was the wrong artifact for the use case (size-as-prominence inverted importance, no section selector, all-annotations-always-on, five design-doc violations). Retained for history; do not iterate on these.
 
@@ -150,13 +156,7 @@ Decisions made with deliberate analysis. Do not relitigate without new evidence 
 | 4 | CHORD_REGISTRY is the single source for chord types | Adding to CHORD_FORMULAS directly desyncs SUFFIX_DISPLAY / PLAY_CHORD_INTERVALS. | 2026-04 |
 | 5 | No external runtime dependencies | Beyond the existing Google Fonts import. Keeps file:// clean. | 2026-03 |
 | 6 | Gear inventory hand-maintained, not in-app authored | gear-inventory.js edited directly from gear.txt. No CRUD UI. | 2026-05 |
-
-## Related Artifacts (outside git repo)
-
-- **`../TONE_VISION.html`** — North star interaction model prototype (signal → translation → execution). Not current build. Design target for post-Gear-tab UX evolution.
-- **`../TONE_WORKFLOW.html`** — Session orientation artifact showing current workflow and gap analysis. Gap tags may be stale relative to v4.4.
-- **`../SRV_Parallel_Patch_Sheet.html`** — SRV signal chain reference artifact.
-- **`../engineer_*.txt`** (5 files) — Research source material for recipe authoring.
+| 7 | Single-layer project structure (no nested `Tone (RI)/` subdir) | Two-layer structure was an artifact of the (incorrect) "Claude Code resolves `.claude/agents/` from parent of repo" belief that drove commit `cdd1def` (2026-04-29). When that belief was debunked (2026-05-17 audit; GitHub #31179) and agents were relocated into the repo, the only remaining reason for the nesting was gone. Collapse executed 2026-05-17 — all inner contents (including .git) moved up to `C:\claude\TONE RI\`. Eliminates parens-in-path quoting friction and `../` references throughout CLAUDE.md and skills. | 2026-05 |
 
 ## Cross-Project Connections
 

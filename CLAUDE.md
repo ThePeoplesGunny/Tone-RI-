@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project Intent & Boundaries
+
+**IS:** Translation layer between harmonic understanding and fretboard execution for experienced guitarists. "The hand doesn't know what the mind knows."
+
+**IS NOT:** A tab reader. A backing-track player. A general music theory encyclopedia. A multiplayer or social platform. A mobile app (file:// single-file architecture is permanent).
+
 ## What this project is
 
 TONE is a single-file interactive web app for experienced guitarists — a translation layer between harmonic understanding and fretboard execution. Read `TONE_CONTEXT.md` before any non-trivial change; it is the source of truth and overrides anything else when in conflict. `ROADMAP.md` carries the version log, open tech debt, and current architectural sequencing. `GEAR_TAB_DESIGN.md` carries the v0.2 design for the Gear tab — the active implementation target.
@@ -40,8 +46,8 @@ There is no build step, no package manager, no test runner. The app is a single 
 - `gear.txt` — user's actual gear inventory. The Tone Engineer agent and `/tone-match` skill map reference tones onto this list. Never invent gear that isn't here.
 - `archive/` — prior beta HTMLs and pre-repo docs. Read-only history; don't edit.
 - `GEAR_TAB_DESIGN.md` — v0.2 design doc for the Gear tab; agent-reviewed and user-approved; pre-implementation. Phase 1 is the next code action.
-- `.claude/commands/` — three slash-skill definitions: `analyze-tab.md`, `distill.md`, `tone-match.md`.
-- `../.claude/agents/` (parent of repo) — eight subagent definitions (`hendrix.md`, `evh.md`, `srv.md`, `kws.md`, `architect.md`, `uiux.md`, `guitar-systems.md`, `tone-engineer.md`) plus `_protocol.md` (universal evaluation structure all agents follow). Subagent resolution looks above the repo root, which is why they live there.
+- `.claude/commands/` — five slash-skill definitions: `session-start.md`, `session-close.md` (universal, per global framework), and `analyze-tab.md`, `distill.md`, `tone-match.md` (TONE-specific).
+- `.claude/agents/` — eight subagent definitions (`hendrix.md`, `evh.md`, `srv.md`, `kws.md`, `architect.md`, `uiux.md`, `guitar-systems.md`, `tone-engineer.md`) plus `_protocol.md` (universal evaluation structure all agents follow). Claude Code resolves subagents from `<project_root>/.claude/agents/` and `~/.claude/agents/` only — it does not walk parent directories. A prior session (cdd1def, 2026-04-29) moved them to the parent folder believing parent-resolution worked; that belief was wrong and the agents were orphaned for ~19 days until the 2026-05-17 audit relocated them here.
 - `../engineer_*.txt` (parent of repo, 5 files) — research source material for the Gear tab recipe-authoring effort: `narrative.txt` (general tone-pedagogy priors), `claude desktop Q&A.txt` (Marshall lineage table), `KWS agent interview.txt` (canonical recipe source — first two recipes derive from this), `pedal companies.txt` (workhorse-tier validation for owned TC/MXR/Boss pedals), `emulation.txt` (Lion '68 + PowerCab 212 Plus pairing — cab-modeling configuration and mode-by-mode settings for the user's owned amp/cab emulation rig).
 - `KWS_Voodoo_Child_Tone_Card.{html,pdf}` — **canonical printable tone-reference artifact**. Carries the section map (above the fold), single-line signal flow strip, two-amp panel, per-knob provenance dots (worst-of-knobs aggregation per pedal), dual-notation cross-check (authored value primary, alternate notation marked with ≈), and Test Notes panel. Restructured 2026-05-03 per UI/UX agent review of the v0–v5 chain artifacts (see archive note below). **Not a basis for the Gear tab schema** — informs print-companion design for Phase 9+ recipe authoring only.
 - `archive/KWS_Voodoo_Child_Signal_Chain{,_v2..v5}.{html,pdf,png}` — superseded iteration record. v0–v5 attempted a visual pedalboard-photo metaphor; UI/UX review (2026-05-03) found the metaphor itself was the wrong artifact for the use case (size-as-prominence inverted importance, no section selector, all-annotations-always-on, five design-doc violations). Retained for history; do not iterate on these.
@@ -117,18 +123,45 @@ These are coding-time constraints. Philosophical and feature-design constraints 
 
 ## Agents and skills
 
-Eight subagents are defined at `../.claude/agents/`. Use them proactively per their descriptions:
+Eight subagents are defined at `.claude/agents/`. Use them proactively per their descriptions:
 
 - **Player perspectives** (musical evaluation): `hendrix`, `evh`, `srv`, `kws`. Each produces an evaluation per `_protocol.md`.
 - **Operational** (engineering evaluation): `architect` (single-file health, blast radius), `uiux` (glanceability, mid-song operability), `guitar-systems` (theory engine correctness), `tone-engineer` (signal chain mapped to `gear.txt`).
 
-Three slash skills at `.claude/commands/`:
+Five slash skills at `.claude/commands/` — two universal (per global framework) and three TONE-specific:
 
+- `/session-start` — verify project state at session boundary (universal, P4)
+- `/session-close` — close protocol + delivery mechanism (universal, P5)
 - `/analyze-tab` — tab → harmonic analysis + technique inventory + transferable principles
 - `/tone-match` — reference tone → signal chain recipe against user's gear
 - `/distill` — orchestrator that routes through agent quality gates
 
 All agents follow the universal evaluation structure in `_protocol.md` (Target → Current State → Gap → Domain Assessment → Recommendation → Conditions → Provenance). Agent outputs are designed to be comparable and synthesizable; preserve that structure when consulting them.
+
+## Locked Decisions
+
+Decisions made with deliberate analysis. Do not relitigate without new evidence (per global P6).
+
+| # | Decision | Rationale | Date |
+|---|----------|-----------|------|
+| 1 | Single-file architecture is load-bearing | Full rewrite considered and rejected (ROADMAP April 2026 review). Performance acceptable, deploy simplicity critical. | 2026-04 |
+| 2 | No localStorage, no service worker, no module imports | file:// runtime forbids them. Persistence = download-the-HTML. | 2026-03 |
+| 3 | Edit existing renderers; don't add new ones | 5 fretboard renderers consolidated through shared chrome helpers in 4.4. Adding a 6th fragments the chrome layer. | 2026-05 |
+| 4 | CHORD_REGISTRY is the single source for chord types | Adding to CHORD_FORMULAS directly desyncs SUFFIX_DISPLAY / PLAY_CHORD_INTERVALS. | 2026-04 |
+| 5 | No external runtime dependencies | Beyond the existing Google Fonts import. Keeps file:// clean. | 2026-03 |
+| 6 | Gear inventory hand-maintained, not in-app authored | gear-inventory.js edited directly from gear.txt. No CRUD UI. | 2026-05 |
+
+## Related Artifacts (outside git repo)
+
+- **`../TONE_VISION.html`** — North star interaction model prototype (signal → translation → execution). Not current build. Design target for post-Gear-tab UX evolution.
+- **`../TONE_WORKFLOW.html`** — Session orientation artifact showing current workflow and gap analysis. Gap tags may be stale relative to v4.4.
+- **`../SRV_Parallel_Patch_Sheet.html`** — SRV signal chain reference artifact.
+- **`../engineer_*.txt`** (5 files) — Research source material for recipe authoring.
+
+## Cross-Project Connections
+
+- **wiki pipeline** → TONE RI: YouTube guitar transcript corpus feeds tone injection candidates and reference material.
+- **Instructor** ← TONE RI: Guitar-domain knowledge (SRV/KWS lineage, fretboard interaction model) shared with Instructor's electric blues curriculum.
 
 ## Versioning convention
 

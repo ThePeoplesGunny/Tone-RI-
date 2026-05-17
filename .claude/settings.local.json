@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(git:*)",
+      "Bash(ls:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(cd:*)",
+      "Bash(gh repo:*)",
+      "Bash(gh pr:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(grep -o '\\\\.[^.]*$')",
+      "Bash(du:*)",
+      "Bash(\"/c/Program Files/xpdf/bin64/pdfinfo.exe\" \"C:\\\\Users\\\\miken\\\\OneDrive\\\\Desktop\\\\claude stuff\\\\TONE RI\\\\SRV - Little Wing.pdf\")",
+      "Bash(mkdir -p /tmp/pdf_pages)",
+      "Bash(\"/c/Program Files/xpdf/bin64/pdftoppm.exe\" -r 150 -png \"SRV - Little Wing.pdf\" /tmp/pdf_pages/page)",
+      "Read(//tmp/**)",
+      "Read(//c/ProgramData/chocolatey/**)",
+      "Read(//c/ProgramData/chocolatey/lib//**)",
+      "Bash(cygpath -w /tmp/pdf_pages/page-000001.ppm)",
+      "Bash(pwd -W)",
+      "Bash(ffmpeg -version)",
+      "Bash(ffmpeg -i /tmp/pdf_pages/page-000001.ppm /tmp/pdf_pages/page-000001.png)",
+      "WebSearch",
+      "WebFetch(domain:www.sweetwater.com)",
+      "WebFetch(domain:www.kingtoneguitar.com)",
+      "WebFetch(domain:www.jimdunlop.com)",
+      "WebFetch(domain:www.ibanez.com)",
+      "WebFetch(domain:equipboard.com)",
+      "WebFetch(domain:www.thomannmusic.com)",
+      "WebFetch(domain:www.guitarpedalx.com)",
+      "PowerShell(Get-ChildItem \"C:\\\\claude\\\\TONE RI\\\\Tone \\(RI\\)\\\\\" -Force | Where-Object { $_.Name -ne '.git' } | Select-Object Mode, Length, Name)"
+    ]
+  }
+}

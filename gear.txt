@@ -36,7 +36,7 @@ sE Electronics DM1 Dynamite 1-channel Active Inline Preamp
 Shure SM57 Cardioid Dynamic Instrument Microphone
 Shure SM58 Dynamic Vocal Microphone Bundle with Cable and Stand
 Shure MV88 USB-C Stereo Condenser Microphone
-TC Electronic Flashback Delay and Looper Pedal
+TC Electronic Flashback 2 Delay and Looper Pedal
 TC Electronic Hall of Fame 2 Reverb Pedal
 TC Electronic PolyTune 3 Polyphonic LED Guitar Tuner Pedal
 TC-Helicon VoiceTone C1 HardTune and Pitch Correction Pedal
@@ -49,5 +49,6 @@ Vox V847-A Classic Reissue Wah Pedal
 Wampler Euphoria Overdrive Pedal
 Wampler Plexi-Drive British Overdrive Pedal
 Headrush FRFR-112 2000-watt 1x12-inch Powered Guitar Cabinet
+Fender Rumble 100 1x12-inch 100-watt Bass Combo Amp
 
 

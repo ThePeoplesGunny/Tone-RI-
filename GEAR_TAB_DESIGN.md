@@ -129,6 +129,12 @@ Schema location: sibling `gear-inventory.js`, loaded via `<script src="gear-inve
 
 Each item has stable `id`, display fields, structured controls, and role tags. Items recipes reference are looked up by `id`.
 
+**Spec verifiability (v0.2, locked — see Section 9 / CLAUDE.md LD#9).** Every pedal entry carries:
+
+- `power` — DC power requirement, modeled separately from amp wattage. Amp `power:` is wattage/tube type; pedal `power:` is the supply-allocation fact. Shape: `{ input, voltageV, currentDrawMa, polarity, connector, batteryCapable, batteryType }`. This makes "does the Voodoo Lab MONDO have a free compatible output for this board?" a queryable fact rather than tribal knowledge.
+- `specProvenance` — **one per-item stamp** (not per-field): `{ source, status, checked }`. Gear specs come from a single manufacturer document per item (manual / spec page), unlike recipe settings which come from heterogeneous per-knob sources — so per-item is the correct granularity. `status` uses the same axis as recipe provenance (`confirmed` once cross-checked against the manufacturer doc; `unconfirmed` until then). "100% verifiable" = every pedal's control complement, ranges, switches, and power trace to a cited source.
+- `default` knob values are **author-inferred starting points, never manufacturer spec**, and are explicitly *excluded* from the `specProvenance` claim. They are retained for Tone Engineer convenience but must never be read as verified. The `specProvenance` stamp covers only the verifiable spec surface: control complement, ranges, switches, power.
+
 ```js
 const GEAR_INVENTORY = {
   guitars: [
@@ -239,10 +245,16 @@ const GEAR_INVENTORY = {
       shortName: 'TS808',
       circuit: 'JRC4558D op-amp tube screamer topology',
       controls: [
+        // `default` = author-inferred starting point, NOT manufacturer spec; excluded from specProvenance
         { id: 'drive', type: 'knob', range: [0, 10], default: 3 },
         { id: 'tone',  type: 'knob', range: [0, 10], default: 5 },
         { id: 'level', type: 'knob', range: [0, 10], default: 7 },
       ],
+      power: { input: 'dc-9v', voltageV: 9, currentDrawMa: 8, polarity: 'center-negative',
+               connector: '2.1mm barrel', batteryCapable: true, batteryType: '9V' },
+      specProvenance: { source: 'Ibanez official TS808 spec page (ibanez.com)',
+                        status: 'unconfirmed', checked: '2026-05-18',
+                        note: 'Spec from std TS808 page; no 35th-specific page exists (same circuit). status stays unconfirmed until a 35th-Anniversary source is found — illustrates the confirmed/unconfirmed axis.' },
       roles: ['tube-screamer', 'mid-push-boost', 'srv-boost', 'kws-boost', 'low-gain-overdrive'],
       typicalDeployment: 'low drive + high level into a clean or lightly broken-up amp; pushes the front end into mid-forward saturation',
     },
@@ -1011,6 +1023,7 @@ Each phase is independently shippable; do not start phase N+1 until N is verifie
 | Conflict | v0.1 position | v0.2 resolution |
 |---|---|---|
 | Knob notation for pedals vs amps | Clock-face for pedals, numeric for amps | **Authored notation per setting**; both numeric and clock-face are sources of truth; never silently converted; `normalizedValue` for analysis only. (Section 3.4) |
+| Gear-inventory spec verifiability | No power data; control specs carried no provenance; `default` looked like spec | **`power` block + per-item `specProvenance` stamp added (additive, §3.1).** Per-item granularity (gear specs = one manufacturer doc per item). `default` retained but explicitly author-inferred, excluded from the provenance claim. CLAUDE.md LD#9, 2026-05-18. |
 | Play Mode integration | Collapsed pre-flight panel | **No integration.** Gear tab and Play Mode are independent activities linked by preset, not by UI. Library row gets two distinct entry points. (Section 2.3, 4.4) |
 | Edit mode v1 scope | Knob drag + toggle + reorder + text + provenance | **Text-based only.** Knob drag deferred indefinitely (notation fidelity). Pedal toggle, side selection, settings text, provenance dropdown, source quote, chain reorder, JSON paste, schema validation, pending-change pill all in v1.0. (Section 4.3) |
 

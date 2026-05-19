@@ -296,7 +296,7 @@ These sources inform TONE's approach — they are not content to reproduce, but 
 | Landmark Pentatonic | Play Mode (target note, forward vision, approach notes) + Forward Map (landmark positions) | **Strong** |
 | CAGED | Chords tab: Voicings (CAGED zone voicing map) + Triads (ACE zone model) + Forward Map (nearest shape hint) + Play Mode CAGED overlay | **Strong** |
 | Technique Bridge | Scales tab: Brewster overlay + universal interval colors + Play Mode: CAGED overlay, forward vision, approach notes, root dot shapes + arpeggio view (dual-mode) + triad chaining + song-route mapping (per-section navigation) | **Strong** — algorithmic core (4.1) + song-route (4.2) |
-| Gear & Tone | Structured `gear-inventory.js` (38 items) + `window.ROLE_INDEX` runtime (Gear tab Phase 2) + Tone Engineer agent + /tone-match skill — no in-app UI surface yet | **Partial** — inventory→role-index infrastructure live; agent role-index integration (Phase 3) + recipes (Phase 4) + rendering (Phase 5+) TBD |
+| Gear & Tone | Structured `gear-inventory.js` (38 items) + `window.ROLE_INDEX` runtime (Gear tab Phase 2) + verifiable per-pedal `power`/`specProvenance` (LD#9, 27/27 confirmed 2026-05-18) + Tone Engineer agent + /tone-match skill — no in-app UI surface yet | **Partial** — inventory→role-index infrastructure live, spec verifiability complete; agent role-index integration (Phase 3) + recipes (Phase 4) + rendering (Phase 5+) TBD |
 
 **Tabs are connected through shared context.** `_activeContext` propagates Decoder key/mode/chord to Chords, Scales, and Theory tabs.
 
@@ -477,6 +477,7 @@ Before writing any code for a new feature or layer, scan the open DEF list. Clas
 | Tendency labels use TENDENCY_MAP | Keyed by numeral for diatonic; inferred for borrowed/secondary/chromatic. |
 | One-note neighbors = same cardinality only | Comparing 5-note to 7-note scales is misleading. |
 | Pentatonic pathway bidirectional | Expansion and contraction both serve the cognitive bridge. |
+| Gear specs 100% verifiable (LD#9) | Pedal `power` block + per-item `specProvenance`; `default` is author-inferred, never spec. Provenance hierarchy: owner-attested > manual > secondary > schema. Inferred connector conventions proven unsafe. |
 | Neighbor cards clickable | Navigate relationships organically, not from a table. |
 | NEIGHBOR_TENDENCIES curated, not generated | Tendency framing is too important to auto-generate. |
 | Finger count = consecutive-string barre groups | Non-consecutive strings at same fret each need a finger. |

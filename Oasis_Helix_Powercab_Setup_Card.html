@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Oasis on Helix → Powercab — Setup Card</title>
+<style>
+  @page { size: Letter; margin: 0.5in 0.55in; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #111;
+    font-size: 10.25pt;
+    line-height: 1.32;
+  }
+  h1 { font-size: 16pt; margin: 0 0 2px; letter-spacing: 0.2px; }
+  h2 {
+    font-size: 10.5pt;
+    margin: 11px 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+    border-bottom: 1.2px solid #111;
+    padding-bottom: 1px;
+  }
+  h3 { font-size: 10.25pt; margin: 6px 0 3px; }
+  .sub { color: #555; font-size: 9pt; margin-top: 1px; }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 8.5pt;
+    color: #444;
+    margin: 4px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #bbb;
+  }
+  .meta b { color: #111; font-weight: 600; }
+  table { border-collapse: collapse; width: 100%; font-size: 9.5pt; }
+  th, td { border: 1px solid #aaa; padding: 3px 6px; text-align: left; vertical-align: top; }
+  th { background: #eee; font-weight: 600; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.5px; }
+  td.k { width: 24%; font-weight: 600; }
+  td.v { width: 30%; font-family: "Consolas", "Courier New", monospace; }
+  td.note { color: #444; font-size: 9pt; }
+  /* Root-cause + one-rule callout */
+  .callout {
+    border: 1.6px solid #b60;
+    background: #fdf6ec;
+    padding: 7px 10px;
+    margin: 6px 0;
+    break-inside: avoid;
+  }
+  .callout .lead { font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; font-size: 9pt; color: #b60; }
+  .callout.rule { border-color: #060; background: #eef7ee; }
+  .callout.rule .lead { color: #060; }
+  .callout p { margin: 3px 0 0; }
+  /* Ordered procedure */
+  ol.steps { margin: 4px 0 4px 20px; padding: 0; }
+  ol.steps li { margin: 2px 0; }
+  ol.steps b { color: #111; }
+  .flow {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 9.25pt;
+    background: #f4f4ee;
+    border: 1px solid #aaa;
+    padding: 5px 8px;
+    margin: 4px 0 0;
+    line-height: 1.5;
+  }
+  .flow .arrow { color: #888; padding: 0 2px; }
+  .flow .side { color: #444; font-size: 8.5pt; }
+  .flow .hub { color: #b60; font-weight: 600; }
+  .badge {
+    display: inline-block; font-size: 7.5pt; padding: 1px 5px; border-radius: 8px;
+    border: 1px solid #888; color: #444; text-transform: uppercase; letter-spacing: 0.5px;
+    margin-left: 4px; vertical-align: 1px;
+  }
+  .badge.v { border-color: #060; color: #060; }
+  .badge.a { border-color: #b60; color: #b60; }
+  .alt { color: #666; font-size: 8.5pt; margin-left: 4px; }
+  .legend { font-size: 8.5pt; color: #555; margin: 4px 0 0; }
+  .footer { margin-top: 8px; border-top: 1px solid #bbb; padding-top: 4px; font-size: 8.25pt; color: #555; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .panel { border: 1.2px solid #111; padding: 6px 8px 7px; break-inside: avoid; }
+  .panel h3 { margin: 0 0 4px; }
+  .panel .role { font-size: 8.5pt; color: #666; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<h1>Oasis Tone &mdash; Line 6 Helix &rarr; Powercab 212 Plus</h1>
+<div class="sub">Complete start-to-finish setup. Primary: <i>Be Here Now</i> (JCM900 wall). Variant: <i>Morning Glory</i> (AC30 + Bluesbreaker blend). Topology C &mdash; Helix as hub.</div>
+
+<div class="meta">
+  <span><b>Connection:</b> 1 L6 LINK cable (110&Omega; XLR), Helix OUT &rarr; Powercab IN</span>
+  <span><b>Firmware:</b> Helix &ge;2.80 &middot; Powercab &ge;2.00</span>
+  <span><b>Guitar:</b> humbucker (PRS / Wolfgang), bridge, vol 10</span>
+  <span><b>All settings:</b> inferred starting points &mdash; dial to the number, then trust your ears</span>
+</div>
+
+<div class="callout">
+  <div class="lead">Why it sounded like trash before &mdash; double-cabbing</div>
+  <p>A Helix <b>Cab/IR block</b> running at the same time as a Powercab <b>speaker model</b> processes the speaker <b>twice</b> &rarr; boxy, dark, dull, "digital." Line 6's own rule: to use Powercab speaker models, disable cab blocks in the modeler.</p>
+</div>
+<div class="callout rule">
+  <div class="lead">The one rule that fixes it permanently</div>
+  <p><b>Powercab &rarr; FLAT mode, forever. All tone lives in the Helix.</b> Now the Helix cab block is the only speaker sim (correct), there's no two-box state to manage, and double-cabbing is structurally impossible. Set the Powercab once and never touch it again.</p>
+</div>
+
+<h2>A &middot; One-Time Setup (do once, never again)</h2>
+<ol class="steps">
+  <li><b>Cable:</b> one 110&Omega; XLR &mdash; Helix <code>L6 LINK OUT</code> &rarr; Powercab <code>L6 LINK IN</code> (carries audio + control).</li>
+  <li><b>Firmware:</b> Helix &ge; 2.80, Powercab &ge; 2.00 (older = no L6 LINK control).</li>
+  <li><b>Powercab &rarr; FLAT mode</b>, master ~12 o'clock. Last time you touch the Powercab.</li>
+  <li><b>Helix Global &rarr; Ins/Outs:</b> In-Z = <b>Auto</b>; Pad <b>off</b> (humbuckers &mdash; only on if input clips).</li>
+  <li><b>Helix Global &rarr; Global EQ &rarr; OFF.</b> A forgotten Global EQ silently wrecks every patch.</li>
+  <li><b>Loudness</b> is set at the <b>Powercab master</b>, not by cranking Helix output. Output meters peak, never clip.</li>
+</ol>
+
+<h2>B &middot; The Dial-In Method (follow the order &mdash; never freelance)</h2>
+<ol class="steps">
+  <li>Start from an <b>empty preset</b> (never edit a factory patch &mdash; full of blocks you'll fight).</li>
+  <li>Place <b>one Amp+Cab block</b> (combined = fewest blocks). Cab stays IN because Powercab is on Flat.</li>
+  <li><b>Dial the amp naked</b> &mdash; Gain &rarr; Bass/Mid/Treble &rarr; Presence &rarr; Master. Get it right before anything touches it. <b>Keep Master up (~7)</b> or it's all preamp fizz.</li>
+  <li><b>Set the cab High Cut to 6&ndash;8 kHz</b> &mdash; kills the digital ice-pick. This one setting fixes most "harsh" complaints.</li>
+  <li><b>Then</b> add drive. <b>Then</b> mod/time. <b>Set levels LAST.</b></li>
+</ol>
+
+<h2>C &middot; Primary Patch &mdash; Be Here Now</h2>
+<div class="flow">
+  <span>Scream 808</span> <span class="arrow">&rarr;</span>
+  <span class="hub">Brit 2204</span> <span class="side">[Amp+Cab]</span> <span class="arrow">&rarr;</span>
+  <span>Delay</span> <span class="arrow">&rarr;</span>
+  <span class="side">L6 LINK &rarr; Powercab (Flat)</span>
+</div>
+<div class="callout" style="margin-top:6px;">
+  <div class="lead">No literal JCM900 in Helix</div>
+  <p>Confirmed &mdash; Helix's high-gain Marshall is the 800-series. Substitute = <b>Brit 2204 (JCM800 2204) pushed by a Tube Screamer</b>: the TS tightens lows + adds the preamp shove that gets the 800 into 900 territory, plus a touch more Presence for the 900's brighter top. Character, not a model-exact match.</p>
+</div>
+<table style="margin-top:6px;">
+  <tr><th>Block</th><th>Knob</th><th>Setting</th><th>Why</th></tr>
+  <tr>
+    <td class="k">Scream 808 <span class="badge a">TS / the 900-gap closer</span></td>
+    <td>Drive</td><td class="v">9 o'clock <span class="alt">~3/10</span></td>
+    <td class="note" rowspan="3">Boost, not distortion. Low drive / high level pushes the 2204 into JCM900-style saturation.</td>
+  </tr>
+  <tr><td></td><td>Tone</td><td class="v">11 o'clock</td></tr>
+  <tr><td></td><td>Level</td><td class="v">2&ndash;3 o'clock <span class="alt">the push</span></td></tr>
+  <tr>
+    <td class="k">Brit 2204 <span class="badge v">= JCM800 2204</span></td>
+    <td>Gain</td><td class="v">6/10</td>
+    <td class="note" rowspan="7">2204 + TS push = 900-ish saturation; resist maxing. <b>Mid stays up &mdash; the stack lives in the mids, never scoop.</b> Master up for power-amp feel. Be Here Now's size is overdub DENSITY (double/triple-track + hard pan), not gain.</td>
+  </tr>
+  <tr><td></td><td>Bass</td><td class="v">5/10</td></tr>
+  <tr><td></td><td>Mid</td><td class="v">6.5/10</td></tr>
+  <tr><td></td><td>Treble</td><td class="v">6/10</td></tr>
+  <tr><td></td><td>Presence</td><td class="v">6.5/10</td></tr>
+  <tr><td></td><td>Master</td><td class="v">7/10</td></tr>
+  <tr><td></td><td>Sag / Hum</td><td class="v">4 / 3</td></tr>
+  <tr>
+    <td class="k">Cab (inside the block)</td>
+    <td>Model</td><td class="v">4x12 Greenback-voiced</td>
+    <td class="note" rowspan="3">High Cut is the anti-fizz setting. Keep cab voicing Marshall/Greenback, not Fender/scooped.</td>
+  </tr>
+  <tr><td></td><td>High Cut</td><td class="v">~7 kHz</td></tr>
+  <tr><td></td><td>Low Cut</td><td class="v">~80 Hz</td></tr>
+  <tr>
+    <td class="k">Delay <span class="badge a">optional</span></td>
+    <td>Time / FB / Mix</td><td class="v">~300 ms / 15% / 12%</td>
+    <td class="note">Just air, not a feature. Drop it for the minimal build.</td>
+  </tr>
+</table>
+<div class="legend"><b>Guitar:</b> humbucker (PRS Tremonti or Wolfgang), bridge pickup, volume 10, tone 10, coil-split off.</div>
+
+<h2>D &middot; Variant &mdash; Morning Glory Dual-Amp Blend</h2>
+<div class="legend">The thing your analog rig can't do: two amps summed in one box. Split the path A/B, run both, merge.</div>
+<div class="two-col" style="margin-top:6px;">
+  <div class="panel">
+    <h3>Path A &mdash; Essex A30 <span class="badge v">= AC30 Top Boost</span></h3>
+    <div class="role">Chime side</div>
+    <table>
+      <tr><td class="k">Drive</td><td class="v">5/10</td></tr>
+      <tr><td class="k">Bass / Mid / Treble</td><td class="v">4 / 6 / 7</td></tr>
+      <tr><td class="k">Cut / Master</td><td class="v">5 / 6</td></tr>
+      <tr><td class="k">Cab</td><td class="v">2x12 Blue, High Cut ~8 kHz</td></tr>
+    </table>
+  </div>
+  <div class="panel">
+    <h3>Path B &mdash; Brit J-45 <span class="badge v">= JTM-45 / Bluesbreaker</span></h3>
+    <div class="role">Grind side</div>
+    <table>
+      <tr><td class="k">Drive</td><td class="v">5.5/10</td></tr>
+      <tr><td class="k">Bass / Mid / Treble</td><td class="v">5 / 6 / 6</td></tr>
+      <tr><td class="k">Presence / Master</td><td class="v">5 / 6</td></tr>
+      <tr><td class="k">Cab</td><td class="v">2x12 or 4x12 Greenback, High Cut ~7 kHz</td></tr>
+    </table>
+  </div>
+</div>
+<div class="legend" style="margin-top:5px;">
+  <b>Merge:</b> start 50/50, lean slightly to the Marshall. &nbsp;
+  <b>Before the split:</b> one Scream 808 (Drive 9 o'clock, Level 1 o'clock) pushing both amps. &nbsp;
+  <b>After the merge:</b> Script Mod Phase (Rate ~9 o'clock, Depth ~60%, Mix ~40%) = the "Champagne Supernova" swirl (Small Stone stand-in).
+</div>
+
+<h2>E &middot; Troubleshooting &mdash; "Why It Sounded Like Trash" (ranked)</h2>
+<table>
+  <tr><th>#</th><th>Mistake</th><th>Fix</th></tr>
+  <tr><td class="k">1</td><td>Double-cabbing (Helix cab + Powercab speaker model both on)</td><td>Powercab on <b>Flat</b>; Helix cab is the only sim.</td></tr>
+  <tr><td class="k">2</td><td>Powercab in wrong mode (Speaker-Modeling / IR while Helix cab is on)</td><td>Flat.</td></tr>
+  <tr><td class="k">3</td><td>Amp Master too low &rarr; buzzy preamp fizz</td><td>Master ~7; set room volume at the Powercab.</td></tr>
+  <tr><td class="k">4</td><td>No cab High Cut &rarr; ice-pick top end</td><td>Cab High Cut <b>6&ndash;8 kHz</b>.</td></tr>
+  <tr><td class="k">5</td><td>Output level wrong / clipping</td><td>L6 LINK active; meters peak, not clip.</td></tr>
+  <tr><td class="k">6</td><td>Global EQ left on from a past patch</td><td>Global EQ <b>OFF</b>.</td></tr>
+  <tr><td class="k">7</td><td>Input pad / impedance wrong</td><td>In-Z <b>Auto</b>, pad off unless input clips.</td></tr>
+</table>
+
+<div class="callout rule">
+  <div class="lead">The 90% floor &mdash; 5 minutes, zero menu-diving</div>
+  <p>Do section A once. Then build a <b>2-block patch: Scream 808 &rarr; Brit 2204 (Amp+Cab, High Cut 7 kHz, Master 7).</b> That's 90% of Be Here Now. Everything beyond those two blocks is polish.</p>
+  <p style="margin-top:4px;"><b>Where the Helix actually earns its keep:</b> the Morning Glory <b>AC30 + Bluesbreaker</b> blend &mdash; two amps summed live, which analog can't do without two amps + an ABY + mic'ing both. For single-amp Be Here Now, your analog rig is honestly fine.</p>
+</div>
+
+<div class="footer">
+  Verified (Line 6 docs + Helix Help): L6 LINK connection; Powercab Flat / Speaker-Modeling / IR modes; the disable-cab-blocks rule; Helix model names &mdash; Brit 2204 (JCM800 2204), Brit Plexi (Super Lead), Brit J-45 (JTM-45/Bluesbreaker), Essex A30 (AC30 Top Boost); no literal JCM900 model. All knob/parameter values are inferred starting points (numeric / clock-face as authored), not spec &mdash; dial to the number, then trust your ears in the room. Companion to TONE_RECIPES['be-here-now-rhythm'] and ['oasis-dont-look-back-in-anger-1995']. Topology C (Helix as hub &rarr; Powercab).
+</div>
+
+</body>
+</html>

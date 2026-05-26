@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Oasis — "Don't Look Back in Anger" (Morning Glory era) — Tone Card</title>
+<style>
+  @page { size: Letter; margin: 0.5in 0.55in; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #111;
+    font-size: 10.25pt;
+    line-height: 1.32;
+  }
+  h1 { font-size: 16pt; margin: 0 0 2px; letter-spacing: 0.2px; }
+  h2 {
+    font-size: 10.5pt;
+    margin: 10px 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+    border-bottom: 1.2px solid #111;
+    padding-bottom: 1px;
+  }
+  h3 { font-size: 10.25pt; margin: 6px 0 3px; }
+  .sub { color: #555; font-size: 9pt; margin-top: 1px; }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 8.5pt;
+    color: #444;
+    margin: 4px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #bbb;
+  }
+  .meta b { color: #111; font-weight: 600; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 9.5pt;
+  }
+  th, td {
+    border: 1px solid #aaa;
+    padding: 3px 6px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #eee;
+    font-weight: 600;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  td.k { width: 22%; font-weight: 600; }
+  td.v { width: 28%; font-family: "Consolas", "Courier New", monospace; }
+  td.note { color: #444; font-size: 9pt; }
+  /* Section map — dominant element above the fold */
+  .section-map { font-size: 9pt; }
+  .section-map th { font-size: 8.5pt; }
+  .section-map td { padding: 4px 6px; }
+  .section-map td.section-name { font-weight: 700; width: 18%; }
+  .section-map td.cell-mono { font-family: "Consolas", "Courier New", monospace; font-size: 9pt; }
+  .section-map td.empty { color: #999; text-align: center; }
+  .section-map .always-on-row td { background: #f7f7f0; font-style: italic; color: #555; }
+  /* Single-line signal flow strip — replaces the visual chain illustration */
+  .flow {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 9.25pt;
+    background: #f4f4ee;
+    border: 1px solid #aaa;
+    padding: 5px 8px;
+    margin: 4px 0 0;
+    line-height: 1.5;
+    word-spacing: 1px;
+  }
+  .flow .arrow { color: #888; padding: 0 2px; }
+  .flow .group { white-space: nowrap; }
+  .flow .side { color: #444; font-size: 8.5pt; }
+  .flow .aby { color: #b60; font-weight: 600; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .panel {
+    border: 1.2px solid #111;
+    padding: 6px 8px 7px;
+    break-inside: avoid;
+  }
+  .panel h3 { margin: 0 0 4px; }
+  .panel .role {
+    font-size: 8.5pt;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 4px;
+  }
+  /* Per-knob provenance dot — worst-of aggregation per pedal in the Pedal column */
+  .dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: 1px;
+    border: 1px solid transparent;
+  }
+  .dot.assumed   { background: #b8b8b8; border-color: #888; }
+  .dot.inferred  { background: #e7a14a; border-color: #b66a00; }
+  .dot.verified  { background: #2a7a2a; border-color: #1a4a1a; }
+  .dot.validated { background: #2a7a2a; border-color: #1a4a1a; box-shadow: 0 0 0 1.5px #fff inset; }
+  /* Alternate-notation cross-check: authored notation primary, converted as ≈ secondary */
+  .alt {
+    color: #666;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.5pt;
+    margin-left: 4px;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 7.5pt;
+    padding: 1px 5px;
+    border-radius: 8px;
+    border: 1px solid #888;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 4px;
+    vertical-align: 1px;
+  }
+  .badge.v { border-color: #060; color: #060; }
+  .badge.a { border-color: #b60; color: #b60; }
+  .badge.m { border-color: #06c; color: #06c; }  /* model / amp-in-a-box */
+  .quote {
+    font-style: italic;
+    border-left: 2px solid #888;
+    padding: 1px 0 1px 8px;
+    margin: 4px 0;
+    color: #333;
+    font-size: 9.5pt;
+  }
+  .feedback {
+    border: 1.2px dashed #111;
+    padding: 6px 8px;
+    margin-top: 8px;
+    break-inside: avoid;
+  }
+  .feedback h2 { border-bottom: none; margin: 0 0 3px; }
+  .lines { line-height: 1.85; color: #aaa; }
+  .lines div { border-bottom: 1px solid #bbb; height: 16px; }
+  .checklist { font-size: 9.25pt; }
+  .checklist label { display: block; margin: 2px 0; }
+  .footer {
+    margin-top: 8px;
+    border-top: 1px solid #bbb;
+    padding-top: 4px;
+    font-size: 8.25pt;
+    color: #555;
+  }
+  ul.tight { margin: 2px 0 4px 16px; padding: 0; }
+  ul.tight li { margin: 1px 0; }
+  .legend { font-size: 8.5pt; color: #555; margin: 4px 0 0; }
+  .dot-legend { font-size: 8.25pt; color: #555; margin: 4px 0 0; }
+  .dot-legend .dot { margin-right: 3px; margin-left: 8px; }
+  .dot-legend .dot:first-child { margin-left: 0; }
+</style>
+</head>
+<body>
+
+<h1>Oasis &mdash; "Don't Look Back in Anger" <span style="font-size:11pt;color:#555;">(Morning Glory era)</span></h1>
+<div class="sub"><i>(What's the Story) Morning Glory?</i> (1995, Creation). Anchor songs: "Don't Look Back in Anger," "Champagne Supernova," "Wonderwall" (electric layers). Standard tuning.</div>
+
+<div class="meta">
+  <span><b>Era rig:</b> Vox AC30 + Marshall Bluesbreaker combo (both Helix-modeled &mdash; neither owned)</span>
+  <span><b>Drive:</b> Ibanez TS-9 &rarr; TS808 (push, not distort)</span>
+  <span><b>Mod:</b> EHX Small Stone phaser &rarr; EVH Phase 90</span>
+  <span><b>Time:</b> Roland Space Echo &rarr; Flashback 2 Tape</span>
+  <span><b>Pick:</b> heavy, hard strum</span>
+</div>
+
+<h2>Section Map &mdash; What's Engaged When</h2>
+<div class="legend">Biggest decision is "what's on right now." Read across. The album sound is double/triple-tracked &mdash; a single live pass is thinner by design.</div>
+<table class="section-map" style="margin-top:4px;">
+  <tr>
+    <th>Section</th>
+    <th>Pickup</th>
+    <th>Amps (Helix blend)</th>
+    <th>Drive</th>
+    <th>Mod</th>
+    <th>Time</th>
+    <th>Notes</th>
+  </tr>
+  <tr class="always-on-row">
+    <td class="section-name">Always on</td>
+    <td>&mdash;</td>
+    <td class="cell-mono">AC30 + Bluesbreaker (~50:50)</td>
+    <td class="empty">&mdash;</td>
+    <td class="empty">&mdash;</td>
+    <td class="cell-mono">Spring, light</td>
+    <td>Both amp models on the verge of breakup; chime on top (AC30), grind underneath (Bluesbreaker).</td>
+  </tr>
+  <tr>
+    <td class="section-name">Clean intro</td>
+    <td class="cell-mono">Neck</td>
+    <td class="cell-mono">AC30 + BB</td>
+    <td class="cell-mono">TS808 OFF</td>
+    <td class="empty">&mdash;</td>
+    <td class="cell-mono">Tape, subtle</td>
+    <td>Arpeggiated open chords ring clean before the band lands.</td>
+  </tr>
+  <tr>
+    <td class="section-name">Rhythm (verse/chorus)</td>
+    <td class="cell-mono">Bridge</td>
+    <td class="cell-mono">AC30 + BB</td>
+    <td class="cell-mono">TS808 IN</td>
+    <td class="empty">&mdash;</td>
+    <td class="cell-mono">Tape, subtle</td>
+    <td>The crunch chord wall. TS808 tightens lows and pushes the amps into grit on hard strums.</td>
+  </tr>
+  <tr>
+    <td class="section-name">Lead / "DLBIA" solo</td>
+    <td class="cell-mono">Bridge &rarr; Neck</td>
+    <td class="cell-mono">AC30 + BB</td>
+    <td class="cell-mono">TS808 IN (harder)</td>
+    <td class="empty">&mdash;</td>
+    <td class="cell-mono">Tape, present</td>
+    <td>Same voice pushed; melodic, vocal lead. Tape echo comes up.</td>
+  </tr>
+  <tr>
+    <td class="section-name">Atmospheric ("Champagne Supernova")</td>
+    <td class="cell-mono">Neck</td>
+    <td class="cell-mono">AC30 + BB</td>
+    <td class="cell-mono">TS808 light</td>
+    <td class="cell-mono">Phase 90 (script)</td>
+    <td class="cell-mono">Tape, present</td>
+    <td>Phaser swirl rides on top of the crunch. <span class="badge a">device-class sub</span> EVH 90 &ne; Small Stone voice.</td>
+  </tr>
+</table>
+
+<div class="flow">
+  <span class="group">PRS Tremonti <span class="side">[bridge / neck per section]</span></span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">PolyTune 3</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">TS808 <span class="side">[front-end push]</span></span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">Phase 90 <span class="side">[Small Stone sub, atmospheric only]</span></span>
+  <span class="arrow">&rarr;</span>
+  <span class="aby">HELIX</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">[ AC30 <span class="side">chime</span> &nbsp;||&nbsp; Bluesbreaker <span class="side">grind</span> &nbsp;+&nbsp; Tape + Spring ]</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">FRFR <span class="side">Powercab / Headrush</span></span>
+</div>
+<div class="legend">Engaged-or-routed-through gear only. Phaser sits <i>after</i> the TS and before the amps so the swirl rides on top of the crunch. Off-this-track gear (Plexi-Drive, MXR Analog Chorus, 5150/Mesa) is NOT in the chain &mdash; chorus and the Plexi voice belong to other eras/recipes.</div>
+
+<h2>Two-Amp Setup &mdash; AC30 + Bluesbreaker Blend</h2>
+<div class="legend">
+  Both are <b>Helix models</b> &mdash; you own neither amp. Run two amp blocks summed to one FRFR, roughly 50:50, tilt toward Bluesbreaker for rhythm body. Goal: amps on the verge of breakup; the TS808 sends them over the edge. Gain stays in <b>crunch</b> territory &mdash; not high-gain.
+</div>
+
+<div class="two-col" style="margin-top:6px;">
+  <div class="panel">
+    <h3><span class="dot inferred" title="worst-of-knobs: inferred"></span>Vox AC30 (Top Boost) <span class="badge m">Helix model</span></h3>
+    <div class="role">Chime platform &middot; ~1964 hired AC30 on the record</div>
+    <table>
+      <tr><td class="k">Drive</td><td class="v"><span class="dot inferred"></span>5 <span class="alt">&asymp;12 o'clock</span></td></tr>
+      <tr><td class="k">Bass</td><td class="v"><span class="dot inferred"></span>5 <span class="alt">&asymp;12 o'clock</span></td></tr>
+      <tr><td class="k">Treble</td><td class="v"><span class="dot inferred"></span>6.5 <span class="alt">&asymp;1&ndash;2 o'clock</span></td></tr>
+      <tr><td class="k">Cut</td><td class="v"><span class="dot inferred"></span>5 <span class="alt">&asymp;12 o'clock</span></td></tr>
+      <tr><td class="k">Cab</td><td class="v"><span class="dot inferred"></span>Blue-Alnico 2x12</td></tr>
+    </table>
+    <div class="legend" style="margin-top:4px;">The chime half. No owned AC30; FRFR also doesn't physically reproduce AC30 speaker behavior.</div>
+  </div>
+
+  <div class="panel">
+    <h3><span class="dot inferred" title="worst-of-knobs: inferred"></span>Marshall Bluesbreaker combo <span class="badge m">Helix model</span></h3>
+    <div class="role">Grind platform &middot; lower gain than a Super Lead</div>
+    <table>
+      <tr><td class="k">Drive</td><td class="v"><span class="dot inferred"></span>5.5 <span class="alt">&asymp;12&ndash;1 o'clock</span></td></tr>
+      <tr><td class="k">Bass</td><td class="v"><span class="dot inferred"></span>5.5 <span class="alt">&asymp;12&ndash;1 o'clock</span></td></tr>
+      <tr><td class="k">Mid</td><td class="v"><span class="dot inferred"></span>6 <span class="alt">&asymp;1 o'clock</span></td></tr>
+      <tr><td class="k">Treble</td><td class="v"><span class="dot inferred"></span>6 <span class="alt">&asymp;1 o'clock</span></td></tr>
+      <tr><td class="k">Presence</td><td class="v"><span class="dot inferred"></span>4 <span class="alt">&asymp;11 o'clock</span></td></tr>
+      <tr><td class="k">Cab</td><td class="v"><span class="dot inferred"></span>Greenback 2x12 / 4x12</td></tr>
+    </table>
+    <div class="legend" style="margin-top:4px;"><b>Do NOT substitute the UAFX Lion '68</b> here &mdash; it's a Super-Lead-Plexi (higher gain than a Bluesbreaker). Use the Helix model.</div>
+  </div>
+</div>
+
+<div class="quote">"All the rhythm parts on <i>Morning Glory</i> were written on the Riviera." &mdash; Noel Gallagher, The Pedal Show. The recorded tone is the AC30 + Marshall combo pair, double-tracked.</div>
+
+<h2>Pedal Settings &mdash; Starting Points</h2>
+<div class="dot-legend">
+  Provenance per knob:
+  <span class="dot verified"></span>verified
+  <span class="dot inferred"></span>inferred
+  <span class="dot assumed"></span>assumed
+  <span class="dot validated"></span>validated (you've dialed and confirmed)
+  &nbsp;&middot;&nbsp; Pedal-name dot = worst-of-knobs across that pedal's settings.
+</div>
+<table style="margin-top:4px;">
+  <tr>
+    <th>Pedal</th><th>Knob</th><th>Setting</th><th>Why</th>
+  </tr>
+  <tr>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>Ibanez TS808 <span class="badge v">match: TS-9</span></td>
+    <td>Drive</td><td class="v"><span class="dot inferred"></span>2.5 <span class="alt">&asymp;9&ndash;10 o'clock</span></td>
+    <td class="note" rowspan="3"><b>The signature move.</b> Low drive / high level = boost, not fuzz. It mid-humps and tightens the lows, shoving the amp's own front end into breakup. Gain comes from the amp being pushed, not from this pedal. (Owned alts: Maxon OD808, King Tone Duellist String-Singer side.)</td>
+  </tr>
+  <tr><td></td><td>Tone</td><td class="v"><span class="dot inferred"></span>6 <span class="alt">&asymp;1 o'clock</span></td></tr>
+  <tr><td></td><td>Level</td><td class="v"><span class="dot inferred"></span>7&ndash;8 <span class="alt">&asymp;2&ndash;3 o'clock</span></td></tr>
+
+  <tr>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>MXR EVH Phase 90 <span class="badge a">sub: Small Stone</span></td>
+    <td>Speed</td><td class="v"><span class="dot inferred"></span>2.5&ndash;3 <span class="alt">&asymp;9&ndash;10 o'clock (slow)</span></td>
+    <td class="note" rowspan="2">Atmospheric passages only ("Champagne Supernova" swirl); bypass for straight rhythm. Script mode (button OUT) for the smoother, less-pronounced voice. EVH 90 is a 4-stage phaser &mdash; correct device class, but not the OTA Small Stone sweep.</td>
+  </tr>
+  <tr><td></td><td>Script switch</td><td class="v"><span class="dot inferred"></span>Script mode (out)</td></tr>
+
+  <tr>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>TC Flashback 2 <span class="badge a">role: Space Echo</span></td>
+    <td>Type</td><td class="v"><span class="dot inferred"></span>Tape</td>
+    <td class="note" rowspan="4">Studio tape echo for the WTSMG ambience, ~450ms. For a tight live slapback instead: Slap mode, Time ~2, FB ~1, Level 3. (DM-era Space Echo is more prominent &mdash; raise feedback to ~5.)</td>
+  </tr>
+  <tr><td></td><td>Time</td><td class="v"><span class="dot inferred"></span>5&ndash;6 <span class="alt">&asymp;12&ndash;1 o'clock (~450ms)</span></td></tr>
+  <tr><td></td><td>Feedback</td><td class="v"><span class="dot inferred"></span>3&ndash;4 <span class="alt">&asymp;10&ndash;11 o'clock</span></td></tr>
+  <tr><td></td><td>Level</td><td class="v"><span class="dot inferred"></span>3 <span class="alt">&asymp;10 o'clock</span></td></tr>
+
+  <tr>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>TC Hall of Fame 2</td>
+    <td>Type</td><td class="v"><span class="dot inferred"></span>Spring / Room</td>
+    <td class="note" rowspan="4">Light glue, not a wash. The recorded sound leans on amp/room and the tape echo; reverb only fills in.</td>
+  </tr>
+  <tr><td></td><td>Decay</td><td class="v"><span class="dot inferred"></span>3 <span class="alt">&asymp;10 o'clock</span></td></tr>
+  <tr><td></td><td>Tone</td><td class="v"><span class="dot inferred"></span>5 <span class="alt">&asymp;12 o'clock</span></td></tr>
+  <tr><td></td><td>Level</td><td class="v"><span class="dot inferred"></span>3 <span class="alt">&asymp;10 o'clock</span></td></tr>
+
+  <tr>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>PRS Mark Tremonti <span class="badge a">sub: Riviera/Sheraton</span></td>
+    <td>Pickup</td><td class="v"><span class="dot inferred"></span>Bridge (rhythm/lead), Neck (clean/atmos)</td>
+    <td class="note" rowspan="3"><b>Biggest un-owned variable.</b> Canonical guitar is a semi-hollow HH (Epiphone Riviera/Sheraton); the Tremonti is a solidbody HH. You can't dial in the semi-hollow looseness &mdash; but ease guitar treble and keep amp gain low so it doesn't sound tight and modern.</td>
+  </tr>
+  <tr><td></td><td>Volume</td><td class="v"><span class="dot inferred"></span>10 <span class="alt">&asymp;5 o'clock</span></td></tr>
+  <tr><td></td><td>Tone</td><td class="v"><span class="dot inferred"></span>~7 <span class="alt">&asymp;2 o'clock</span></td></tr>
+</table>
+
+<h2>Source-Confirmed vs. Inferred</h2>
+<div class="two-col">
+  <div>
+    <h3 style="margin-top:0;">Source-confirmed (the rig) <span class="badge v">v</span></h3>
+    <ul class="tight">
+      <li>WTSMG rhythm parts written/recorded on an <b>Epiphone Riviera</b>; Sheraton the other iconic semi-hollow &mdash; The Pedal Show / Boost Guitar Pedals / Mixdown.</li>
+      <li>Core amps = <b>Vox AC30 (~1964) + Marshall Bluesbreaker combo</b> &mdash; Boost Guitar Pedals, Andertons.</li>
+      <li><b>Ibanez TS-9 Tube Screamer</b> used almost exclusively through the '90s to push the amp front end &mdash; Mixdown, Andertons.</li>
+      <li>Modulation movement = <b>EHX Small Stone phaser</b> ("Champagne Supernova") &mdash; Guitar Chalk.</li>
+      <li>Delay = <b>Roland Space Echo</b> (studio) / Boss DD-3 (live slapback) &mdash; Mixdown.</li>
+    </ul>
+  </div>
+  <div>
+    <h3 style="margin-top:0;">Inferred / substituted <span class="badge a">a</span></h3>
+    <ul class="tight">
+      <li><b>All knob positions</b> are starting points &mdash; Noel hasn't published per-song settings. Dial by ear from the source out.</li>
+      <li>AC30 &amp; Bluesbreaker are <b>Helix models</b> &mdash; neither owned; FRFR &ne; real speaker in a room.</li>
+      <li>PRS Tremonti for the semi-hollow &mdash; solidbody fallback; airy semi-hollow character not reproducible.</li>
+      <li>EVH Phase 90 for the Small Stone &mdash; right device class, different sweep.</li>
+      <li>Flashback Tape for the Space Echo &mdash; flavor-direct, not the same machine.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="feedback">
+  <h2>Test Notes &mdash; Bring Back for the Recipe</h2>
+  <div class="checklist">
+    <label>&#9633; AC30:BB blend felt right at 50:50 / wanted more AC30 / more Bluesbreaker: __________</label>
+    <label>&#9633; TS808 @ Drive 2.5 / Level 7&ndash;8 pushed the amps or just got loud: __________</label>
+    <label>&#9633; Gain landed in crunch / went too saturated (= DM era, back off) / too clean: __________</label>
+    <label>&#9633; Phase 90 (script) read as the "Champagne Supernova" swirl? Y / N &mdash; speed: __________</label>
+    <label>&#9633; Tape echo time/feedback: kept / longer / shorter / more repeats: __________</label>
+    <label>&#9633; Tremonti (bridge, tone ~7) vs the semi-hollow target &mdash; too tight? eased treble to: __________</label>
+    <label>&#9633; Doubled the rhythm L/R for the wall? Y / N &mdash; how many tracks: __________</label>
+    <label>&#9633; Tried the Definitely Maybe delta (Plexi-Drive + more delay + LP)? notes: __________</label>
+  </div>
+  <h3 style="margin-top:6px;">Free notes</h3>
+  <div class="lines">
+    <div></div><div></div><div></div><div></div><div></div><div></div>
+  </div>
+</div>
+
+<div class="footer">
+  Sources: Boost Guitar Pedals &mdash; <i>Noel Gallagher's Gear on (What's the Story) Morning Glory?</i> &middot; Mixdown &mdash; <i>Gear Rundown: Noel Gallagher, the Oasis years</i> &middot; Ground Guitar &mdash; <i>Noel Gallagher Gear</i> &middot; Andertons &mdash; <i>How To Sound Like Oasis</i> &middot; Guitar Chalk &mdash; <i>Oasis (Noel Gallagher) Amp Settings</i>.
+  Notation fidelity: pedal values numeric (these are numeric-knob pedals); clock-face shown as an &asymp; cross-check only &mdash; authored value primary, converted approximation prefixed by &asymp;. Anchor era = Morning Glory (1995); Definitely Maybe (1994) is a separate recipe, not averaged in. Companion to TONE_RECIPES['oasis-dont-look-back-in-anger-1995'].
+</div>
+
+</body>
+</html>

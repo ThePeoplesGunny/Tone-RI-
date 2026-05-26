@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Oasis — "Be Here Now" Rhythm — Tone Card</title>
+<style>
+  @page { size: Letter; margin: 0.5in 0.55in; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #111;
+    font-size: 10.25pt;
+    line-height: 1.32;
+  }
+  h1 { font-size: 16pt; margin: 0 0 2px; letter-spacing: 0.2px; }
+  h2 {
+    font-size: 10.5pt;
+    margin: 10px 0 4px;
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+    border-bottom: 1.2px solid #111;
+    padding-bottom: 1px;
+  }
+  h3 { font-size: 10.25pt; margin: 6px 0 3px; }
+  .sub { color: #555; font-size: 9pt; margin-top: 1px; }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: 8.5pt;
+    color: #444;
+    margin: 4px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #bbb;
+  }
+  .meta b { color: #111; font-weight: 600; }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 9.5pt;
+  }
+  th, td {
+    border: 1px solid #aaa;
+    padding: 3px 6px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #eee;
+    font-weight: 600;
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  td.k { width: 22%; font-weight: 600; }
+  td.v { width: 28%; font-family: "Consolas", "Courier New", monospace; }
+  td.note { color: #444; font-size: 9pt; }
+  /* Section map — dominant element above the fold */
+  .section-map { font-size: 9pt; }
+  .section-map th { font-size: 8.5pt; }
+  .section-map td { padding: 4px 6px; }
+  .section-map td.section-name { font-weight: 700; width: 18%; }
+  .section-map td.cell-mono { font-family: "Consolas", "Courier New", monospace; font-size: 9pt; }
+  .section-map td.empty { color: #999; text-align: center; }
+  .section-map .always-on-row td { background: #f7f7f0; font-style: italic; color: #555; }
+  /* Single-line signal flow strip — replaces the visual chain illustration */
+  .flow {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 9.25pt;
+    background: #f4f4ee;
+    border: 1px solid #aaa;
+    padding: 5px 8px;
+    margin: 4px 0 0;
+    line-height: 1.5;
+    word-spacing: 1px;
+  }
+  .flow .arrow { color: #888; padding: 0 2px; }
+  .flow .group { white-space: nowrap; }
+  .flow .side { color: #444; font-size: 8.5pt; }
+  .flow .aby { color: #b60; font-weight: 600; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .panel {
+    border: 1.2px solid #111;
+    padding: 6px 8px 7px;
+    break-inside: avoid;
+  }
+  .panel h3 { margin: 0 0 4px; }
+  .panel .role {
+    font-size: 8.5pt;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 4px;
+  }
+  /* Per-knob provenance dot — worst-of aggregation per pedal in the Pedal column */
+  .dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: 1px;
+    border: 1px solid transparent;
+  }
+  .dot.assumed   { background: #b8b8b8; border-color: #888; }
+  .dot.inferred  { background: #e7a14a; border-color: #b66a00; }
+  .dot.verified  { background: #2a7a2a; border-color: #1a4a1a; }
+  .dot.validated { background: #2a7a2a; border-color: #1a4a1a; box-shadow: 0 0 0 1.5px #fff inset; }
+  /* Alternate-notation cross-check: authored notation primary, converted as ≈ secondary */
+  .alt {
+    color: #666;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.5pt;
+    margin-left: 4px;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 7.5pt;
+    padding: 1px 5px;
+    border-radius: 8px;
+    border: 1px solid #888;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 4px;
+    vertical-align: 1px;
+  }
+  .badge.v { border-color: #060; color: #060; }
+  .badge.a { border-color: #b60; color: #b60; }
+  .badge.m { border-color: #06c; color: #06c; }  /* model / amp-in-a-box */
+  .quote {
+    font-style: italic;
+    border-left: 2px solid #888;
+    padding: 1px 0 1px 8px;
+    margin: 4px 0;
+    color: #333;
+    font-size: 9.5pt;
+  }
+  .feedback {
+    border: 1.2px dashed #111;
+    padding: 6px 8px;
+    margin-top: 8px;
+    break-inside: avoid;
+  }
+  .feedback h2 { border-bottom: none; margin: 0 0 3px; }
+  .lines { line-height: 1.85; color: #aaa; }
+  .lines div { border-bottom: 1px solid #bbb; height: 16px; }
+  .checklist { font-size: 9.25pt; }
+  .checklist label { display: block; margin: 2px 0; }
+  .footer {
+    margin-top: 8px;
+    border-top: 1px solid #bbb;
+    padding-top: 4px;
+    font-size: 8.25pt;
+    color: #555;
+  }
+  ul.tight { margin: 2px 0 4px 16px; padding: 0; }
+  ul.tight li { margin: 1px 0; }
+  .legend { font-size: 8.5pt; color: #555; margin: 4px 0 0; }
+  .dot-legend { font-size: 8.25pt; color: #555; margin: 4px 0 0; }
+  .dot-legend .dot { margin-right: 3px; margin-left: 8px; }
+  .dot-legend .dot:first-child { margin-left: 0; }
+  .wall-num { font-size: 13pt; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<h1>Oasis &mdash; "Be Here Now" Rhythm</h1>
+<div class="sub"><i>Be Here Now</i> (1997, Creation). The Marshall-stack wall-of-overdubs record. Standard tuning.</div>
+
+<div class="meta">
+  <span><b>Era rig:</b> Marshall JCM900 stacks (+ Matchless Superchief 120, JTM45/Bluesbreaker; Vox Conqueror in studio)</span>
+  <span><b>Owned core:</b> UAFX Lion '68 pushed hard &rarr; FRFR</span>
+  <span><b>Boost:</b> Maxon OD808 (tighten + push)</span>
+  <span><b>Width:</b> PS-6 detune + MXR chorus</span>
+  <span><b>Pick:</b> heavy, hard strum</span>
+</div>
+
+<h2>Section Map &mdash; What's Engaged When</h2>
+<div class="legend">The biggest decision on this record isn't a knob &mdash; it's <b>how many times you track the part.</b> Read across, then read "The Wall" panel below.</div>
+<table class="section-map" style="margin-top:4px;">
+  <tr>
+    <th>Section</th>
+    <th>Pickup</th>
+    <th>Amp</th>
+    <th>Boost</th>
+    <th>Width</th>
+    <th>Time</th>
+    <th>Notes</th>
+  </tr>
+  <tr class="always-on-row">
+    <td class="section-name">Always on</td>
+    <td>&mdash;</td>
+    <td class="cell-mono">Lion '68 (pushed)</td>
+    <td class="empty">&mdash;</td>
+    <td class="empty">&mdash;</td>
+    <td class="cell-mono">HoF plate, light</td>
+    <td>CS-3 compression always on to even the layer. Amp doing the work, gain near max.</td>
+  </tr>
+  <tr>
+    <td class="section-name">Cleaner intro / bridge</td>
+    <td class="cell-mono">Neck</td>
+    <td class="cell-mono">Lion '68</td>
+    <td class="cell-mono">OD808 OFF</td>
+    <td class="cell-mono">Chorus light</td>
+    <td class="cell-mono">HoF plate</td>
+    <td>Let the amp sit just below the wall before the band crashes in.</td>
+  </tr>
+  <tr>
+    <td class="section-name">Main rhythm wall</td>
+    <td class="cell-mono">Bridge</td>
+    <td class="cell-mono">Lion '68 (pushed)</td>
+    <td class="cell-mono">OD808 IN</td>
+    <td class="cell-mono">PS-6 detune + chorus</td>
+    <td class="cell-mono">HoF plate</td>
+    <td><b>Double/triple-track this</b> and hard-pan L/R. The width tools glue the stack.</td>
+  </tr>
+  <tr>
+    <td class="section-name">Lead / solo</td>
+    <td class="cell-mono">Bridge</td>
+    <td class="cell-mono">Lion '68 (pushed)</td>
+    <td class="cell-mono">OD808 IN (harder)</td>
+    <td class="cell-mono">chorus only</td>
+    <td class="cell-mono">HoF + slap</td>
+    <td>OD808 pushes the Lion harder for sustain; pull detune back so the line stays focused.</td>
+  </tr>
+</table>
+
+<div class="flow">
+  <span class="group">PRS Tremonti <span class="side">[bridge / neck]</span></span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">PolyTune 3</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">Boss CS-3</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">Maxon OD808 <span class="side">[tighten + push]</span></span>
+  <span class="arrow">&rarr;</span>
+  <span class="aby">Lion '68</span>
+  <span class="side">[pushed &rarr; JCM900 chase]</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">PS-6 detune</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">Flashback 2 <span class="side">slap</span></span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">MXR Chorus</span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">HoF 2 <span class="side">plate</span></span>
+  <span class="arrow">&rarr;</span>
+  <span class="group">FRFR</span>
+</div>
+<div class="legend">Engaged gear only. The old Wampler Plexi-Drive stage was <b>cut</b> &mdash; it was doing the amp's job (redundant with the Lion '68). No AC30/Ruby '63 here: this is a Marshall record, not a Vox one. No Helix per spec.</div>
+
+<h2>Core Voice + The Wall</h2>
+<div class="two-col" style="margin-top:6px;">
+  <div class="panel">
+    <h3><span class="dot inferred" title="worst-of-knobs: inferred"></span>UAFX Lion '68 <span class="badge m">amp-in-a-box</span></h3>
+    <div class="role">Marshall stack &middot; pushed hard to chase JCM900</div>
+    <table>
+      <tr><td class="k">Mode</td><td class="v"><span class="dot inferred"></span>AMP</td></tr>
+      <tr><td class="k">Volume</td><td class="v"><span class="dot inferred"></span>8 <span class="alt">&asymp;3 o'clock</span></td></tr>
+      <tr><td class="k">Gain</td><td class="v"><span class="dot inferred"></span>8.5 <span class="alt">&asymp;3&ndash;4 o'clock</span></td></tr>
+      <tr><td class="k">Bass</td><td class="v"><span class="dot inferred"></span>5 <span class="alt">&asymp;12 o'clock</span></td></tr>
+      <tr><td class="k">Middle</td><td class="v"><span class="dot inferred"></span>5.5 <span class="alt">&asymp;12&ndash;1 o'clock</span></td></tr>
+      <tr><td class="k">Treble</td><td class="v"><span class="dot inferred"></span>6.5 <span class="alt">&asymp;1&ndash;2 o'clock</span></td></tr>
+      <tr><td class="k">Presence</td><td class="v"><span class="dot inferred"></span>5.5 <span class="alt">&asymp;12&ndash;1 o'clock</span></td></tr>
+      <tr><td class="k">Cab</td><td class="v"><span class="dot inferred"></span>Greenback 4x12</td></tr>
+    </table>
+    <div class="legend" style="margin-top:4px;"><b>JCM900 is a flagged gap.</b> The Lion '68 is a 1968 Super Lead Plexi &mdash; same Marshall family but lower-gain/looser than the album's JCM900. Push Volume/Gain higher than a vintage-Plexi setting to chase it. Anti 1992 won't help (it's a Peavey 5150 voice).</div>
+  </div>
+
+  <div class="panel">
+    <h3>The Wall &mdash; Layering <span class="badge a">the real "tone"</span></h3>
+    <div class="role">Overdub density &middot; the defining technique</div>
+    <table>
+      <tr><td class="k">Track count</td><td class="v"><span class="wall-num">2&ndash;4&times;</span> same part</td></tr>
+      <tr><td class="k">Pan</td><td class="v">hard L / R <span class="alt">(stack outward)</span></td></tr>
+      <tr><td class="k">Take discipline</td><td class="v">re-play, don't copy/paste</td></tr>
+      <tr><td class="k">Glue</td><td class="v">PS-6 detune + slow chorus</td></tr>
+    </table>
+    <div class="legend" style="margin-top:4px;">Be Here Now is <b>overdub density first, tone second.</b> A single pass <i>will</i> sound thinner than the record &mdash; that's a track-count problem, not a tone problem. <b>Do not fix thinness by adding gain.</b> Re-perform each layer (slightly different feel per take) rather than duplicating one track &mdash; the tiny timing/pitch differences are what make the wall move.</div>
+  </div>
+</div>
+
+<div class="quote">"There were so many guitars on it&hellip; it just became this monolithic, gigantic-sounding thing." &mdash; the Be Here Now overdub approach, paraphrased. The mass is the point.</div>
+
+<h2>Pedal Settings &mdash; Starting Points</h2>
+<div class="dot-legend">
+  Provenance per knob:
+  <span class="dot verified"></span>verified
+  <span class="dot inferred"></span>inferred
+  <span class="dot assumed"></span>assumed
+  <span class="dot validated"></span>validated (you've dialed and confirmed)
+  &nbsp;&middot;&nbsp; Pedal-name dot = worst-of-knobs across that pedal's settings.
+</div>
+<table style="margin-top:4px;">
+  <tr>
+    <th>Pedal</th><th>Knob</th><th>Setting</th><th>Why</th>
+  </tr>
+  <tr>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>Boss CS-3</td>
+    <td>Sustain</td><td class="v"><span class="dot inferred"></span>11 o'clock</td>
+    <td class="note" rowspan="4">Light compression, always on, to even out the overdub layer so the stacked takes sit together. Not a squash &mdash; just glue.</td>
+  </tr>
+  <tr><td></td><td>Attack</td><td class="v"><span class="dot inferred"></span>min (full CCW)</td></tr>
+  <tr><td></td><td>Tone</td><td class="v"><span class="dot inferred"></span>12 o'clock</td></tr>
+  <tr><td></td><td>Level</td><td class="v"><span class="dot inferred"></span>unity</td></tr>
+
+  <tr>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>Maxon OD808 <span class="badge v">match: TS</span></td>
+    <td>Drive</td><td class="v"><span class="dot inferred"></span>2 <span class="alt">&asymp;9 o'clock</span></td>
+    <td class="note" rowspan="3"><b>Boost, not drive.</b> Low drive / high level = a TS mid-hump that tightens the lows and shoves the Lion '68 into JCM900-style saturation. Gain comes from the amp, not this pedal. (Owned alt: Ibanez TS808.)</td>
+  </tr>
+  <tr><td></td><td>Tone</td><td class="v"><span class="dot inferred"></span>6 <span class="alt">&asymp;1 o'clock</span></td></tr>
+  <tr><td></td><td>Level</td><td class="v"><span class="dot inferred"></span>8 <span class="alt">&asymp;3 o'clock</span></td></tr>
+
+  <tr>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>Boss PS-6 Harmonist</td>
+    <td>Mode</td><td class="v"><span class="dot inferred"></span>Detune</td>
+    <td class="note" rowspan="3">Stereo width across the overdub stack. Subtle &mdash; you want spread, not a chorus-y warble. Pull it back for leads.</td>
+  </tr>
+  <tr><td></td><td>Detune</td><td class="v"><span class="dot inferred"></span>&plusmn;7 cents</td></tr>
+  <tr><td></td><td>Blend</td><td class="v"><span class="dot inferred"></span>dry 70 / wet 30</td></tr>
+
+  <tr>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>MXR Analog Chorus</td>
+    <td>Rate</td><td class="v"><span class="dot inferred"></span>3 <span class="alt">&asymp;10 o'clock (slow)</span></td>
+    <td class="note" rowspan="3">Slow, shallow chorus to glue the doubled layers &mdash; not an audible swirl. If you can clearly "hear the chorus," back Rate and Depth down.</td>
+  </tr>
+  <tr><td></td><td>Depth</td><td class="v"><span class="dot inferred"></span>3 <span class="alt">&asymp;10 o'clock (shallow)</span></td></tr>
+  <tr><td></td><td>Level</td><td class="v"><span class="dot inferred"></span>low <span class="alt">&asymp;9&ndash;10 o'clock</span></td></tr>
+
+  <tr>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>TC Flashback 2</td>
+    <td>Type</td><td class="v"><span class="dot inferred"></span>2290 (clean digital)</td>
+    <td class="note" rowspan="4">Tight slapback for depth, not an audible echo. Single repeat (feedback 0). Mostly for leads / the bigger rhythm sections.</td>
+  </tr>
+  <tr><td></td><td>Delay time</td><td class="v"><span class="dot inferred"></span>35 ms</td></tr>
+  <tr><td></td><td>Feedback</td><td class="v"><span class="dot inferred"></span>0 (single repeat)</td></tr>
+  <tr><td></td><td>Level</td><td class="v"><span class="dot inferred"></span>~28% <span class="alt">&asymp;9&ndash;10 o'clock</span></td></tr>
+
+  <tr>
+    <td class="k"><span class="dot inferred" title="worst-of-knobs: inferred"></span>TC Hall of Fame 2</td>
+    <td>Type</td><td class="v"><span class="dot inferred"></span>Plate</td>
+    <td class="note" rowspan="3">Light plate for size, not a wash. The wall already fills the space; reverb just rounds the edges.</td>
+  </tr>
+  <tr><td></td><td>Decay</td><td class="v"><span class="dot inferred"></span>1.4 s</td></tr>
+  <tr><td></td><td>Mix</td><td class="v"><span class="dot inferred"></span>~12% (light) <span class="alt">&asymp;9 o'clock</span></td></tr>
+</table>
+
+<h2>Source-Confirmed vs. Inferred</h2>
+<div class="two-col">
+  <div>
+    <h3 style="margin-top:0;">Source-confirmed (the rig) <span class="badge v">v</span></h3>
+    <ul class="tight">
+      <li><b>Marshall JCM900</b> was the primary era/live amp; JTM45/Bluesbreaker + <b>Matchless Superchief 120</b> (ordered 1997) in the stack &mdash; Ground Guitar.</li>
+      <li>A <b>Vox Conqueror</b> was prominent as the main studio amp on the album &mdash; Ground Guitar.</li>
+      <li>Guitars: Gibson Les Paul + Epiphone <b>ES-355 / Riviera</b> humbuckers &mdash; Ground Guitar.</li>
+      <li>Marshall stacks used across Definitely Maybe / Morning Glory / Be Here Now &mdash; Oasis Recording Info (Noel quote).</li>
+      <li>UAFX <b>Anti 1992 = Peavey 5150</b> (not Marshall) &mdash; uaudio.com; that's why it's ruled out for this voice.</li>
+    </ul>
+  </div>
+  <div>
+    <h3 style="margin-top:0;">Inferred / substituted <span class="badge a">a</span></h3>
+    <ul class="tight">
+      <li><b>All knob positions</b> are starting points &mdash; no published per-song settings. Dial by ear.</li>
+      <li><b>JCM900 &rarr; Lion '68</b>: same Marshall lineage, lower gain. Closest owned amp-in-a-box; not a 1:1 voice.</li>
+      <li><b>Vox Conqueror</b>: no owned Vox voice &mdash; Greenback cab + presence is the nearest approximation (secondary gap).</li>
+      <li>PRS Tremonti for the LP / semi-hollow humbucker sources &mdash; solidbody fallback.</li>
+      <li>OD808 &amp; chorus values were realigned to their stated intent (the prototype had inverted numbers).</li>
+    </ul>
+  </div>
+</div>
+
+<div class="feedback">
+  <h2>Test Notes &mdash; Bring Back for the Recipe</h2>
+  <div class="checklist">
+    <label>&#9633; Lion '68 @ Vol 8 / Gain 8.5 got into JCM900 territory or wanted more / less: __________</label>
+    <label>&#9633; OD808 as a boost (Drive 2 / Level 8) tightened &amp; pushed, or got muddy: __________</label>
+    <label>&#9633; Did a single pass sound thin? &mdash; how many tracks before it became "the wall": __________</label>
+    <label>&#9633; Pan width (hard L/R) sounded huge / too wide / phasey: __________</label>
+    <label>&#9633; PS-6 detune (&plusmn;7c, 70/30): glue / too warbly / not enough spread: __________</label>
+    <label>&#9633; Chorus (Rate 3 / Depth 3): inaudible glue as intended, or still hearable: __________</label>
+    <label>&#9633; Missed the Vox Conqueror color? &mdash; would a real AC30 voice (Ruby '63) help here: Y / N</label>
+    <label>&#9633; Re-played each layer vs. copied a take &mdash; which sat better: __________</label>
+  </div>
+  <h3 style="margin-top:6px;">Free notes</h3>
+  <div class="lines">
+    <div></div><div></div><div></div><div></div><div></div><div></div>
+  </div>
+</div>
+
+<div class="footer">
+  Sources: Ground Guitar &mdash; <i>Noel Gallagher Gear</i> (JCM900, Matchless Superchief 120, Vox Conqueror, ES-355/Riviera) &middot; Oasis Recording Info (Marshall stacks, Noel quote) &middot; MusicStrive &mdash; <i>Oasis guitar tone</i> &middot; uaudio.com (Anti 1992 = Peavey 5150).
+  Notation fidelity: pedal/amp values numeric (numeric-knob gear); clock-face shown as an &asymp; cross-check only &mdash; authored value primary. CS-3 and reverb mix authored clock-face per their unmarked knobs. Companion to TONE_RECIPES['be-here-now-rhythm'] (sharpened 2026-05-25). All settings inferred starting points; rig facts source-confirmed.
+</div>
+
+</body>
+</html>

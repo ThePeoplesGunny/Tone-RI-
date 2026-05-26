@@ -5093,19 +5093,86 @@ const PRESETS = [
 
 // ── Tone recipes — abstract stage targets + concrete pedal realization ──
 const TONE_RECIPES = {
+  // Sharpened 2026-05-25 from the pre-research prototype (Tone Engineer agent + web research).
+  // Be Here Now is the user's favorite Oasis album. Core change: explicit Marshall amp voice
+  // (Lion '68 pushed hard) replaces the implicit-amp + Plexi-Drive stage; JCM900 flagged as an
+  // honest gap. Extra fields (era/sourceRecording/substitutionAudit/flaggedGaps/sources) are
+  // additive and forward-compatible with the Phase 4 v1 schema. Settings numeric per §3.4.
   'be-here-now-rhythm': {
     name: 'Oasis "Be Here Now" Rhythm',
-    source: 'humbucker bridge (PRS Tremonti / Les Paul)',
+    source: 'humbucker bridge — PRS Tremonti (bridge HB) is the owned match for Noel\'s ES-355 / Riviera / Les Paul humbucker sources',
+    era: 'Be Here Now — 1997',
+    sourceRecording: 'Be Here Now (1997, Creation). Marshall-stack wall of overdubs; JCM900 the primary era amp, Vox Conqueror prominent in the studio.',
     stages: [
-      { fn:'compression',     target:'3-4dB GR, fast attack',                    pedal:'Boss CS-3',           settings:'Sustain 11, Attack min, Lvl unity' },
-      { fn:'front-end-boost', target:'TS-style mid-hump, low drive, high level', pedal:'Maxon OD808',         settings:'Drive 8, Tone 12, Level 2' },
-      { fn:'drive',           target:'JTM45/Plexi crunch, ~70% gain',            pedal:'Wampler Plexi-Drive', settings:'Gain 2, Tone 2-3, Bass OFF' },
-      { fn:'pitch-variance',  target:'±7c detune, ~30% wet',                     pedal:'Boss PS-6 Detune',    settings:'±7c, dry 70 / wet 30' },
-      { fn:'time-variance',   target:'30-50ms slap, single repeat, ~30% wet',    pedal:'TC Flashback',        settings:'2290, 35ms, FB 0, Mix 28' },
-      { fn:'modulation-seam', target:'slow chorus, low depth',                   pedal:'MXR Analog Chorus',   settings:'Rate 9, Depth 8, Lvl low' },
-      { fn:'space',           target:'plate reverb, 1.4s, ~12% wet',             pedal:'TC Hall of Fame 2',   settings:'Plate, 1.4s, Mix 12' }
+      { fn:'compression',     target:'3-4dB GR, fast attack, even out the overdub layer',                                          pedal:'Boss CS-3',           settings:'Sustain 11, Attack min, Tone 12, Level unity' },
+      { fn:'front-end-boost', target:'TS mid-hump to tighten lows + push the amp into JCM900-style saturation (boost, not drive)',  pedal:'Maxon OD808',         settings:'Drive 2, Tone 6, Level 8' },
+      { fn:'amp',             target:'Marshall stack wall — 1968 Super Lead Plexi pushed hard as the closest owned voice to the album JCM900', pedal:'UAFX Lion \'68', settings:'AMP mode, Volume 8, Gain 8.5, Bass 5, Middle 5.5, Treble 6.5, Presence 5.5; Greenback 4x12 cab' },
+      { fn:'pitch-variance',  target:'±7c detune for stereo width across the overdub stack',                                        pedal:'Boss PS-6 Detune',    settings:'±7c, dry 70 / wet 30' },
+      { fn:'time-variance',   target:'30-50ms slap, single repeat, depth not echo',                                                 pedal:'TC Flashback 2',      settings:'2290 mode, 35ms, FB 0, Mix 28' },
+      { fn:'modulation-seam', target:'slow shallow chorus to glue the doubled layers',                                              pedal:'MXR Analog Chorus',   settings:'Rate 3, Depth 3, Level low' },
+      { fn:'space',           target:'plate reverb, 1.4s, light',                                                                   pedal:'TC Hall of Fame 2',   settings:'Plate, Decay 1.4s, Tone 12, Mix 12' }
     ],
-    notes: 'Track rhythm 2-4x doubled hard L/R for the wall-of-guitars sound. Single-pass sounds thinner than the album by design — track-count problem, not a tone problem.'
+    substitutionAudit: [
+      { artistGear:'Marshall JCM900 (primary Be Here Now stack)',          userGearId:'uafx-lion-68',                  method:'amp-in-a-box-emulation', quality:'closest-analog — Lion \'68 is a 1968 Super Lead Plexi: same Marshall lineage, lower-gain/looser/earlier-voiced than a JCM900. Push Volume/Gain high + boost the front (OD808). Not a 1:1 voice.' },
+      { artistGear:'Marshall JTM45 / Bluesbreaker',                        userGearId:'uafx-lion-68',                  method:'amp-in-a-box-emulation', quality:'closest-analog — same Plexi-lineage voice; secondary color folded into the single amp stage.' },
+      { artistGear:'Matchless Superchief 120 (boutique EL34 live stack)',  userGearId:'uafx-lion-68',                  method:'tonal-adjacent',         quality:'rough — no owned boutique-EL34 amp-in-a-box; Plexi stands in for the aggregate stack.' },
+      { artistGear:'Vox Conqueror / Defiant (prominent studio amp)',       userGearId:'uafx-lion-68',                  method:'tonal-adjacent',         quality:'rough — no owned Vox/AC30 voice; Lion \'68 Greenback cab + presence is nearest. Real gap.' },
+      { artistGear:'TS-style front boost (era-typical amp-pusher)',        userGearId:'maxon-od808',                   method:'circuit-philosophy',     quality:'direct — Maxon OD808 is an original-circuit Tube Screamer; exact low-drive/high-level boost role.' },
+      { artistGear:'studio stereo width / doubling (overdub stack + ADT)', userGearId:'boss-ps-6 + mxr-analog-chorus', method:'role-fill',              quality:'good — detune + slow chorus reproduce the wide, glued, over-produced image; width is research-supported, kept (not clutter).' }
+    ],
+    flaggedGaps: [
+      { role:'jcm900-marshall-high-gain', disposition:'flagged-gap', rationale:'PRIMARY — the album\'s defining dirty Marshall voice. Closest owned = Lion \'68 (Super Lead Plexi, lower-gain/looser) pushed hard + OD808 boost. No owned hotter-Marshall (JCM800/900/2000). Anti 1992 does NOT fill it (models a Peavey 5150 — confirmed uaudio.com — American 6L6 high-gain, wrong lineage); EVH 5150 / Mesa Dual Rec owned but also wrong voice.' },
+      { role:'vox-ac30-top-boost', disposition:'flagged-gap', rationale:'SECONDARY — Vox Conqueror was prominent as the studio amp. No owned Vox/EL84 chime voice; Lion \'68 Greenback cab + presence 5.5 is the nearest owned approximation.' }
+    ],
+    sources: [
+      { url:'https://www.groundguitar.com/noel-gallagher-gear/', cited:'JCM900 primary era amp; JTM45/Bluesbreaker; ES-355/Riviera/\'97 LP; Vox Conqueror as main studio amp on the album' },
+      { url:'https://www.groundguitar.com/noel-gallagher-gear/noel-gallaghers-matchless-superchief-120/', cited:'Matchless Superchief 120 ordered 1997' },
+      { url:'http://www.oasis-recordinginfo.co.uk/?page_id=673', cited:'Marshall stacks across DM/MG/BHN (Noel quote)' },
+      { url:'https://musicstrive.com/oasis-guitar-tone/', cited:'Marshall-stack approach overview' },
+      { url:'https://www.uaudio.com/products/anti-1992-high-gain-amp', cited:'UAFX Anti 1992 models a Peavey 5150 — rules it out as a JCM900 stand-in' }
+    ],
+    notes: 'The Be Here Now sound is overdub DENSITY first, tone second: track this rhythm 2-4x and pan hard L/R for the wall of guitars. A single pass WILL sound thinner than the record — that is a track-count problem, not a tone problem; do not fix it by adding gain. Drive originates in the Lion \'68 amp voice (Marshall stack), NOT in a drive pedal — the OD808 only tightens and pushes the front end (the old Wampler Plexi-Drive stage was cut as redundant with the amp). JCM900 is a flagged gap: Lion \'68 is a Plexi — lower-gain and looser — so push Volume/Gain higher than a vintage-Plexi recipe would. Studio note: a Vox Conqueror was prominent on the record; no owned Vox voice — Greenback cab + presence 5.5 is the nearest approximation. NO-Helix per spec. Sharpened 2026-05-25 from the pre-research prototype; settings INFERRED starting points, rig facts source-confirmed (sources[]).'
+  },
+
+  // Morning Glory-era Noel. Source-confirmed 2026-05-25 (Tone Engineer agent + web research; supersedes
+  // the LP/Super-Lead/Plexi-Drive/chorus first-pass framing, recorded as contested→resolved per P14).
+  // Distinct era from 'be-here-now-rhythm' (1997) — do not average. Authored in the live prototype shape;
+  // extra fields (era/sourceRecording/substitutionAudit/sources/dmEraDelta) are additive and forward-compatible
+  // with the Phase 4 v1 schema migration (GEAR_TAB_DESIGN §3.2). Settings are numeric per §3.4 notation fidelity.
+  'oasis-dont-look-back-in-anger-1995': {
+    name: 'Oasis "Don\'t Look Back in Anger" (Morning Glory era)',
+    source: 'humbucker semi-hollow (Epiphone Riviera/Sheraton) → PRS Tremonti bridge HB, tone ~7 (FALLBACK — owned is a solidbody HH; no semi-hollow in rig)',
+    era: '(What\'s the Story) Morning Glory? — 1995',
+    sourceRecording: 'WTSMG (1995, Creation). Anchor songs: "Don\'t Look Back in Anger", "Champagne Supernova", "Wonderwall" (electric layers).',
+    stages: [
+      { fn:'front-end-boost', target:'TS9 mid-hump pushing the amp front end — the signature; gain comes from the amp being pushed, not from the pedal', pedal:'Ibanez TS808',                   settings:'Drive 2.5, Tone 6, Level 7-8',                                  prov:'inferred · device DIRECT (tube-screamer role)' },
+      { fn:'modulation',      target:'EHX Small Stone phaser swirl ("Champagne Supernova"); engage on atmospheric passages, bypass for straight rhythm', pedal:'MXR EVH Phase 90',           settings:'Script mode, Speed 2.5-3',                                      prov:'inferred · device-class direct (phaser); EVH 90 ≠ Small Stone voice' },
+      { fn:'amp-A-chime',     target:'Vox AC30 Top Boost — the chime half of the WTSMG pair',                          pedal:'Helix AC30 model → FRFR',                                          settings:'Drive 5, Bass 5, Treble 6.5, Cut 5; Blue-Alnico 2x12 cab',       prov:'inferred · amp-in-a-box (helix-fallback; no owned AC30)' },
+      { fn:'amp-B-grind',     target:'Marshall Bluesbreaker combo — the grind half; lower gain than a Super Lead (do NOT sub the Lion \'68)', pedal:'Helix Bluesbreaker model → FRFR',                  settings:'Drive 5.5, Bass 5.5, Mid 6, Treble 6, Presence 4; ~50:50 blend w/ A', prov:'inferred · amp-in-a-box (helix-fallback; no owned Bluesbreaker)' },
+      { fn:'time-variance',   target:'Roland Space Echo studio tape echo, ~450ms',                                    pedal:'TC Flashback 2',                                                   settings:'Tape mode, Time 5-6, Feedback 3-4, Level 3',                     prov:'inferred · flavor direct (tape-delay-flavor)' },
+      { fn:'space',           target:'light spring/room glue, not a wash',                                            pedal:'TC Hall of Fame 2',                                                settings:'Spring/Room, Decay 3, Tone 5, Level 3',                          prov:'inferred · direct' }
+    ],
+    substitutionAudit: [
+      { artistGear:'Epiphone Riviera/Sheraton (semi-hollow HH)', userGearId:'prs-mark-tremonti', method:'role-fill',               quality:'fallback (solidbody; airy semi-hollow character not reproducible — ease guitar treble, keep amp gain low)' },
+      { artistGear:'Ibanez TS9 Tube Screamer',                   userGearId:'ibanez-ts808-35th', method:'circuit-philosophy',      quality:'direct (alts: maxon-od808, king-tone-duellist string-singer side)' },
+      { artistGear:'EHX Small Stone phaser',                     userGearId:'mxr-evh-phase-90',  method:'tonal-adjacent',          quality:'device-class direct; EVH-flavored 4-stage, not the OTA Small Stone sweep' },
+      { artistGear:'Vox AC30 (~1964)',                           userGearId:'line-6-helix',      method:'helix-fallback',          quality:'amp-in-a-box model; no owned AC30' },
+      { artistGear:'Marshall Bluesbreaker combo',                userGearId:'line-6-helix',      method:'helix-fallback',          quality:'amp-in-a-box model; Lion \'68 is a Super-Lead-Plexi and is wrong here (higher gain than Bluesbreaker)' },
+      { artistGear:'Roland Space Echo',                          userGearId:'tc-flashback-delay',method:'role-fill',               quality:'Tape mode flavor-direct' }
+    ],
+    flaggedGaps: [
+      { role:'ac30-chime',          disposition:'flagged-gap',   rationale:'No owned AC30; Helix model only. FRFR also does not physically reproduce AC30 speaker behavior.' },
+      { role:'bluesbreaker-grind',  disposition:'flagged-gap',   rationale:'No owned Bluesbreaker-voiced amp; Helix model only.' },
+      { role:'semi-hollow-body',    disposition:'explicit-skip', rationale:'Tremonti solidbody is closest owned; accepted character loss.' }
+    ],
+    sources: [
+      { url:'https://www.boostguitarpedals.co.uk/blogs/gear-of-the-gods/noel-gallaghers-guitar-gear-on-whats-the-story-morning-glory-1995', cited:'Riviera as WTSMG rhythm guitar; AC30 + Marshall combo core; TS-9; pedal-light board' },
+      { url:'https://mixdownmag.com.au/features/gear-rundown-noel-gallagher-the-oasis-years/', cited:'Sheraton/Riviera humbucker semi-hollows; TS9 almost-exclusive OD; Space Echo / DD-3 delays' },
+      { url:'https://www.groundguitar.com/noel-gallagher-gear/', cited:'guitar/amp/effects history across eras' },
+      { url:'https://blog.andertons.co.uk/sound-like/how-to-sound-like-oasis-get-noel-gallaghers-sound-more', cited:'AC30+Bluesbreaker WTSMG pair; TS to push amp front end' },
+      { url:'https://www.guitarchalk.com/oasis-noel-gallagher-amp-settings/', cited:'Small Stone phaser on Champagne Supernova; moderate-gain crunch' }
+    ],
+    notes: 'ANCHOR ERA = Morning Glory (1995). The wall is built by DOUBLE/TRIPLE-TRACKING the rhythm hard-panned L/R, not by a single big tone — single-pass sounds thinner than the record by design. Gain staging is the load-bearing move: distortion originates at the amp model\'s input, the TS808 is a clean-ish mid-hump BOOST (low drive / high level) that tightens lows and shoves the amp into its own breakup. Total gain stays in crunch, not high-gain — the 5150/Mesa are wrong here. Topology C (Helix as hub) is mandatory: TS808 + Phase 90 as real pedals in front, Helix does the AC30+Bluesbreaker blend + time FX → FRFR. DEFINITELY MABYE (1994) DELTA — do not average: Les Paul moves to primary; Marshall combo (JCM900-leaning) + Roland Space Echo more prominent (Flashback Tape FB ~5); amp gain runs higher; the Wampler Plexi-Drive becomes legitimately useful as a Plexi front-end here (it does NOT belong in the WTSMG chain); phaser demoted further. Settings INFERRED starting points; rig facts source-confirmed (see sources[]). All knob values numeric per §3.4.'
   }
 };
 

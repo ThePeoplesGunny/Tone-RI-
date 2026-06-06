@@ -4496,9 +4496,19 @@ function switchView(name, btn) {
   if (name === 'chords' && _chordSubview === 'triads') {
     renderTriads();
   }
-  // Render agent dashboard on tab switch
+  // Render agent dashboard on tab switch.
+  // Guard: dashboard-data.js is an external <script src>. If a saved snapshot
+  // was moved away from its sibling .js files, renderDashboard is undefined —
+  // degrade loudly with a visible message instead of throwing silently (W6).
   if (name === 'dashboard') {
-    renderDashboard();
+    if (typeof renderDashboard === 'function') renderDashboard();
+    else {
+      const dv = document.getElementById('view-dashboard');
+      if (dv) dv.innerHTML = '<div style="padding:2rem;font-family:\'Space Mono\',monospace;color:var(--text-dim)">'
+        + '<strong style="color:var(--amber)">Dashboard data not loaded.</strong><br><br>'
+        + 'This snapshot needs its sibling <code>dashboard-data.js</code> file. '
+        + 'Open the HTML from the same folder as <code>dashboard-data.js</code> and <code>gear-inventory.js</code>.</div>';
+    }
   }
 }
 
@@ -6276,11 +6286,17 @@ function saveAndDownload() {
   const src = document.documentElement.outerHTML;
   const replaced = src.replace(/\/\*@@PRESETS_START@@\*\/[\s\S]*?\/\*@@PRESETS_END@@\*\//, presetsBlock);
 
-  // Build timestamped filename
+  // Build versioned, collision-resistant filename (W1: forking guard).
+  // The beta build is parsed from the current filename so it tracks the
+  // version without a separate constant (avoids version-in-N-places sprawl).
+  // Date + HHMM means same-day saves never silently overwrite each other.
   const now = new Date();
   const pad = n => String(n).padStart(2,'0');
-  const ts = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
-  const filename = 'TONE_' + ts + '.html';
+  const date = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
+  const time = pad(now.getHours()) + pad(now.getMinutes());
+  const buildMatch = decodeURIComponent(location.pathname).match(/TONE__BETA_v\d+_\d+/);
+  const build = buildMatch ? buildMatch[0] : 'TONE';
+  const filename = build + '__' + date + '_' + time + '.html';
 
   // Trigger download
   const blob = new Blob([replaced], { type: 'text/html' });
@@ -7179,6 +7195,101 @@ window.ROLE_INDEX = (typeof GEAR_INVENTORY !== 'undefined') ? buildRoleIndex(GEA
 window.buildRoleIndex = buildRoleIndex;
 window.resolveRole = resolveRole;
 window.roleIndexGaps = roleIndexGaps;
+
+// ══════════════════════════════════════════════════════════════
+// SELF-TEST HARNESS  (R2 — zero-dependency assertion floor)
+// ══════════════════════════════════════════════════════════════
+// Pure-function regression guard for the algorithmic core. No DOM,
+// no deps, no build step — Locked Decisions #2/#5 hold. Two ways to run:
+//   • open the file with ?selftest   → auto-runs, console + on-page banner
+//   • type runSelfTests() in console → returns {passed, failed, total, results}
+// Seeded from verified known-good values + DEF-history regressions (7♯9
+// parser, borrowed-chord numerals, Univibe role lookup) so a fixed bug
+// cannot silently return. Extend the body as the engine grows.
+function runSelfTests(verbose) {
+  if (verbose === undefined) verbose = true;
+  const results = [];
+  const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  const T  = (name, got, want) => results.push({ name, pass: eq(got, want), got, want });
+  const TT = (name, cond)      => results.push({ name, pass: !!cond, got: !!cond, want: true });
+
+  // ── SSOT: CHORD_REGISTRY is the single source for chord types (LD#4) ──
+  T('SSOT CHORD_FORMULAS mirrors registry intervals (major)', CHORD_FORMULAS.major.intervals, CHORD_REGISTRY.major.intervals);
+  T('SSOT CHORD_FORMULAS key set === registry key set', Object.keys(CHORD_FORMULAS), Object.keys(CHORD_REGISTRY));
+  T('SSOT SUFFIX_DISPLAY.min7', SUFFIX_DISPLAY.min7, 'm7');
+
+  // ── rotateScale: the 6 modes derive from the major seed ──
+  T('rotateScale(major,5) === natural minor', rotateScale(SCALE_SEEDS.major.intervals, 5), [0,2,3,5,7,8,10]);
+  T('rotateScale(major,1) === dorian',        rotateScale(SCALE_SEEDS.major.intervals, 1), [0,2,3,5,7,9,10]);
+  T('SCALE_FORMULAS.natural_minor matches rotation', SCALE_FORMULAS.natural_minor.intervals, [0,2,3,5,7,8,10]);
+
+  // ── scaleSetDifference: penta→parent intervals computed, not hand-typed ──
+  T('major − pentatonic_major === [4th,7th]',        scaleSetDifference('major','pentatonic_major'), [5,11]);
+  T('nat.minor − pentatonic_minor === [2nd,♭6]',     scaleSetDifference('natural_minor','pentatonic_minor'), [2,8]);
+
+  // ── harmonizeScale: thirds-stacking yields diatonic qualities ──
+  T('harmonizeScale(major) qualities',        harmonizeScale('major').map(h=>h.quality),         ['major','minor','minor','major','major','minor','dim']);
+  T('harmonizeScale(natural_minor) qualities', harmonizeScale('natural_minor').map(h=>h.quality), ['minor','dim','major','minor','minor','major','major']);
+
+  // ── identifyChord: reverse lookup (notes → chord) ──
+  const hasChord = (notes, root, q) => identifyChord(notes).some(r => r.root===root && r.qualityKey===q);
+  TT('identifyChord(C,E,G) → C major',                 hasChord(['C','E','G'],'C','major'));
+  TT('identifyChord(A,C,E) → A minor',                 hasChord(['A','C','E'],'A','minor'));
+  TT('identifyChord(C,E,G,B♭) → C dom7',               hasChord(['C','E','G','Bb'],'C','dom7'));
+  TT('identifyChord(E,G#,B,D,G) → E7♯9 (Hendrix chord)', hasChord(['E','G#','B','D','G'],'E','7#9'));
+  T('identifyChord(<2 notes) → []', identifyChord(['C']), []);
+
+  // ── computeNumeral: Roman-numeral derivation. R7 will refactor this to
+  //    read CHORD_REGISTRY[].suffix — these lock current behavior so the
+  //    refactor is verifiable (W4 / LD#4). ──
+  T('computeNumeral(7,dom7,major) → V⁷',          computeNumeral(7,'dom7','major'),  'V⁷');
+  T('computeNumeral(9,minor,major) → vi',         computeNumeral(9,'minor','major'), 'vi');
+  T('computeNumeral(2,min7,major) → ii⁷',         computeNumeral(2,'min7','major'),  'ii⁷');
+  T('computeNumeral(8,major,major) → ♭VI (borrowed)', computeNumeral(8,'major','major'), '♭VI');
+  T('computeNumeral(0,major,major) → I',          computeNumeral(0,'major','major'), 'I');
+
+  // ── ROLE_INDEX: Gear tab Phase 2 forward guard (skipped if gear file absent) ──
+  if (typeof GEAR_INVENTORY !== 'undefined' && Object.keys(window.ROLE_INDEX || {}).length) {
+    TT('resolveRole(univibe-modulation) → MXR M68', resolveRole('univibe-modulation').some(e => e.gearId === 'mxr-m68-univibe'));
+    T('resolveRole(<unknown>) → [] (explicit gap)', resolveRole('__no_such_role__'), []);
+    T('roleIndexGaps([unknown]) flags it',          roleIndexGaps(['__no_such_role__']), ['__no_such_role__']);
+  } else {
+    results.push({ name: 'ROLE_INDEX tests', pass: true, skipped: true, note: 'gear-inventory.js not loaded' });
+  }
+
+  const passed = results.filter(r => r.pass).length;
+  const total  = results.length;
+  const failed = total - passed;
+  if (verbose) {
+    console.group('TONE self-tests — ' + passed + '/' + total + ' passed' + (failed ? '  ✗ ' + failed + ' FAILED' : '  ✓ all green'));
+    results.forEach(r => {
+      if (r.skipped)   console.info('— SKIP', r.name, r.note || '');
+      else if (r.pass) console.log('✓', r.name);
+      else             console.error('✗', r.name, '\n   got:', r.got, '\n  want:', r.want);
+    });
+    console.groupEnd();
+  }
+  return { passed, failed, total, results };
+}
+window.runSelfTests = runSelfTests;
+
+// Auto-run when opened with ?selftest — works on file:// (e.g. …v4_4_.html?selftest)
+if (typeof location !== 'undefined' && /[?&]selftest\b/.test(location.search)) {
+  const showSelfTestBanner = () => {
+    try {
+      const r = runSelfTests(true);
+      const bar = document.createElement('div');
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;padding:8px 14px;'
+        + 'font:13px/1.4 \'Space Mono\',monospace;text-align:center;color:#fff;background:'
+        + (r.failed ? '#7a1f1f' : '#1f5a2a');
+      bar.textContent = 'TONE self-tests: ' + r.passed + '/' + r.total + ' passed'
+        + (r.failed ? '  ✗ ' + r.failed + ' FAILED — open console' : '  ✓ all green');
+      document.body.appendChild(bar);
+    } catch (e) { console.error('self-test harness error', e); }
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', showSelfTestBanner);
+  else showSelfTestBanner();
+}
 </script>
 
 

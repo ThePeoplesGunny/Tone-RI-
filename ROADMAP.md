@@ -6,7 +6,7 @@
 
 ## Next Target
 
-**Gear tab — Phase 2** (per `GEAR_TAB_DESIGN.md` v0.2). Design doc is agent-reviewed (Architect, UI/UX, Tone Engineer, Guitar Systems) and user-approved. Three contested decisions resolved (notation fidelity per setting, Gear tab is standalone from Play Mode, edit mode is text-only / no knob drag). Schema-level role assertion validation (Section 3.7 of design doc) is the load-bearing structural change that makes the Univibe-class hallucination impossible.
+**Gear tab — Phase 3** (per `GEAR_TAB_DESIGN.md` v0.2). Design doc is agent-reviewed (Architect, UI/UX, Tone Engineer, Guitar Systems) and user-approved. Three contested decisions resolved (notation fidelity per setting, Gear tab is standalone from Play Mode, edit mode is text-only / no knob drag). Phases 1 (`gear-inventory.js`) and 2 (`buildRoleIndex()` runtime) shipped. Phase 3 is the Tone Engineer agent update: role-index lookup + the §3.7 reverse-guard validator (the load-bearing structural change that makes the Univibe-class hallucination impossible) + KWS recipe rerun.
 
 Implementation order from the design doc:
 1. ~~**Phase 1**~~ — `gear-inventory.js` shipped 2026-05-03. 38 in-scope guitar-tone items across 10 categories; 81 distinct role tags; `ROLE_INDEX['univibe-modulation'] = ['mxr-m68-univibe']` confirmed (Univibe DIRECT MATCH available, Phase 90 no longer asserts that role).
@@ -43,6 +43,13 @@ No open defects.
 - Tremonti Mesa settings research event (before authoring Tremonti recipe in Phase 9 of Gear tab build)
 - TUNING_PRESETS constant unification (small refactor; eliminates dropdown/recipe-id drift)
 - Helix block-level modeling (v2 of Gear tab)
+
+**2026-06-06 — Trust-floor hardening (project review, P0 track on v4.4):**
+- **Verification floor added.** `runSelfTests()` / `?selftest` harness in the HTML (banner `SELF-TEST HARNESS`) — 23 assertions over the pure-function core (CHORD_REGISTRY SSOT, `rotateScale`, `harmonizeScale`, `identifyChord`, `computeNumeral`, `scaleSetDifference`, role index). Browser-verified all green 2026-06-06.
+- **`/session-close` now gates commit** on self-tests green + change-type manual checks (Triads tab added to the render checklist — it's the one fretboard surface the smoke test omitted).
+- **Save path hardened (R1).** Versioned, collision-proof snapshot filename (`TONE__BETA_vX_Y__date_HHMM`); loud Dashboard load-guard replaces the silent throw when a relocated snapshot can't find `dashboard-data.js`.
+- **Self-containment — loud-guard decision.** Full snapshot self-containment NOT pursued: gear/dashboard data are static git-backed (LD#6) so loss is recoverable; runtime inlining is infeasible under file:// (no `fetch`; `dashboard-data.js` carries functions). Revisit only if needed, with TONE_RECIPES (Phase 4) as the forcing function.
+- **Residual from review (not yet done):** P1 UX — persistent context HUD, nav-prompt glance/study split. P2 — chrome consolidation of the 2 Triads renderers (docs + LD#3 still say "5 renderers"; actually **7**, 5 consolidated), `computeNumeral`→`CHORD_REGISTRY[].suffix` derivation, governance reconcile (`architect.md` DEF-17 stale vs disk). Feature track — NF1 tempo auto-advance (visual clock, no audio) → NF2 timed approach note → NF3 one-tap "why this note".
 
 ---
 

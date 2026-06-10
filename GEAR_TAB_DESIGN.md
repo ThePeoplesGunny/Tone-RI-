@@ -602,6 +602,8 @@ Enumerated values for `substitution.method` and `substitutionAudit[].method`:
 
 `explicit-skip` and `flagged-gap` are different: skip is accepted-loss, gap surfaces to user and is the only `substitution.method` value that opens a Workflow B (acquisition) discussion path.
 
+*(Phase 3 hardening: `validateRecipeRoles()` structurally rejects any `substitutionAudit[].method` outside this enumeration — added after the Phase 3 acceptance rerun emitted invented methods (`role-analog`), proving prompt-layer discipline alone doesn't bind.)*
+
 ### 3.6 Role index — derived view of GEAR_INVENTORY
 
 Built at app load by walking `GEAR_INVENTORY` and inverting `roles[]`:
@@ -825,7 +827,7 @@ The Tone Engineer agent reads `GEAR_INVENTORY` and `ROLE_INDEX` at the start of 
 **Mandatory steps before emitting a recipe:**
 
 1. Resolve every artist-rig item to a role (e.g., "Univibe" → role `univibe-modulation`).
-2. Query `ROLE_INDEX[role]`. If non-empty, use the highest-quality match (`direct` > `closest-analog` > `amp-in-a-box` > `capture` > `helix-fallback`).
+2. Query `ROLE_INDEX[role]`. If non-empty, use the highest-quality match. *(LD#8 reconciliation: the index emits only structural qualities — `direct` > `amp-in-a-box` > `capture` > `fallback`. Judgment grades like `closest-analog` are agent reasoning per §3.5, layered on top, never emitted by the index.)*
 3. If `ROLE_INDEX[role]` is empty: classify as `explicit-skip` (acceptable loss) or `flagged-gap` (surface to user); never invent a substitute.
 4. For each entry in `pedalChain`, `effectsLoopChain`, `amps`: assert `entry.role ∈ GEAR_INVENTORY[entry.gearId].roles[]`. **If assertion fails, the agent must regenerate, not emit.**
 5. Populate `substitutionAudit[]` with one row per artist-rig item.

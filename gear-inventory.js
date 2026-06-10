@@ -43,7 +43,7 @@
 //                       brown-sound, rectifier-voice, dumble-flavor,
 //                       big-muff-flavor, univibe-modulation, phase-90,
 //                       analog-chorus, vintage-wah, modern-wah, classic-wah,
-//                       harmonist, drop-tune
+//                       cae-circuit, harmonist, drop-tune
 //
 //   Function:           tuner, noise-gate, compressor, aby-switch, fuzz,
 //                       low-gain-overdrive, mid-gain-overdrive,
@@ -393,7 +393,7 @@ const GEAR_INVENTORY = {
       ],
       power: { input: 'dc-9v', voltageV: 9, currentDrawMa: 8, polarity: 'center-negative', connector: '1/8" (3.5mm) jack', batteryCapable: true, batteryType: '9V' },
       specProvenance: { source: 'User-attested 2026-05-18 (owner)', status: 'confirmed', checked: '2026-05-18', note: 'Owner-attested: 9V DC center-negative, 8mA max, 9V battery. CONNECTOR CORRECTION (P14): NOT a 2.1mm barrel (prior inferred value was wrong) — the 35th faithfully recreates the 1979 circuit and uses the older 1/8" (3.5mm) power jack. Power-budget impact: needs a 3.5mm adapter cable off a standard barrel supply (e.g. the MONDO).' },
-      roles: ['tube-screamer', 'mid-push-boost', 'srv-boost', 'kws-boost', 'low-gain-overdrive'],
+      roles: ['tube-screamer', 'mid-push-boost', 'srv-substitute', 'kws-1997-substitute', 'low-gain-overdrive'],
       typicalDeployment: 'low drive + high level into a clean or lightly broken-up amp; pushes the front end into mid-forward saturation',
     },
     {
@@ -536,7 +536,7 @@ const GEAR_INVENTORY = {
       ],
       power: { input: 'dc-9v', voltageV: 9, currentDrawMa: 5, polarity: 'center-negative', connector: '2.1mm barrel', batteryCapable: true, batteryType: '9V' },
       specProvenance: { source: 'Jim Dunlop official M68 manual PDF (jimdunlop.com/content/manuals/M68.pdf)', status: 'confirmed', checked: '2026-05-18', note: 'Manual spec block: 5mA / 9V DC. Battery via bottom plate or ECB003. Polarity/connector = MXR/Dunlop ECB003 standard (center-negative 2.1mm).' },
-      roles: ['univibe-modulation', 'watery-modulation', 'hendrix-rhythm-texture', 'kws-1997-substitute', 'kws-modern-substitute'],
+      roles: ['univibe-modulation', 'kws-1997-substitute', 'kws-modern-substitute'],
       typicalDeployment: 'placed before drive for classic Hendrix Machine Gun rhythm; Chorus mode for KWS Voodoo Child funk break (DIRECT MATCH for univibe-modulation role — preferred over Phase 90 substitution).',
     },
     {
@@ -552,7 +552,7 @@ const GEAR_INVENTORY = {
       ],
       power: { input: 'dc-9v', voltageV: 9, currentDrawMa: 8, polarity: 'center-negative', connector: '2.1mm barrel', batteryCapable: true, batteryType: '9V' },
       specProvenance: { source: 'Jim Dunlop official EVH90 manual PDF (jimdunlop.com/content/manuals/EVH90.pdf)', status: 'confirmed', checked: '2026-05-18', note: 'Manual spec block: 8.2mA / 9V DC (recorded as integer 8). Battery via bottom plate or ECB003. Center-negative 2.1mm MXR/Dunlop standard.' },
-      roles: ['phase-90', 'evh-eruption-swirl', 'evh-rhythm-shimmer', 'evh-platform'],
+      roles: ['phase-90', 'evh-platform'],
       typicalDeployment: 'Script mode for vintage EVH solo swirl; Block mode for post-1980 EVH territory. NOT preferred as Univibe substitute when M68 Uni-Vibe is available.',
     },
     {
@@ -569,7 +569,7 @@ const GEAR_INVENTORY = {
       ],
       power: { input: 'dc-9v', voltageV: 9, currentDrawMa: 13, polarity: 'center-negative', connector: '2.1mm barrel', batteryCapable: true, batteryType: '9V' },
       specProvenance: { source: 'Jim Dunlop official M234 manual PDF (jimdunlop.com/content/manuals/M234.pdf)', status: 'confirmed', checked: '2026-05-18', note: 'Manual spec block: 13mA / 9V DC. Battery via bottom plate or ECB003. Center-negative 2.1mm MXR/Dunlop standard.' },
-      roles: ['analog-chorus', 'lush-modulation'],
+      roles: ['analog-chorus'],
       typicalDeployment: 'classic 80s analog chorus voice. Use sparingly; mix-friendly with low depth + low level.',
     },
     {
@@ -692,7 +692,7 @@ const GEAR_INVENTORY = {
       ],
       power: { input: 'dc-9-18v', voltageV: 9, currentDrawMa: 11, polarity: 'center-negative', connector: '5.5/2.1mm barrel', batteryCapable: true, batteryType: '9V' },
       specProvenance: { source: 'User-attested 2026-05-18 (owner)', status: 'confirmed', checked: '2026-05-18', note: 'Owner-attested: 9V or 18V DC, center-negative, 5.5/2.1mm barrel, 11mA max draw, accepts standard 9V battery. Resolves the prior null (Fulltone never published the draw). Fulltone warns against unregulated supplies. Voltage is a tone control — see typicalDeployment.' },
-      roles: ['vintage-wah', 'modern-wah', 'studio-wah'],
+      roles: ['vintage-wah', 'modern-wah'],
       typicalDeployment: 'studio-tier wah; voicing switch covers wide territory. More refined than standard Cry Baby family. VOLTAGE AS A TONE CONTROL (owner-attested): 9V = classic compressed vintage tone; 18V = wider dynamic range, more headroom. Recipes may specify supply voltage as a deliberate voicing parameter.',
     },
     {

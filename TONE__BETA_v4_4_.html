@@ -7141,8 +7141,8 @@ function renderTriadChain() {
 // item's roles[] (and sides[].roles[]) into a role → fillers map. This is
 // the FORWARD half of the §3.7 two-sided anti-hallucination guard: query
 // ROLE_INDEX[role] to find the direct match before substituting. The
-// REVERSE half (schema rejects role assertions not backed by gear.roles[])
-// lands in Phase 3 with the recipe schema.
+// REVERSE half is validateRecipeRoles() below (Phase 3): schema rejects
+// role assertions not backed by the gear's roles[].
 //
 // `quality` is STRUCTURALLY derived (gear category only):
 //   'direct'       — owned unit fills the role as itself
@@ -7191,10 +7191,71 @@ function roleIndexGaps(requestedRoles) {
   return requestedRoles.filter(r => resolveRole(r).length === 0);
 }
 
+// Find a gear item by id across all GEAR_INVENTORY categories.
+// Returns { item, category } or null.
+function findGearById(inventory, gearId) {
+  for (const categoryKey of Object.keys(inventory)) {
+    const item = inventory[categoryKey].find(i => i.id === gearId);
+    if (item) return { item, category: categoryKey };
+  }
+  return null;
+}
+
+// SCHEMA-LEVEL ROLE ASSERTION VALIDATION (Gear Tab Phase 3 — §3.7).
+// The REVERSE half of the two-sided anti-hallucination guard. For every
+// entry in a recipe's pedalChain[] / effectsLoopChain[] / amps[]:
+//   ASSERT entry.role ∈ gear.roles[]   (or sides[sideId].roles[] when a
+//   side is specified — side roles REPLACE item roles, per §3.7)
+// entry.role is optional; entries without one only need a known gearId.
+// Also enforces the §3.5 substitution-method enumeration on
+// substitutionAudit[].method — added after the Phase 3 live rerun emitted
+// invented methods ('role-analog'); same structural-guard rationale.
+// Returns { valid, errors[] }. An invalid recipe must be rejected at
+// recipe load, recipe save, and agent emit time — the agent regenerates,
+// never emits (§5.1 step 4). Enforcement at load/save wires in with
+// TONE_RECIPES (Phase 4); this function is the single validation point.
+const SUBSTITUTION_METHODS = ['direct-match', 'circuit-philosophy', 'role-fill',
+  'tonal-adjacent', 'internal-side-selection', 'amp-in-a-box-emulation',
+  'capture', 'helix-fallback', 'explicit-skip', 'flagged-gap'];
+function validateRecipeRoles(recipe, inventory) {
+  if (inventory === undefined) inventory = (typeof GEAR_INVENTORY !== 'undefined') ? GEAR_INVENTORY : null;
+  if (!inventory) return { valid: false, errors: [{ reason: 'GEAR_INVENTORY not loaded' }] };
+  const errors = [];
+  for (const chain of ['pedalChain', 'effectsLoopChain', 'amps']) {
+    const entries = (recipe && Array.isArray(recipe[chain])) ? recipe[chain] : [];
+    entries.forEach((entry, index) => {
+      if (!entry || !entry.gearId) { errors.push({ chain, index, reason: 'missing gearId' }); return; }
+      const found = findGearById(inventory, entry.gearId);
+      if (!found) { errors.push({ chain, index, gearId: entry.gearId, reason: 'unknown gearId — not in GEAR_INVENTORY' }); return; }
+      let roles = Array.isArray(found.item.roles) ? found.item.roles : [];
+      if (entry.side) {
+        const side = (found.item.sides || []).find(s => s.sideId === entry.side);
+        if (!side) { errors.push({ chain, index, gearId: entry.gearId, side: entry.side, reason: 'unknown sideId' }); return; }
+        roles = Array.isArray(side.roles) ? side.roles : [];
+      }
+      if (entry.role != null && !roles.includes(entry.role)) {
+        errors.push({ chain, index, gearId: entry.gearId, side: entry.side, role: entry.role,
+                      reason: 'role not in gear roles[] — §3.7 reverse guard' });
+      }
+    });
+  }
+  const audit = (recipe && Array.isArray(recipe.substitutionAudit)) ? recipe.substitutionAudit : [];
+  audit.forEach((row, index) => {
+    if (row && row.method != null && !SUBSTITUTION_METHODS.includes(row.method)) {
+      errors.push({ chain: 'substitutionAudit', index, method: row.method,
+                    reason: 'method not in §3.5 enumeration' });
+    }
+  });
+  return { valid: errors.length === 0, errors };
+}
+
 window.ROLE_INDEX = (typeof GEAR_INVENTORY !== 'undefined') ? buildRoleIndex(GEAR_INVENTORY) : {};
 window.buildRoleIndex = buildRoleIndex;
 window.resolveRole = resolveRole;
 window.roleIndexGaps = roleIndexGaps;
+window.findGearById = findGearById;
+window.validateRecipeRoles = validateRecipeRoles;
+window.SUBSTITUTION_METHODS = SUBSTITUTION_METHODS;
 
 // ══════════════════════════════════════════════════════════════
 // SELF-TEST HARNESS  (R2 — zero-dependency assertion floor)
@@ -7253,6 +7314,20 @@ function runSelfTests(verbose) {
     TT('resolveRole(univibe-modulation) → MXR M68', resolveRole('univibe-modulation').some(e => e.gearId === 'mxr-m68-univibe'));
     T('resolveRole(<unknown>) → [] (explicit gap)', resolveRole('__no_such_role__'), []);
     T('roleIndexGaps([unknown]) flags it',          roleIndexGaps(['__no_such_role__']), ['__no_such_role__']);
+
+    // ── §3.7 reverse guard (Gear tab Phase 3): the Univibe-miss class, locked ──
+    TT('§3.7 REJECTS phase-90 ↦ univibe-modulation (Univibe miss)',
+       !validateRecipeRoles({ pedalChain: [{ gearId: 'mxr-evh-phase-90', role: 'univibe-modulation' }] }).valid);
+    TT('§3.7 ACCEPTS m68 ↦ univibe-modulation (direct match)',
+       validateRecipeRoles({ pedalChain: [{ gearId: 'mxr-m68-univibe', role: 'univibe-modulation' }] }).valid);
+    TT('§3.7 resolves side roles (Duellist string-singer ↦ klon-flavor)',
+       validateRecipeRoles({ pedalChain: [{ gearId: 'king-tone-duellist', side: 'string-singer', role: 'klon-flavor' }] }).valid);
+    TT('§3.7 REJECTS unknown gearId (no invented gear)',
+       !validateRecipeRoles({ pedalChain: [{ gearId: 'klon-centaur', role: 'klon-flavor' }] }).valid);
+    TT('§3.5 REJECTS invented substitution method (live-drift regression)',
+       !validateRecipeRoles({ substitutionAudit: [{ method: 'role-analog' }] }).valid);
+    TT('§3.5 ACCEPTS enumerated substitution method',
+       validateRecipeRoles({ substitutionAudit: [{ method: 'internal-side-selection' }] }).valid);
   } else {
     results.push({ name: 'ROLE_INDEX tests', pass: true, skipped: true, note: 'gear-inventory.js not loaded' });
   }

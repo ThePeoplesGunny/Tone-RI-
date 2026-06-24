@@ -16,7 +16,6 @@
       "WebFetch(domain:github.com)",
       "Bash(grep -o '\\\\.[^.]*$')",
       "Bash(du:*)",
-      "Bash(\"/c/Program Files/xpdf/bin64/pdfinfo.exe\" \"C:\\\\Users\\\\miken\\\\OneDrive\\\\Desktop\\\\claude stuff\\\\TONE RI\\\\SRV - Little Wing.pdf\")",
       "Bash(mkdir -p /tmp/pdf_pages)",
       "Bash(\"/c/Program Files/xpdf/bin64/pdftoppm.exe\" -r 150 -png \"SRV - Little Wing.pdf\" /tmp/pdf_pages/page)",
       "Read(//tmp/**)",
@@ -33,8 +32,7 @@
       "WebFetch(domain:www.ibanez.com)",
       "WebFetch(domain:equipboard.com)",
       "WebFetch(domain:www.thomannmusic.com)",
-      "WebFetch(domain:www.guitarpedalx.com)",
-      "PowerShell(Get-ChildItem \"C:\\\\claude\\\\TONE RI\\\\Tone \\(RI\\)\\\\\" -Force | Where-Object { $_.Name -ne '.git' } | Select-Object Mode, Length, Name)"
+      "WebFetch(domain:www.guitarpedalx.com)"
     ]
   }
 }

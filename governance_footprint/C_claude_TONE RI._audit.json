@@ -1,0 +1,53 @@
+{
+  "date": "2026-06-24",
+  "project": "C:\\claude\\TONE RI",
+  "failures": [
+    {
+      "check": "1-probe-pipe-tests / D-skill-file-as-code",
+      "detail": "Recipe JSON schema field names (pedalChain/effectsLoopChain/amps with gearId/role/side; substitutionAudit[].method) are documented NOWHERE in CLAUDE.md or tone-engineer.md — they live only inside the shipped validateRecipeRoles(). A recipe authored with a plausible-but-wrong key (e.g. 'roleAssertion' instead of 'role') passes validation with exit 0 (verified: probe with {gearId,roleAssertion} returned VALID; same probe with correct {gearId,role:'phase-shift'} correctly returned INVALID exit 1). Silent-pass on a mistyped field is the swallow-the-error class. Severity: latent. Fix: document the exact recipe schema in tone-engineer.md §Recipe Mode and/or have validateRecipeRoles flag unrecognized entry keys."
+    },
+    {
+      "check": "5-loading-reach / settings baseline (P13)",
+      "detail": "No committed .claude/settings.json baseline exists — only settings.local.json. settings.local.json has NO deny list, so the framework-required destructive-ops deny-list (§III.2 permission baseline) is absent. This is a P13 permission-baseline gap."
+    }
+  ],
+  "stale_claims": [
+    "settings.local.json line 19 references stale absolute path 'C:\\Users\\miken\\OneDrive\\Desktop\\claude stuff\\TONE RI\\SRV - Little Wing.pdf' — pre-move location; dead permission entry (Pattern B vestige).",
+    "settings.local.json line 37 PowerShell allow-entry references the collapsed 'Tone (RI)\\' subdir (removed per LD#7 2026-05-17) — dead permission entry.",
+    "All version/count/anchor claims in CLAUDE.md, ROADMAP.md, session-start.md VERIFIED ACCURATE: 38 gear items, 10 categories, 74 distinct roles, 29 self-test assertions (live), 8 subagents, 5 commands, 27 specProvenance-confirmed pedals, mission phrase at line 9, all 11 banner anchors match, all 14 named HTML functions present. No drift found in these."
+  ],
+  "never_invoked": [
+    "hendrix — 0 invocations (subagent_type) across 4 transcripts (152 loose name-mentions are domain content, not dispatches)",
+    "evh — 0 invocations (324 loose mentions are content)",
+    "srv — 0 invocations (162 loose mentions are content)",
+    "kws — 0 invocations (514 loose mentions are recipe-subject content, not agent dispatch)",
+    "guitar-systems — 0 invocations (16 loose mentions)"
+  ],
+  "invoked": {
+    "tone-engineer": 14,
+    "architect": 1,
+    "uiux": 1
+  },
+  "recurring_work": [
+    "Tone-card / patch-sheet HTML authoring (KWS_Voodoo_Child_Tone_Card, Oasis_Be_Here_Now_Tone_Card, Oasis_Morning_Glory_Tone_Card, Oasis_Helix_Powercab_Setup_Card, SRV_Parallel_Patch_Sheet) — 5 printable HTML tone artifacts produced across sessions with no dedicated skill. Multiple memory entries codify the format (deliverable_format, dimensional_accuracy, uniform_drawing_intent, per_setting_verification). Candidate: a /tone-card skill embedding the mandated provenance-dot + per-setting-verification + designed-HTML steps. NOT auto-created (§IV creation is a user decision)."
+  ],
+  "relocation_candidates": [
+    "CLAUDE.md 'Code architecture inside the HTML' + 'The algorithmic core' + 'Render layer' + 'PRESETS schema' blocks (~6-7K chars combined) are physical-model prose largely derivable from the HTML banners/function signatures (L-0028 relocation candidates). The banner-string table and function-name lists duplicate what Grep of the HTML yields. KEEP the irreducible HOW-HERE (banner-navigation instruction, LD pointers); the enumerated function rosters are the relocation surface."
+  ],
+  "absorption_candidates": [
+    "CLAUDE.md 'Locked Decisions' rows #1,#2,#5 (single-file / no-localStorage / no-external-deps) are APPLICATION (bind universal principles to file:// reality) — KEEP.",
+    "CLAUDE.md repeats the LD#7 parent-resolution-bug narrative in THREE places (Working-directory note, Repository-layout .claude/agents bullet, LD#7 row) — RESTATEMENT across locations; consolidate to the LD#7 row + one pointer. ~600 chars recoverable."
+  ],
+  "loaded_total": {
+    "CLAUDE.md_chars": 22741,
+    "claude_md_cap": 40000,
+    "footprint_total_all_governance_files_chars": 185006,
+    "session_load_budget": 45000,
+    "note": "footprint _total sums ALL governance files; per-session load = CLAUDE.md (22741) + 5 commands (~41729) always-reachable; 8 agents load on-demand. CLAUDE.md well under cap.",
+    "memory_file_count": 35,
+    "memory_file_threshold": 40,
+    "memory_index_MEMORY_md_chars_approx": 4800,
+    "memory_index_threshold": 8000
+  },
+  "summary": "Scaffolding is largely trustworthy. ALL executable probes ran live and passed: headless-Edge self-test 29/29 green, validate-recipe-roles --index/--roles exit 0, §3.7 reverse guard fires correctly (bad role + unknown gearId -> exit 1, good -> exit 0). ALL counts/anchors/line-numbers verified accurate (zero drift in version strings, gear/role/agent/command counts, banner anchors, named functions, mission-phrase line). 2 FAILs: (1) recipe JSON schema field names undocumented -> silent-pass on mistyped key (latent error-swallow class); (2) no committed settings.json baseline + no deny-list (P13 gap). 5 of 8 agents never dispatched as agents (hendrix/evh/srv/kws/guitar-systems) across 4 transcripts — authored != working, though small sample. 2 stale permission entries reference pre-move paths. NOT every probe was mutating-skipped; no probe skipped for a non-mutating reason."
+}
